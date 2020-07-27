@@ -1,0 +1,91 @@
+import datetime
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+
+from contests.utils import comp_answer_upload_to, user_answer_upload_to
+
+
+class Contest(models.Model):
+    writer = models.ForeignKey(User, on_delete=models.SET_NULL)
+    title = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # 채점을 위한 data를 contestAnswer에 저장함.
+    contestAnswer = models.FileField(
+        null=True, blank=True, upload_to=comp_answer_upload_to
+    )
+    deadline = models.DateTimeField()
+    timeline = models.TextField()  # 여러 날짜들을 text로 저장했다가 json으로 변환해서 프론트로 넘김
+    prize = models.IntegerField()  # 만 단위로 받을 것임.
+
+    isForTraining = models.BooleanField(default=False)  # 연습용이냐 실전용이냐.
+
+    winnerInterview = models.TextField(
+        null=True, blank=True
+    )  # 우승자 인터뷰 & 코드 리뷰 영상. 유튜브 URL만 db에서 들고 있게 한다.
+
+    # 등급(초중고)
+    EASY = "EASY"
+    NORMAL = "NORMAL"
+    HARD = "HARD"
+    difficultyChoice = ((EASY, "Easy"), (NORMAL, "Normal"), (HARD, "Hard"))
+    difficulty = models.CharField(
+        max_length=6, choices=difficultyChoice, default="Normal"
+    )
+
+    # 평가방법(정확도 vs 인기도(추천순))
+    ACCURACY = "ACCURACY"
+    POPULARITY = "POPULARITY"
+    evaluationChoice = ((ACCURACY, "Accuracy"), (POPULARITY, "Popularity"))
+    evliationMethod = models.CharField(
+        max_length=10, choices=evaluationChoice, default="Accuracy"
+    )
+
+    # 학습 모델 종류. 계속 추가될 것이므로 따로 선택지를 고정해놓지는 않는다.
+    learningModel = models.CharField(max_length=255)
+
+    evaluationExplanation = models.TextField()  # 평가기준 설명
+    contestExplanation = models.TextField()  # 대회 설명
+    prizeExplanation = models.TextField()  # 상금 설명
+    dataExplanation = models.TextField()  # data 설명
+    profileThumb = models.ImageField(null=True, blank=True)
+    backThumb = models.ImageField(null=True, blank=True)
+    contestOverview = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.title
+
+    def isFinished(self):
+        now = datetime.datetime.now()
+        if self.deadline < now:
+            return True
+        else:
+            return False
+
+    def scrapsCount(self):
+        return User.objects.filter(contestScraps=self).count()
+
+
+class ContestFile(models.Model):
+    constest = models.ForeignKey(Contest, on_delete=models.SET_NULL)
+    file = models.FileField(null=True, blank=True)  # data file을 위함
+
+
+class ContestUserAnswer(models.Model):
+    constest = models.ForeignKey(
+        Contest, on_delete=models.SET_NULL, related_name="userAnswer"
+    )
+    writer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
+
+    file = models.FileField(upload_to=user_answer_upload_to, null=True, blank=True)
+
+    accuracy = models.FloatField(default=0)
+
+    # 종료 시점에 업데이트해서 1등 - 1, 2등 - 2, 3등 - 3, 상위30% - 4 참여완료 - 5
+    rank = models.IntegerField(default=0)
