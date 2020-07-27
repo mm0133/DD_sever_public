@@ -1,7 +1,5 @@
-from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
-
-User = settings.AUTH_USER_MODEL
 
 # 삭제할 때 view에서, 대댓이 있는 걸 확인해서 있으면 '삭제된 댓글입니다'로 content를 바꾼다.
 # 대댓 없으면 그냥 지운다.

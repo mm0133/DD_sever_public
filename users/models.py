@@ -1,11 +1,8 @@
-from django.conf import settings
 from django.db import models
-
 from communications.models import ContestCodeNote, ContestDebate, Velog
 from contests.models import Contest, ContestUserAnswer
 from contests.utils import user_profile_image_path
-
-User = settings.AUTH_USER_MODEL
+from django.contrib.auth.models import User
 
 
 class Profile(models.Model):
