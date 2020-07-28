@@ -39,6 +39,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # apps
+    "api.contests",
+    "api.communications",
+    "api.educations",
+    "api.managements",
+    "api.users",
 ]
 
 MIDDLEWARE = [

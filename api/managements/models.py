@@ -6,7 +6,7 @@ from django.db import models
 
 
 class Notice(models.Model):
-    writer = models.ForeignKey(User, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -24,7 +24,7 @@ class Notice(models.Model):
 
 
 class QuestionToManager(models.Model):
-    writer = models.ForeignKey(User, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -40,13 +40,13 @@ class QuestionToManager(models.Model):
 
 
 class CommentToQuestion(models.Model):
-    writer = models.ForeignKey(User, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
     hitNums = models.IntegerField(default=0)
 
-    questionToManager = models.ForeignKey(QuestionToManager, on_delete=models.SET_NULL)
+    questionToManager = models.ForeignKey(QuestionToManager, on_delete=models.CASCADE)
 
     # 대댓글(재귀)
     commentToQuestion = models.ForeignKey(
@@ -62,8 +62,8 @@ class CommentToQuestion(models.Model):
 
 
 # 그냥 받고 끝인 피드백
-class QuestionToManager(models.Model):
-    writer = models.ForeignKey(User, on_delete=models.SET_NULL)
+class FeedbackToManager(models.Model):
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
 

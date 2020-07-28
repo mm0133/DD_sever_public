@@ -4,11 +4,11 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
-from contests.utils import comp_answer_upload_to, user_answer_upload_to
+from api.contests.utils import comp_answer_upload_to, user_answer_upload_to
 
 
 class Contest(models.Model):
-    writer = models.ForeignKey(User, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) #step만 가능
     title = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -70,15 +70,15 @@ class Contest(models.Model):
 
 
 class ContestFile(models.Model):
-    constest = models.ForeignKey(Contest, on_delete=models.SET_NULL)
+    constest = models.ForeignKey(Contest, null=True, on_delete=models.SET_NULL)
     file = models.FileField(null=True, blank=True)  # data file을 위함
 
 
 class ContestUserAnswer(models.Model):
     constest = models.ForeignKey(
-        Contest, on_delete=models.SET_NULL, related_name="userAnswer"
+        Contest, null=True,  on_delete=models.SET_NULL, related_name="userAnswer"
     )
-    writer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)

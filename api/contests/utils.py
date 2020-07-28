@@ -2,7 +2,7 @@ import os
 from datetime import date
 from uuid import uuid4
 
-from contests.models import *
+from api.contests.models import *
 
 
 def join_user():
