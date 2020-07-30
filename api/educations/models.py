@@ -4,7 +4,7 @@ from django.db import models
 
 class EduVideoLecture(models.Model):
 
-    writer = models.ForeignKey(User,null=True, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     hitNums = models.IntegerField(default=0)
