@@ -2,14 +2,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import EduVideoLecture
-from .serializer import EduVideoLectureSerializer, EduVideoLecturesListSerializer
+from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer
 
 
-class EduVideoLecturesView(APIView):
+class EduVideoLectureView(APIView):
 
     def get(self, request):
         lecture = EduVideoLecture.objects.all()
-        serializer = EduVideoLecturesListSerializer(lecture, many=True).data
+        serializer = EduVideoLecturesSerializer(lecture, many=True).data
         return Response(serializer)
 
     def post(self, request):
@@ -35,7 +35,7 @@ class EduVideoLecturesView(APIView):
 
 
 
-class EduVideoLectureView(APIView):
+class EduVideoLectureViewWithPk(APIView):
 
     def get_videoLecture(self, pk):
         try:
@@ -66,8 +66,8 @@ class EduVideoLectureView(APIView):
 
         serializer = EduVideoLectureSerializer(videoLecture, data=request.data, partial=True)
         if serializer.is_valid():#validate 로직 추가
-            room = serializer.save()
-            return Response(EduVideoLectureSerializer(room).data)
+            videoLecture = serializer.save()
+            return Response(EduVideoLectureSerializer(videoLecture).data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -76,7 +76,7 @@ class EduVideoLectureView(APIView):
         videolecture = self.get_videoLecture(pk)
         if False: #videolecture.user != request.user: #관리자 로직 로그인 추가 필요
             return Response(status=status.HTTP_403_FORBIDDEN)
-        if videolecture is not None:
+        if True:#관리자 로직
             videolecture.delete()
             return Response(status=status.HTTP_200_OK)
         else:

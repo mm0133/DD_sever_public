@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
     image = models.ImageField(
         default="default.png", upload_to=user_profile_image_path, null=True, blank=True
     )
@@ -17,10 +17,10 @@ class Profile(models.Model):
     # json으로 어떤 대회에서(id값이 key가 된다) 어떤 rank(1~5)를 들고 있는지 기록해둔다.
     contestRankDictionary = models.TextField(default="{}")
 
-    contestScrpas = models.ManyToManyField(Contest, blank=True)
-    debateScraps = models.ManyToManyField(ContestDebate, blank=True)
-    codeNoteScraps = models.ManyToManyField(ContestCodeNote, blank=True)
-    velogScraps = models.ManyToManyField(Velog, blank=True)
+    contestScrpas = models.ManyToManyField(Contest, related_name="scrapProfiles", blank=True)
+    debateScraps = models.ManyToManyField(ContestDebate, related_name="scrapProfiles", blank=True)
+    codeNoteScraps = models.ManyToManyField(ContestCodeNote, related_name="scrapProfiles", blank=True)
+    velogScraps = models.ManyToManyField(Velog, related_name="scrapProfiles", blank=True)
 
     def __str__(self):
         return f"{self.user.username} Profile"

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from api.contests.models import Contest
 
 
+
 # 삭제할 때 view에서, 대댓이 있는 걸 확인해서 있으면 '삭제된 댓글입니다'로 content를 바꾼다.
 # 대댓 없으면 그냥 지운다.
 
@@ -29,9 +30,13 @@ class ContestDebate(models.Model):
 
     def __str__(self):
         return self.title
-
+#이 아래부분 아직 안썼는데 serializer 짤 때 잘만하면 괜찮을지도?
     def scrapsCount(self):
-        return User.objects.filter(debateScraps=self).count()
+        return self.scrapProfiles.count()
+
+    def isScraped(self, user):
+        return user.customProfile in self.scrapProfiles.all()
+
 
 
 class ContestCodeNote(models.Model):
@@ -53,8 +58,15 @@ class ContestCodeNote(models.Model):
     def __str__(self):
         return self.title
 
+
     def scrapsCount(self):
-        return User.objects.filter(codeNoteScraps=self).count()
+        return self.scrapProfiles.count()
+
+
+    def isScraped(self, user):
+        return user.customProfile in self.scrapProfiles.all()
+
+
 
 
 class Velog(models.Model):
@@ -74,8 +86,13 @@ class Velog(models.Model):
     def __str__(self):
         return self.title
 
+
     def scrapsCount(self):
-        return User.objects.filter(velogScraps=self).count()
+        return self.scrapProfiles.count()
+
+    def isScraped(self, user):
+        return user.customProfile in self.scrapProfiles.all()
+
 
 
 class DebateComment(models.Model):
