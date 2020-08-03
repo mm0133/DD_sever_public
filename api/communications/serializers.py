@@ -3,12 +3,12 @@ from rest_framework import serializers
 
 from api.communications.models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
 
-#으아 상속해서 쓰고싶은데  user에서 역참조할때 scrap들 이름이 달라서 어려움 그리고
-#이걸 역참조해서 모델에 같은이름으로 함수만들까 했는데 그것도 쉽지않은게 profile에 있다는게 문제임 오류가 생기는듯?
+
 
 class LikeIncludedModelSerializer(serializers.ModelSerializer):
     likeNums = serializers.SerializerMethodField()
     isLiked = serializers.SerializerMethodField()
+    writerNickname = serializers.SerializerMethodField()
 
     def get_isLiked(self, obj):
 
@@ -20,6 +20,11 @@ class LikeIncludedModelSerializer(serializers.ModelSerializer):
 
     def get_likeNums(self, obj):
         return obj.likes.count()
+
+    def get_writerNickname(self, obj):
+        if obj.writer:
+            return obj.writer.customProfile.nickname
+        return None
 
 
 class LikeScrapIncludedModelSerializer(LikeIncludedModelSerializer):
@@ -41,16 +46,24 @@ class LikeScrapIncludedModelSerializer(LikeIncludedModelSerializer):
 
 class ContestDebatesSerializer(LikeScrapIncludedModelSerializer):
 
+
     class Meta:
         model = ContestDebate
         exclude = ['updatedAt','likes', 'content']
+        read_only_fields= ['createdAT','hitNums']
+        extra_kwargs={'writer':{'write_only':True}}
+
 
 
 class ContestDebateSerializer(LikeScrapIncludedModelSerializer):
 
+
     class Meta:
         model = ContestDebate
         exclude = ['likes']
+        read_only_fields= ['createdAT','hitNums', 'updatedAt']
+        extra_kwargs = {'writer': {'write_only': True}}
+
 
 
 class ContestCodeNotesSerializer(LikeScrapIncludedModelSerializer):
@@ -58,6 +71,8 @@ class ContestCodeNotesSerializer(LikeScrapIncludedModelSerializer):
     class Meta:
         model = ContestCodeNote
         exclude = ['updatedAt', 'likes', 'content']
+        read_only_fields= ['createdAT','hitNums']
+        extra_kwargs={'writer':{'write_only':True}}
 
 
 class ContestCodeNoteSerializer(LikeScrapIncludedModelSerializer):
@@ -65,6 +80,8 @@ class ContestCodeNoteSerializer(LikeScrapIncludedModelSerializer):
     class Meta:
         model = ContestCodeNote
         exclude = ['likes']
+        read_only_fields= ['createdAT','hitNums', 'updatedAt']
+        extra_kwargs = {'writer': {'write_only': True}}
 
 
 
@@ -73,6 +90,8 @@ class VelogsSerializer(LikeScrapIncludedModelSerializer):
     class Meta:
         model = Velog
         exclude = ['likes', 'createdAt', 'content']
+        read_only_fields= ['createdAT','hitNums']
+        extra_kwargs={'writer':{'write_only':True}}
 
 
 class VelogSerializer(LikeScrapIncludedModelSerializer):
@@ -80,6 +99,8 @@ class VelogSerializer(LikeScrapIncludedModelSerializer):
     class Meta:
         model=Velog
         exclude = ['likes']
+        read_only_fields= ['createdAT','hitNums', 'updatedAt']
+        extra_kwargs = {'writer': {'write_only': True}}
 
 
 
@@ -87,17 +108,27 @@ class DebateCommentSerializer(LikeIncludedModelSerializer):
 
     class Meta:
         model=DebateComment
+        exclude = ['likes', ]
+        read_only_fields= ['createdAT','hitNums', 'updatedAt']
+        extra_kwargs = {'writer': {'write_only': True}, 'contestDebate':{'write_only': True}}
 
 class CodeNoteCommentSerializer(LikeIncludedModelSerializer):
 
     class Meta:
         model=CodeNoteComment
+        exclude = ['likes', ]
+        read_only_fields= ['createdAT','hitNums', 'updatedAt']
+        extra_kwargs = {'writer': {'write_only': True}, 'contestCodeNote':{'write_only': True}}
 
-class VelogCommentsSerializer(LikeIncludedModelSerializer):
+
+
+class VelogCommentSerializer(LikeIncludedModelSerializer):
 
     class Meta:
         model=VelogComment
-
+        exclude = ['likes', ]
+        read_only_fields= ['createdAT','hitNums', 'updatedAt']
+        extra_kwargs = {'writer': {'write_only': True}, 'contestCodeNote':{'write_only': True}}
 
 
 # class ContestDebatesSerializer(serializers.ModelSerializer):

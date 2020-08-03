@@ -39,6 +39,9 @@ class ContestDebate(models.Model):
 
 
 
+
+
+
 class ContestCodeNote(models.Model):
     writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)

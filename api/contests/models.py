@@ -10,8 +10,8 @@ from api.contests.utils import comp_answer_upload_to, user_answer_upload_to
 class Contest(models.Model):
     writer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) #step만 가능
     title = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
 
     # 채점을 위한 data를 contestAnswer에 저장함.
     contestAnswer = models.FileField(
@@ -40,7 +40,7 @@ class Contest(models.Model):
     ACCURACY = "ACCURACY"
     POPULARITY = "POPULARITY"
     evaluationChoice = ((ACCURACY, "Accuracy"), (POPULARITY, "Popularity"))
-    evliationMethod = models.CharField(
+    evaluationMethod = models.CharField(
         max_length=10, choices=evaluationChoice, default="Accuracy"
     )
 
@@ -70,12 +70,12 @@ class Contest(models.Model):
 
 
 class ContestFile(models.Model):
-    constest = models.ForeignKey(Contest, null=True, on_delete=models.SET_NULL)
+    contest = models.ForeignKey(Contest, null=True, on_delete=models.SET_NULL)
     file = models.FileField(null=True, blank=True)  # data file을 위함
 
 
 class ContestUserAnswer(models.Model):
-    constest = models.ForeignKey(
+    contest = models.ForeignKey(
         Contest, null=True,  on_delete=models.SET_NULL, related_name="userAnswer"
     )
     writer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
@@ -89,3 +89,8 @@ class ContestUserAnswer(models.Model):
 
     # 종료 시점에 업데이트해서 1등 - 1, 2등 - 2, 3등 - 3, 상위30% - 4 참여완료 - 5
     rank = models.IntegerField(default=0)
+
+    def calculateAccuracy(self):
+        #self.file로 계산하는 로직넣기
+        return 50
+

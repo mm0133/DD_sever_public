@@ -1,16 +1,19 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import ContestDebate, ContestCodeNote, Velog
+from .models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
 from .serializers import ContestDebatesSerializer, ContestDebateSerializer, ContestCodeNotesSerializer, \
-    ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer
+    ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer, DebateCommentSerializer, CodeNoteCommentSerializer, \
+    VelogCommentSerializer
 
 
+# post, put validation에서 hitnum, likes, writer  등등 손봐야함 귀찮은데 serialize.save 안쓰는것도 방법인듯 아님 read_only field?
 class ContestDebateView(APIView):
 
     def get(self, request):
         contestDebate =  ContestDebate.objects.all()
         serializer = ContestDebatesSerializer(contestDebate, many=True, context={'user': request.user})
+        #contex={'request':requuest}로 request객체 받아서 쓸수도 있음
         return Response(serializer.data)
 
     def post(self, request):
@@ -19,7 +22,7 @@ class ContestDebateView(APIView):
 
         serializer = ContestDebateSerializer(data=request.data)
         if serializer.is_valid():#validation 로직 손보기
-            serializer.save()
+            serializer.save(writer=request.user)#로그인 안하면 지금 오류남
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -39,7 +42,7 @@ class ContestDebateViewWithPk(APIView):
         if contestDebate ==None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = ContestDebateSerializer(contestDebate,  context={'request': request})
+            serializer = ContestDebateSerializer(contestDebate,  context={'user': request.user})
             return Response(serializer.data)
 
 
@@ -75,7 +78,7 @@ class ContestCodeNoteView(APIView):
 
     def get(self, request):
         contestCodeNote = ContestCodeNote.objects.all()
-        serializer = ContestCodeNotesSerializer(contestCodeNote, many=True, context={'request': request})
+        serializer = ContestCodeNotesSerializer(contestCodeNote, many=True, context={'user': request.user})
         return Response(serializer.data)
 
     def post(self, request):
@@ -84,7 +87,7 @@ class ContestCodeNoteView(APIView):
 
         serializer = ContestCodeNoteSerializer(data=request.data)
         if serializer.is_valid():#validation 로직 손보기
-            serializer.save()
+            serializer.save(writer=request.user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -104,7 +107,7 @@ class ContestCodeNoteViewWithPk(APIView):
         if contestCodeNote ==None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = ContestCodeNoteSerializer(contestCodeNote, context={'request': request})
+            serializer = ContestCodeNoteSerializer(contestCodeNote, context={'user': request.user})
             return Response(serializer.data)
 
 
@@ -149,7 +152,7 @@ class VelogView(APIView):
 
         serializer = VelogSerializer(data=request.data)
         if serializer.is_valid():#validation 로직 손보기
-            serializer.save()
+            serializer.save(writer=request.user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -169,7 +172,7 @@ class VelogViewWithPk(APIView):
         if velog ==None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = VelogSerializer(velog,  context={'request': request})
+            serializer = VelogSerializer(velog,  context={'user': request.user})
             return Response(serializer.data)
 
 
@@ -201,8 +204,201 @@ class VelogViewWithPk(APIView):
 
 
 
-class DebateCommentViewWithDebatePK(APIView)# Debate pk에 따라 달린 댓글들을 보낼예정 대댓글은 안보냄, 댓글생성시이용
+# Debate pk에 따라 달린 댓글들을 보낼예정 대댓글은 안보냄, 댓글생성시이용
+class DebateCommentViewWithDebatePK(APIView):
 
-class DebateCommentViewWithPK(APIView) #댓글 pk에 따라 수정 삭제 하게할 예정
+    def get(self, request, pk):
+        debateComment =  DebateComment.objects.filter(contestDebate_id=pk)
+        serializer = DebateCommentSerializer(debateComment, many=True, context={'user': request.user})
+        return Response(serializer.data)
 
-class DebateReplyCommentViewWithCommentPK(APIView) #댓글 pk에 따른 대댓글을 전부보낼예정
+    def post(self, request, pk):
+        if False: #로그인 인증 로직 필요
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+        debateComment=DebateComment.objects.create(
+            writer=request.user,
+            content = request.data["content"],
+            contestDebate_id = pk,
+            debateComment_id = request.data["debateComment"]
+        )
+        serializer = DebateCommentSerializer(debateComment)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class DebateCommentViewWithPK(APIView):#댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
+
+    def get_debateComment(self, pk):
+        try:
+            debateComment = DebateComment.objects.get(pk=pk)
+            return debateComment
+        except debateComment.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        debateComment = self.get_debateComment(pk)
+        if debateComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            serializer = DebateCommentSerializer(debateComment, context={'user': request.user})
+            return Response(serializer.data)
+
+    def put(self, request, pk):
+        debateComment = self.get_debateComment(pk)
+        if debateComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if False:  # request.user == self.writer  or 관리자
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = DebateCommentSerializer(debateComment, data=request.data, partial=True,)
+        if serializer.is_valid():  # validate 로직 추가
+            debateComment = serializer.save()
+            return Response(DebateCommentSerializer(debateComment).data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        debateComment = self.get_debateComment(pk)
+        if debateComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        if True:  # request.user == self.writer  or 관리자
+            debateComment.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class CodeNoteCommentViewWithCodeNotePK(APIView):
+
+    def get(self, request, pk):
+        codeNoteComment =  CodeNoteComment.objects.filter(contestCodeNote_id=pk)
+        serializer = CodeNoteCommentSerializer(codeNoteComment, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        if False: #로그인 인증 로직 필요
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+        codeNoteComment=CodeNoteComment.objects.create(
+            writer=request.user,
+            content = request.data["content"],
+            contestCodeNote_id = pk,
+            codeNoteComment_id = request.data["debateComment"]
+        )
+        serializer = DebateCommentSerializer(codeNoteComment)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class CodeNoteCommentViewWithPK(APIView):#댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
+
+    def get_codeNoteComment(self, pk):
+        try:
+            codeNoteComment = CodeNoteComment.objects.get(pk=pk)
+            return codeNoteComment
+        except codeNoteComment.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        codeNoteComment = self.get_codeNoteComment(pk)
+        if codeNoteComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            serializer = CodeNoteCommentSerializer(codeNoteComment, context={'user': request.user})
+            return Response(serializer.data)
+
+    def put(self, request, pk):
+        codeNoteComment = self.get_codeNoteComment(pk)
+        if codeNoteComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if False:  # request.user == self.writer  or 관리자
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = CodeNoteCommentSerializer(codeNoteComment, data=request.data, partial=True,)
+        if serializer.is_valid():  # validate 로직 추가
+            codeNoteComment = serializer.save()
+            return Response(CodeNoteCommentSerializer(codeNoteComment).data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        codeNoteComment = self.get_codeNoteComment(pk)
+        if codeNoteComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        if True:  # request.user == self.writer  or 관리자
+            codeNoteComment.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+class VelogCommentViewWithVelogPK(APIView):
+
+    def get(self, request, pk):
+        velogComment =  VelogComment.objects.filter(Velog_id=pk)
+        serializer = VelogCommentSerializer(velogComment, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        if False: #로그인 인증 로직 필요
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+        velogComment=VelogComment.objects.create(
+            writer=request.user,
+            content = request.data["content"],
+            velog_id= pk,
+            velogComment_id = request.data["velogComment"]
+        )
+        serializer = VelogCommentSerializer(velogComment)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class VelogCommentViewWithPK(APIView):#댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
+
+    def get_velogComment(self, pk):
+        try:
+            velogComment = VelogComment.objects.get(pk=pk)
+            return velogComment
+        except velogComment.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        velogComment = self.get_velogComment(pk)
+        if velogComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            serializer = VelogCommentSerializer(velogComment, context={'user': request.user})
+            return Response(serializer.data)
+
+    def put(self, request, pk):
+        velogComment = self.get_velogComment(pk)
+        if velogComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if False:  # request.user == self.writer  or 관리자
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = VelogCommentSerializer(velogComment, data=request.data, partial=True,)
+        if serializer.is_valid():  # validate 로직 추가
+            velogComment = serializer.save()
+            return Response(VelogCommentSerializer(velogComment).data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        velogComment = self.get_velogComment(pk)
+        if velogComment == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        if True:  # request.user == self.writer  or 관리자
+            velogComment.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)

@@ -34,7 +34,7 @@ class QuestionToManager(models.Model):
 
     isPrivate = models.BooleanField()
     # 질문글이 공개냐 비공개냐. 일부러 default 안 줘서 validate error 나게 유도.
-
+    #유저가 수정 불가하게 함
     def __str__(self):
         return self.title
 
