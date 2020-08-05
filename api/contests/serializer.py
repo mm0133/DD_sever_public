@@ -4,6 +4,8 @@ from api.contests.models import Contest, ContestFile, ContestUserAnswer
 
 
 class ContestsSerializer(serializers.ModelSerializer):
+    # serializer에서는 Contest.objects.all() 이런 식으로 객체를 직접 가져오지 못한다.
+    # 따라서 별도로 object의 attribute를 불러와주는 방법이 필요한데,
     isScraped=serializers.SerializerMethodField()
     scrapNums = serializers.SerializerMethodField()
     isFinished=serializers.SerializerMethodField()
@@ -16,6 +18,7 @@ class ContestsSerializer(serializers.ModelSerializer):
 
 
     def get_isScraped(self, obj):
+        # context는 이 serializer를 호출할 때 넘겨준다. contest.views를 보면 확인 가능하다.
         user = self.context.get("user")
         if user:
             if user.is_authenticated:#user.is_authenticated: 로그인시

@@ -8,7 +8,7 @@ from api.contests.utils import comp_answer_upload_to, user_answer_upload_to
 
 
 class Contest(models.Model):
-    writer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) #step만 가능
+    writer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # step만 가능
     title = models.CharField(max_length=255)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
@@ -66,7 +66,10 @@ class Contest(models.Model):
             return False
 
     def scrapsCount(self):
-        return User.objects.filter(contestScraps=self).count()
+        return self.scrapProfiles.count()
+
+    def isScraped(self, user):
+        return user.customProfile in self.scrapProfiles.all()
 
 
 class ContestFile(models.Model):
@@ -76,9 +79,9 @@ class ContestFile(models.Model):
 
 class ContestUserAnswer(models.Model):
     contest = models.ForeignKey(
-        Contest, null=True,  on_delete=models.SET_NULL, related_name="userAnswer"
+        Contest, null=True, on_delete=models.SET_NULL, related_name="userAnswer"
     )
-    writer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
@@ -91,6 +94,5 @@ class ContestUserAnswer(models.Model):
     rank = models.IntegerField(default=0)
 
     def calculateAccuracy(self):
-        #self.file로 계산하는 로직넣기
+        # self.file로 계산하는 로직넣기
         return 50
-
