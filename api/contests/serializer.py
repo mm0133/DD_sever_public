@@ -10,7 +10,7 @@ class ContestsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Contest
-        fields= ['id', 'title', 'createdAt', 'updatedAt','deadline',
+        fields= ['id', 'title', 'createdAt', 'updatedAt','deadline', 'profileThumb'
                  'timeline','prize', 'isForTraining', 'difficulty', 'evaluationMethod',
                 'learningModel' ]
 
@@ -61,6 +61,10 @@ class ContestSerializer(serializers.ModelSerializer):
     def get_isFinished(self, obj):
         return obj.isFinished()
 
+class ContestScrapSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contest
+        fields=['id', 'contest', 'file']
 
 class ContestFileSerializer(serializers.ModelSerializer):
     class Meta:

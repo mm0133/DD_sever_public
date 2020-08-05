@@ -4,13 +4,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.users.models import CustomProfile
-from api.users.serializer import CustomProfileSerializer, CustomProfileSerializerForOwner, CustomProfileSerializerForPut
+from api.users.serializer import CustomProfileSerializer, CustomProfileSerializerForOwner, \
+    CustomProfileSerializerForPut, MyCustomProfileSerializer
 
 
 @api_view(['GET'])
 def get_Profile(request, nickname):
     profile = CustomProfile.objects.get(nickname=nickname)
-    serializer = CustomProfileSerializer(profile, context={"user":request.user})
+    if  request.user.customProfile.nickname == nickname: #본인 맞는지 인증
+        serializer = MyCustomProfileSerializer(profile, context={"user":request.user})
+    else:
+        serializer = CustomProfileSerializer(profile, context={"user":request.user})
     return Response(serializer.data)
 
 
