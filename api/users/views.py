@@ -13,38 +13,21 @@ def get_Profile(request, nickname):
     serializer = CustomProfileSerializer(profile, context={"user":request.user})
     return Response(serializer.data)
 
-@api_view(['POST'])
-def post_Profile(request, nickname):
-
-    #이미 프로필있는경우 안됨
-    if CustomProfile.objects.get(user=request.user):
-        return Response(status.HTTP_400_BAD_REQUEST)
-
-    profile=CustomProfile.objects.create(
-        user=request.user,
-        nickname=request.data["nickname"],
-        phoneNumber=request.data["phoneNumber"],
-        email=request.data["email"]
-    )
-    serializer=CustomProfileSerializerForOwner(profile).data
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-
 
 class CustomProfileView(APIView):
 
     # 자기자신 아니면 NotFound
-    def get_CustomProfile(self, request, pk):
+    def get_CustomProfile(self, request):
         try:
-            customProfile = CustomProfile.objects.get(pk=pk)
-            if request.user != customProfile.user:
+            customProfile = CustomProfile.objects.get(user=request.user)
+            if False: #본인인증관련 비밀번호한번더 입력? 이런거 있어야할듯
                 return None
             return customProfile
         except customProfile.DoesNotExist:
             return None
 
-    def get(self, request, pk):
-        customProfile = self.get_customProfile(pk)
+    def get(self, request):
+        customProfile = self.get_customProfile(request)
         if customProfile ==None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
@@ -52,8 +35,23 @@ class CustomProfileView(APIView):
             return Response(serializer.data)
 
 
+    def post(self,request):
+
+        if CustomProfile.objects.get(user=request.user):
+            return Response(status.HTTP_400_BAD_REQUEST)
+
+        profile = CustomProfile.objects.create(
+            user=request.user,
+            nickname=request.data["nickname"],
+            phoneNumber=request.data["phoneNumber"],
+            email=request.data["email"]
+        )
+        serializer = CustomProfileSerializerForOwner(profile).data
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
     def put(self, request, pk):
-        customProfile = self.get_customProfile(pk)
+        customProfile = self.get_customProfile(request)
         if customProfile == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -68,13 +66,3 @@ class CustomProfileView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-    def delete(self, request, pk):
-        customProfile = self.get_customProfile(pk)
-        if customProfile == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            customProfile.delete()
-            return Response(status=status.HTTP_200_OK)
-
