@@ -1,0 +1,84 @@
+$color-main-dark: #4b6580;
+$color-main-light: #5a9ca1;
+$color-gradient: linear-gradient(to right,  #4b6580 12%,#4b6580 12%,#5a9ca1 100%);
+
+$color-text-dark: #333333;
+$color-text-light: #c8c8c8;
+
+$color-background-dark: #333333;
+$color-background-light: #e8e8e8;
+
+$width-main: 1280px;
+$padding-main: calc((100% - #{$width-main}) / 2);
+$height-header: 60px;
+
+$font-title-bold: "NanumSquareBold";
+$font-title-regular: "NanumSquareRegualr";
+$font-title-light: "NanumSquareLight";
+
+$font-text-bold: "NotoSansBold";
+$font-text-regular: "NotoSansRegular";
+$font-text-light: "NotoSansLight";
+
+//div {
+//  border: 1px solid #cccccc;
+//  box-sizing: border-box;
+//}
+
+#total-wrap {
+  margin: 0;
+  padding: 0;
+  font-family: $font-text-regular;
+  a {
+    text-decoration: none;
+    color: inherit;
+    &:hover {
+    cursor: pointer;
+  }
+  }
+}
+
+header {
+  height: $height-header;
+  padding: 0 $padding-main;
+  background: $color-gradient;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .logo {
+    font-family: $font-title-bold;
+    font-size: 20px;
+    color: white;
+    span {
+      font-family: $font-title-regular;
+    }
+  }
+  .nav {
+    display: flex;
+    font-family: $font-title-regular;
+    font-size: 14px;
+    color: white;
+
+    .nav-item {
+      opacity: 0.75;
+      margin-left: 40px;
+      &:hover {
+        font-family: $font-title-bold;
+        opacity: 1;
+      }
+    }
+  }
+  .logout {
+    width: 90px;
+    height: 35px;
+    text-align: center;
+    line-height: 35px;
+    border: 1px solid white;
+    border-radius: 100px;
+
+    font-family: $font-title-bold;
+    font-size: 14px;
+    color: white;
+  }
+}

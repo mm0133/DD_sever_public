@@ -1,4 +1,10 @@
 import React from "react";
+import "./main.scss";
+
+// fontAwesome
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrophy, faBookOpen } from "@fortawesome/free-solid-svg-icons";
+
 
 function Main() {
     return (
@@ -6,13 +12,13 @@ function Main() {
             <header>
                 <div className="logo">데이타덕 <span>Data</span>Duck</div>
                 <div className="nav">
-                    <div className="nav-item">대회 목록</div>
-                    <div className="nav-item">강의</div>
-                    <div className="nav-item">토론방</div>
-                    <div className="nav-item">코드 공유</div>
-                    <div className="nav-item">사용설명서</div>
-                    <div className="nav-item">공지</div>
-                    <div className="nav-item">마이페이지</div>
+                    <a href=""><div className="nav-item">대회 목록</div></a>
+                    <a href=""><div className="nav-item">강의</div></a>
+                    <a href=""><div className="nav-item">토론방</div></a>
+                    <a href=""><div className="nav-item">코드 공유</div></a>
+                    <a href=""><div className="nav-item">사용설명서</div></a>
+                    <a href=""><div className="nav-item">공지</div></a>
+                    <a href=""><div className="nav-item">마이페이지</div></a>
                 </div>
                 <div className="logout">로그아웃</div>
             </header>
@@ -37,7 +43,9 @@ function Main() {
             <contest>
                 <div className="header">
                     <div className="title">
-                        <div className="img-wrap"><img src="" alt=""/></div>
+                        <div className="icon-wrap">
+                            <FontAwesomeIcon icon={faTrophy} />
+                        </div>
                         실전 대회 <span>대회에 참가해 실전 감각을 익혀보세요.</span>
                     </div>
                     <div className="more">실전 대회 더 둘러보기 <span>></span></div>
@@ -47,7 +55,9 @@ function Main() {
             <contest>
                 <div className="header">
                     <div className="title">
-                        <div className="img-wrap"><img src="" alt=""/></div>
+                        <div className="icon-wrap">
+                            <FontAwesomeIcon icon={faBookOpen} />
+                        </div>
                         연습 대회 <span className="subtitle">실전 대회가 아직 어렵다면, 연습 대회로 시작해 보세요.</span>
                     </div>
                     <div className="more">연습 대회 더 둘러보기 <span>></span></div>
@@ -123,7 +133,6 @@ function Main() {
             </mannual>
 
             <footer>
-
             </footer>
         </div>
     )
