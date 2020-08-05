@@ -10,7 +10,9 @@ function Main() {
     return (
         <div id="total-wrap">
             <header>
-                <div className="logo">데이타덕 <span>Data</span>Duck</div>
+                <a href="">
+                    <div className="logo">데이타덕 <span>Data</span>Duck</div>
+                </a>
                 <div className="nav">
                     <a href=""><div className="nav-item">대회 목록</div></a>
                     <a href=""><div className="nav-item">강의</div></a>
@@ -24,13 +26,17 @@ function Main() {
             </header>
 
             <main-banner>
-                <div className="left-side">
+                <div>
                     <div className="catchphrase">
                         데이타덕은<br />
                         <span>머신러닝을 원하는 모두</span>에게<br />
                         열린 공간입니다.
                     </div>
-                    <div className="button">단계별 대회 둘러보기</div>
+                    <a href="">
+                        <div className="button">
+                            <div className="overlay">단계별 대회 둘러보기</div>
+                        </div>
+                    </a>
                 </div>
                 <div className="logo-image"><img src="" alt=""/></div>
                 <div className="contest-scrap">

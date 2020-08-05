@@ -8,7 +8,7 @@ $color-text-light: #c8c8c8;
 $color-background-dark: #333333;
 $color-background-light: #e8e8e8;
 
-$width-main: 1280px;
+$width-main: 1200px;
 $padding-main: calc((100% - #{$width-main}) / 2);
 
 $height-header: 60px;
@@ -78,9 +78,9 @@ header {
   }
   .logout {
     width: 87px;
-    height: 35px;
+    height: 32px;
     text-align: center;
-    line-height: 35px;
+    line-height: 32px;
 
     border: 1px solid white;
     border-radius: 100px;
@@ -88,6 +88,8 @@ header {
     font-family: $font-title-bold;
     font-size: 14px;
     color: white;
+
+    transition-duration: 0.3s;
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.07); // white
@@ -99,4 +101,44 @@ main-banner {
   height: $height-mainBanner;
   padding: 0 $padding-main;
   background: $color-background-light;
+
+  .catchphrase {
+    font-family: $font-title-regular;
+    font-size: 30px;
+    line-height: 45px;
+    margin: 20px 0 40px;
+    span {
+      font-family: $font-title-bold;
+    }
+  }
+  .button {
+    width: 220px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+
+    border-radius: 100px;
+    background-color: $color-main-dark;
+
+    font-family: $font-title-bold;
+    font-size: 18px;
+    color: white;
+
+    &:hover > .overlay {
+      width: inherit;
+      height: inherit;
+      border-radius: inherit;
+      background-color: rgba(0, 0, 0, 0.07);
+    }
+    .overlay {
+      transition-duration: 0.3s;
+    }
+  }
+  .contest-scrap {
+    width: 400px;
+    height: 180px;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.07);
+  }
 }
