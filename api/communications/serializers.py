@@ -9,6 +9,7 @@ class LikeIncludedModelSerializer(serializers.ModelSerializer):
     likeNums = serializers.SerializerMethodField()
     isLiked = serializers.SerializerMethodField()
     writerNickname = serializers.SerializerMethodField()
+    writerImage=serializers.SerializerMethodField()
 
     def get_isLiked(self, obj):
 
@@ -25,6 +26,9 @@ class LikeIncludedModelSerializer(serializers.ModelSerializer):
         if obj.writer:
             return obj.writer.customProfile.nickname
         return None
+    def get_writerImage(self,obj):
+        if obj.writer:
+            return obj.writer.customProfile.SmallImage
 
 
 class LikeScrapIncludedModelSerializer(LikeIncludedModelSerializer):

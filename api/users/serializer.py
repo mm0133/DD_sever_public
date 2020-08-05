@@ -1,21 +1,26 @@
 from rest_framework import serializers
 
 from api.communications.models import ContestDebate, ContestCodeNote
+from api.communications.serializers import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
 from api.users.models import CustomProfile
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+
+class CustomProfileSerializer(serializers.ModelSerializer):
+    isProfileMine=serializers.SerializerMethodField()
     myContests=serializers.SerializerMethodField()
     myContestsNow= serializers.SerializerMethodField()
     myContestsFinished=serializers.SerializerMethodField()
     contestDebates=serializers.SerializerMethodField()
     contestCodeNotes=serializers.SerializerMethodField()
-    velog=serializers.SerializerMethodField()
+    velogs=serializers.SerializerMethodField()
 
 
     class Meta:
         model = CustomProfile
-        fields=['image','nickname','contestRankDictionary']
+        fields=['SmallImage','nickname','contestRankDictionary']
+    def get_isProfileMine(self,obj):
+        return self.context.user == obj.user
 
     def get_myContests(self,obj):
         list = []
@@ -24,33 +29,43 @@ class ProfileSerializer(serializers.ModelSerializer):
         return list
 
 
-
     def get_myContestsNow(self,obj):
         list = []
         for contest in obj.myContestsNow():
-            list.append(contest.id)
+            list.append({"id":contest.id,"title":contest.title})
         return list
 
     def get_myContestsFinished(self,obj):
         list = []
         for contest in obj.myContestsFinished():
-            list.append(contest.id)
+            list.append({"id":contest.id,"title":contest.title})
         return list
 
     def get_contestDebates(self,obj):
-        list = []
-        for debate in ContestDebate.objects.filter(writer=obj.user):
-            list.append({"id":debate.id, "title":debate.title})
-            return list
 
-    def get_contestCodeNote(self,obj):
-        list = []
-        for codeNote in ContestCodeNote.objects.filter(writer=obj.user):
-            list.append(codeNote.id)
-            return list
+        contestDebates= ContestDebate.objects.filter(writer=obj.user)
+        serializer=ContestDebatesSerializer(contestDebates, many=True)
 
-    # def get_velog(self, obj):
-    #     list = []
-    #     for
+        return serializer.data
 
+    def get_contestCodeNotes(self,obj):
+        contestCodeNotes = ContestCodeNote.objects.filter(writer=obj.user)
+        serializer = ContestCodeNotesSerializer(contestCodeNotes, many=True)
+
+        return serializer.data
+
+    def get_velogs(self, obj):
+
+        velogs = ContestCodeNote.objects.filter(writer=obj.user)
+        serializer = VelogsSerializer(velogs, many=True)
+
+        return serializer.data
+
+
+class CustomProfileSerializerForWrite(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomProfile
+        fields = ['Image', 'nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email']
+        read_only_fields = ['user', 'email', 'phoneNumber', 'contestRankDictionary',]
 

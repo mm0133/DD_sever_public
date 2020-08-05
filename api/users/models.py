@@ -7,7 +7,10 @@ from django.contrib.auth.models import User
 
 class CustomProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
-    image = models.ImageField(
+    Image = models.ImageField(
+        default="default.png", upload_to=user_profile_image_path, null=True, blank=True
+    )
+    SmallImage =models.ImageField(
         default="default.png", upload_to=user_profile_image_path, null=True, blank=True
     )
     email = models.EmailField()
@@ -21,6 +24,8 @@ class CustomProfile(models.Model):
     debateScraps = models.ManyToManyField(ContestDebate, related_name="scrapProfiles", blank=True)
     codeNoteScraps = models.ManyToManyField(ContestCodeNote, related_name="scrapProfiles", blank=True)
     velogScraps = models.ManyToManyField(Velog, related_name="scrapProfiles", blank=True)
+    createdAT= models.DateTimeField(auto_now_add=True)
+    updatedAT=models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.user.username} Profile"
