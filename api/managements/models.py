@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-# 삭제할 때 view에서, 대댓이 있는 걸 확인해서 있으면 '삭제된 댓글입니다'로 content를 바꾼다.
+
+# 삭제할 때 view 에서, 대댓이 있는 걸 확인해서 있으면 '삭제된 댓글입니다'로 content 를 바꾼다.
 # 대댓 없으면 그냥 지운다.
 
 
@@ -20,7 +21,7 @@ class Notice(models.Model):
         return self.title
 
     # 글 쓸 권한 확인을 위해 내장함수를 쓰려고 했으나,
-    # is_staff 내장함수가 있어서 view에서 한 줄 더 적어주면 된다.
+    # is_staff 내장함수가 있어서 view 에서 한 줄 더 적어주면 된다.
 
 
 class QuestionToManager(models.Model):
@@ -31,8 +32,9 @@ class QuestionToManager(models.Model):
     hitNums = models.IntegerField(default=0)
     title = models.CharField(max_length=255)
     isPrivate = models.BooleanField()
+
     # 질문글이 공개냐 비공개냐. 일부러 default 안 줘서 validate error 나게 유도.
-    #유저가 수정 불가하게 함
+    # 유저가 수정 불가하게 함
     def __str__(self):
         return self.title
 
