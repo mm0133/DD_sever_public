@@ -27,7 +27,7 @@ function Main() {
                 <div className="left-side">
                     <div className="catchphrase">
                         데이타덕은<br />
-                        <span>머신러닝을 즐기는 모두</span>에게<br />
+                        <span>머신러닝을 원하는 모두</span>에게<br />
                         열린 공간입니다.
                     </div>
                     <div className="button">단계별 대회 둘러보기</div>

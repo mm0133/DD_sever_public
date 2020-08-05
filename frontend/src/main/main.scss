@@ -10,7 +10,9 @@ $color-background-light: #e8e8e8;
 
 $width-main: 1280px;
 $padding-main: calc((100% - #{$width-main}) / 2);
+
 $height-header: 60px;
+$height-mainBanner: 350px;
 
 $font-title-bold: "NanumSquareBold";
 $font-title-regular: "NanumSquareRegualr";
@@ -19,6 +21,12 @@ $font-title-light: "NanumSquareLight";
 $font-text-bold: "NotoSansBold";
 $font-text-regular: "NotoSansRegular";
 $font-text-light: "NotoSansLight";
+
+@mixin flex-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 //div {
 //  border: 1px solid #cccccc;
@@ -29,22 +37,21 @@ $font-text-light: "NotoSansLight";
   margin: 0;
   padding: 0;
   font-family: $font-text-regular;
+
   a {
     text-decoration: none;
     color: inherit;
     &:hover {
-    cursor: pointer;
-  }
+      cursor: pointer;
+    }
   }
 }
 
 header {
+  @include flex-box;
   height: $height-header;
   padding: 0 $padding-main;
   background: $color-gradient;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 
   .logo {
     font-family: $font-title-bold;
@@ -61,7 +68,7 @@ header {
     color: white;
 
     .nav-item {
-      opacity: 0.75;
+      opacity: 0.8;
       margin-left: 40px;
       &:hover {
         font-family: $font-title-bold;
@@ -70,15 +77,26 @@ header {
     }
   }
   .logout {
-    width: 90px;
+    width: 87px;
     height: 35px;
     text-align: center;
     line-height: 35px;
+
     border: 1px solid white;
     border-radius: 100px;
 
     font-family: $font-title-bold;
     font-size: 14px;
     color: white;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.07); // white
+    }
   }
+}
+main-banner {
+  @include flex-box;
+  height: $height-mainBanner;
+  padding: 0 $padding-main;
+  background: $color-background-light;
 }
