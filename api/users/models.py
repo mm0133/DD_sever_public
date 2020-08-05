@@ -5,7 +5,7 @@ from api.contests.utils import user_profile_image_path
 from django.contrib.auth.models import User
 
 
-class Profile(models.Model):
+class CustomProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
     image = models.ImageField(
         default="default.png", upload_to=user_profile_image_path, null=True, blank=True
