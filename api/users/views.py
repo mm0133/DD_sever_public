@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.users.models import CustomProfile
-from api.users.serializer import CustomProfileSerializer, CustomProfileSerializerForWrite
+from api.users.serializer import CustomProfileSerializer, CustomProfileSerializerForOwner, CustomProfileSerializerForPut
 
 
 @api_view(['GET'])
@@ -26,7 +26,7 @@ def post_Profile(request, nickname):
         phoneNumber=request.data["phoneNumber"],
         email=request.data["email"]
     )
-    serializer=CustomProfileSerializerForWrite(profile).data
+    serializer=CustomProfileSerializerForOwner(profile).data
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -37,7 +37,7 @@ class CustomProfileView(APIView):
     def get_CustomProfile(self, request, pk):
         try:
             customProfile = CustomProfile.objects.get(pk=pk)
-            if request.user != customProfile.user
+            if request.user != customProfile.user:
                 return None
             return customProfile
         except customProfile.DoesNotExist:
@@ -48,28 +48,33 @@ class CustomProfileView(APIView):
         if customProfile ==None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = CustomProfileSerializerForWrite(customProfile)
+            serializer = CustomProfileSerializerForOwner(customProfile)
             return Response(serializer.data)
 
-    #
-    # def put(self, request, pk):
-    #     contestCodeNote = self.get_contestCodeNote(pk)
-    #     if contestCodeNote == None:
-    #         return Response(status=status.HTTP_404_NOT_FOUND)
-    #
-    #     serializer = ContestCodeNoteSerializer(contestCodeNote, data=request.data, partial=True)
-    #     if serializer.is_valid():#validate 로직 검토
-    #         contestCodeNote = serializer.save()
-    #         return Response(ContestCodeNoteSerializer(contestCodeNote).data)
-    #     else:
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #
-    #
-    # def delete(self, request, pk):
-    #     contestCodeNote = self.get_contestCodeNote(pk)
-    #     if contestCodeNote == None:
-    #         return Response(status=status.HTTP_404_NOT_FOUND)
-    #         contestCodeNote.delete()
-    #         return Response(status=status.HTTP_200_OK)
-    #     else:
-    #         return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def put(self, request, pk):
+        customProfile = self.get_customProfile(pk)
+        if customProfile == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CustomProfileSerializerForPut(customProfile, data=request.data, partial=True)
+        if serializer.is_valid():#validate 로직 검토
+            customProfile = serializer.save()
+            if request.data["Image"]:
+                customProfile.image=""
+                customProfile.smallImage=""
+            #파일 용량낮춰서 저장하기. image는 자기 프로필에가면 조금 크게나오는 사진, smallimage는 댓글 옆에 작은사진
+            serializer=CustomProfileSerializerForOwner(customProfile)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk):
+        customProfile = self.get_customProfile(pk)
+        if customProfile == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            customProfile.delete()
+            return Response(status=status.HTTP_200_OK)
+

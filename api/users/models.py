@@ -7,10 +7,10 @@ from django.contrib.auth.models import User
 
 class CustomProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
-    Image = models.ImageField(
+    image = models.ImageField(
         default="default.png", upload_to=user_profile_image_path, null=True, blank=True
     )
-    SmallImage =models.ImageField(
+    smallImage =models.ImageField(
         default="default.png", upload_to=user_profile_image_path, null=True, blank=True
     )
     email = models.EmailField()

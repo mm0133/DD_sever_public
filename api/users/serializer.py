@@ -18,7 +18,7 @@ class CustomProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomProfile
-        fields=['SmallImage','nickname','contestRankDictionary']
+        fields=['user','SmallImage','nickname','contestRankDictionary']
     def get_isProfileMine(self,obj):
         return self.context.user == obj.user
 
@@ -62,10 +62,16 @@ class CustomProfileSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class CustomProfileSerializerForWrite(serializers.ModelSerializer):
+class CustomProfileSerializerForOwner(serializers.ModelSerializer):
 
     class Meta:
         model = CustomProfile
-        fields = ['Image', 'nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email']
-        read_only_fields = ['user', 'email', 'phoneNumber', 'contestRankDictionary',]
+        fields = ['Image', 'nickname', 'user', 'phoneNumber', 'email']
+        read_only_fields = ['user', 'email', 'phoneNumber'] #현재 read only 핗요없긴함 혹시몰라남김
+
+
+class CustomProfileSerializerForPut(serializers.ModelSerializer):
+    class Meta:
+        model = CustomProfile
+        fields = ['nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email']
 
