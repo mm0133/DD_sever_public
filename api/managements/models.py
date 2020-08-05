@@ -29,9 +29,7 @@ class QuestionToManager(models.Model):
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
     hitNums = models.IntegerField(default=0)
-
     title = models.CharField(max_length=255)
-
     isPrivate = models.BooleanField()
     # 질문글이 공개냐 비공개냐. 일부러 default 안 줘서 validate error 나게 유도.
     #유저가 수정 불가하게 함
@@ -44,8 +42,6 @@ class CommentToQuestion(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
-    hitNums = models.IntegerField(default=0)
-
     questionToManager = models.ForeignKey(QuestionToManager, on_delete=models.CASCADE)
 
     # 대댓글(재귀)

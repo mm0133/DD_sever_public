@@ -18,6 +18,21 @@ class NoticesSerializer(serializers.ModelSerializer):
         else:
             return None
 
+class NoticesSerializerExcludeIsPinned(serializers.ModelSerializer):
+    writerNickname = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notice
+        exclude = ['updatedAt', 'content']
+        read_only_fields = ['createdAT', 'hitNums']
+        extra_kwargs = {'writer': {'write_only': True}}
+
+    def get_writerNickname(self, obj):
+        if obj.writer:
+            return obj.writer.customProfile.nickname
+        else:
+            return None
+
 
 class NoticeSerializer(serializers.ModelSerializer):
     writerNickname = serializers.SerializerMethodField()
@@ -41,7 +56,7 @@ class QuestionsToManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notice
         exclude=['writer','updatedAt']
-        read_only_fields = ['hitNums', 'createdAT']
+        read_only_fields = ['hitNums', 'createdAT', 'isPrivate']
 
     def get_writerNickname(self, obj):
         if obj.writer:
@@ -55,8 +70,9 @@ class QuestionToManagerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QuestionToManager
-        exclude = ['updatedAt']
-        read_only_fields = ['hitNums','createdAT']
+        exclude = ['writer']
+        read_only_fields = ['hitNums','createdAT','updatedAT']
+        extra_kwargs = {'writer': {'write_only': True}}
 
     def get_writerNickname(self, obj):
         if obj.writer:
@@ -72,7 +88,7 @@ class CommentToQuestionSerializer(serializers.ModelSerializer):
         model = CommentToQuestion
         fields='__all__'
         read_only_fields=['hitNums', 'createdAT', 'updatedAT']
-        extra_kwargs = {'questionToManager': {'write_only': True}}
+        extra_kwargs = {'writer': {'write_only': True}}
 
     def get_writerNickname(self, obj):
         if obj.writer:

@@ -10,7 +10,8 @@ from rest_framework.views import APIView
 
 from api.managements.models import Notice, QuestionToManager, FeedbackToManager, CommentToQuestion
 from api.managements.serializer import NoticesSerializer, NoticeSerializer, FeedbacksToManagerSerializer, \
-    FeedbackToManagerSerializer, QuestionsToManagerSerializer, QuestionToManagerSerializer, CommentToQuestionSerializer
+    FeedbackToManagerSerializer, QuestionsToManagerSerializer, QuestionToManagerSerializer, CommentToQuestionSerializer, \
+    NoticesSerializerExcludeIsPinned
 
 
 class NoticeView(APIView):
@@ -35,7 +36,7 @@ class NoticeView(APIView):
 @api_view(['GET'])
 def pinnedNotice(request):
     notice = Notice.objects.filter(isPinned=True)
-    serializer = NoticesSerializer(notice, many=True)
+    serializer = NoticesSerializerExcludeIsPinned(notice, many=True)
     return Response(serializer.data)
 
 
@@ -43,7 +44,7 @@ def pinnedNotice(request):
 @api_view(['GET'])
 def notpinnedNotie(request):
     notice = Notice.objects.filter(isPinned=False)
-    serializer = NoticesSerializer(notice, many=True)
+    serializer = NoticesSerializerExcludeIsPinned(notice, many=True)
     return Response(serializer.data)
 
 
@@ -226,12 +227,11 @@ class CommentToQuestionViewWithPK(APIView):#댓글 수정삭제, get요청은 �
         if False:  # request.user != commentToQuestion.writer  or !관리자
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        serializer = CommentToQuestionSerializer(commentToQuestion, data=request.data, partial=True,)
-        if serializer.is_valid():  # validate 로직 추가
-            commentToQuestion = serializer.save()
-            return Response(CommentToQuestionSerializer(commentToQuestion).data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        commentToQuestion.content=request.data["content"]
+        commentToQuestion.save()
+
+        return Response(CommentToQuestionSerializer(commentToQuestion).data)
+
 
     def delete(self, request, pk):
         commentToQuestion = self.get_commentToQuestion(pk)
@@ -248,6 +248,8 @@ class CommentToQuestionViewWithPK(APIView):#댓글 수정삭제, get요청은 �
 class FeedbackToManagerView(APIView):
 
     def get(self, request):
+        if False: #관리자가 아니라면
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         feedbackToManager =  FeedbackToManager.objects.all()
         serializer = FeedbacksToManagerSerializer(feedbackToManager, many=True)
         return Response(serializer.data)
@@ -273,6 +275,8 @@ class FeedbackToManagerViewWithPk(APIView):
             return None
 
     def get(self, request, pk):
+        if False: #관리자가 아니라면
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         feedbackToManager = self.get_feedbackToManager(pk)
         if feedbackToManager ==None:
             return Response(status=status.HTTP_404_NOT_FOUND)

@@ -6,7 +6,7 @@ urlpatterns = [
     path("notice/", views.NoticeView.as_view()), #get, post
     path("notice_pinned/", views.pinnedNotice), #get
     path("notice_not_pinned/", views.notpinnedNotie), #get
-    path("notice/<int:pk>",views.NoticeViewWithPk.as_view()), #get, put, delete
+    path("notice/<int:pk>/",views.NoticeViewWithPk.as_view()), #get, put, delete
     path("question_to_manager_private/", views.get_privateQuestionToManager),#get
     path("question_to_manager_public/",views.get_publicQuestionToManager),#get
     path("question_to_manager/",views.register_QuestionToManager),#post
