@@ -1,12 +1,17 @@
 import React from 'react';
-import Main from "./main/main";
+
+import "./components/header.scss"
+import Header from "./components/header";
+import Main from "./components/main";
+
 
 function App() {
-  return (
-      <div>
-          <Main />
-      </div>
-  );
+    return (
+        <div>
+            <Header />
+            <Main />
+        </div>
+    );
 }
 
 export default App;

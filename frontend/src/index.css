@@ -1,4 +1,4 @@
-/* Noto Sans */
+/* 노토산스 */
 @font-face {
   font-family: "NotoSansBold";
   src: url("fonts/NotoSansCJKkr-Bold.ttf") format("truetype");
@@ -13,6 +13,10 @@
 }
 /* 나눔스퀘어 */
 @font-face {
+  font-family: "NanumSquareExtraBold";
+  src: url("fonts/NanumSquareEB.ttf") format("truetype");
+}
+@font-face {
   font-family: "NanumSquareBold";
   src: url("fonts/NanumSquareB.ttf") format("truetype");
 }
@@ -23,6 +27,11 @@
 @font-face {
   font-family: "NanumSquareLight";
   src: url("fonts/NanumSquareL.ttf") format("truetype");
+}
+/* 닉스곤 */
+@font-face {
+  font-family: "Nixgon";
+  src: url("fonts/NIXGONFONTS M 2.0.ttf") format("truetype");
 }
 
 body {
