@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
 from api.communications.models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, \
     VelogComment
 

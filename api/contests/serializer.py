@@ -12,9 +12,9 @@ class ContestsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Contest
-        fields= ['id', 'title', 'createdAt', 'updatedAt','deadline', 'profileThumb'
+        fields= ['id', 'title', 'createdAt', 'updatedAt','deadline', 'profileThumb',
                  'timeline','prize', 'isForTraining', 'difficulty', 'evaluationMethod',
-                'learningModel' ]
+                'learningModel', 'isScraped', 'scrapNums', 'isFinished' ]
 
 
     def get_isScraped(self, obj):

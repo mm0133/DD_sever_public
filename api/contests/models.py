@@ -1,4 +1,4 @@
-import datetime
+from django.utils import timezone
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -59,7 +59,7 @@ class Contest(models.Model):
         return self.title
 
     def isFinished(self):
-        now = datetime.datetime.now()
+        now = timezone.now()
         if self.deadline < now:
             return True
         else:
