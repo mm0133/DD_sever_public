@@ -1,6 +1,9 @@
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from .models import EduVideoLecture
 from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer
 
@@ -70,3 +73,5 @@ class EduVideoLectureViewWithPk(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
