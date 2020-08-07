@@ -148,3 +148,6 @@ dmypy.json
 
 #djagno setting,database
 my_settings.py
+
+
+user_1/
