@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,7 +11,12 @@ from api.users.serializer import CustomProfileSerializer, CustomProfileSerialize
 @api_view(['GET'])
 def get_Profile(request, nickname):
     profile = CustomProfile.objects.get(nickname=nickname)
-    if  request.user.customProfile.nickname == nickname: #본인 맞는지 인증
+    try:
+        userNickname = request.user.customProfile.nickname
+    except userNickname.DoesNotExist:
+        userNickname = None
+
+    if request.user.is_authenticated and userNickname == nickname: #본인 맞는지 인증
         serializer = MyCustomProfileSerializer(profile, context={"user":request.user})
     else:
         serializer = CustomProfileSerializer(profile, context={"user":request.user})
@@ -20,7 +25,7 @@ def get_Profile(request, nickname):
 
 class CustomProfileView(APIView):
 
-    # 자기자신 아니면 NotFound
+    permission_classes = [permissions.IsAuthenticated]
     def get_CustomProfile(self, request):
         try:
             customProfile = CustomProfile.objects.get(user=request.user)

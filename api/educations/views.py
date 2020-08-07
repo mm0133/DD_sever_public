@@ -1,14 +1,14 @@
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from config.customPermissions import IsGetRequestOrAdminUser
 from .models import EduVideoLecture
 from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer
 
 
 class EduVideoLectureView(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
 
     def get(self, request):
         lecture = EduVideoLecture.objects.all()
@@ -30,6 +30,7 @@ class EduVideoLectureView(APIView):
 
 
 class EduVideoLectureViewWithPk(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
 
     def get_videoLecture(self, pk):
         try:

@@ -3,17 +3,19 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework import permissions
 from api.managements.models import Notice, QuestionToManager, FeedbackToManager, CommentToQuestion
 from api.managements.serializer import NoticesSerializer, NoticeSerializer, FeedbacksToManagerSerializer, \
     FeedbackToManagerSerializer, QuestionsToManagerSerializer, QuestionToManagerSerializer, \
     CommentToQuestionSerializer, NoticesSerializerExcludeIsPinned
+from config.customPermissions import IsGetRequestOrAdminUser
 
 
 class NoticeView(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
     def get(self, request):
         notice = Notice.objects.all()
         serializer = NoticesSerializer(notice, many=True)
@@ -45,7 +47,7 @@ def notpinnedNotie(request):
 
 
 class NoticeViewWithPk(APIView):
-
+    permission_classes = [IsGetRequestOrAdminUser]
     def get_notice(self, pk):
         try:
             notice = Notice.objects.get(pk=pk)
@@ -106,6 +108,7 @@ def get_publicQuestionToManager(request):
 
 
 @api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
 def register_QuestionToManager(request):
     if False:  # 로그인 인증 추가
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -124,8 +127,8 @@ class QuestionToManagerViewWithPk(APIView):
     def get_QuestionToManager(self, request, pk):
         try:
             questionToManager = QuestionToManager.objects.get(pk=pk)
-            if (not questionToManager.isPrivate) or (
-                    request.user == questionToManager.writer) or True:  # True대신에 관리자 로직 넣을것
+            if (not questionToManager.isPrivate) or (request.user == questionToManager.writer and request.user.is_authenticated) \
+                    or (request.user.is_staff and request.user):  # True대신에 관리자 로직 넣을것
                 return questionToManager
             else:
                 return None
@@ -169,22 +172,30 @@ class QuestionToManagerViewWithPk(APIView):
 class CommentToQuestionViewWithQuestionPK(APIView):
     def get(self, request, pk):
         commentToQuestion = CommentToQuestion.objects.filter(QuestionToManager_id=pk)
-        serializer = CommentToQuestionSerializer(commentToQuestion, many=True)
-        return Response(serializer.data)
+        if (not commentToQuestion.questionToManager.isPrivate) or \
+                (request.user == commentToQuestion.questionToManager.writer and request.user.is_authenticated) or \
+                (request.user.is_staff and request.use):
+            serializer = CommentToQuestionSerializer(commentToQuestion, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, pk):
-        if QuestionToManager.objects.get(pk=pk).writer != request.user or True:  # True 자리에 관리자가 아니면 ? 로직 넣기
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if request.user.is_authenticated:
+            if QuestionToManager.objects.get(pk=pk).writer != request.user or not(request.user.is_staff):  # True 자리에 관리자가 아니면 ? 로직 넣기
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        commentToQuestion = CommentToQuestion.objects.create(
+
+            commentToQuestion = CommentToQuestion.objects.create(
             writer=request.user,
             content=request.data["content"],
             questionToManager_id=pk,
             commentToQuestion_id=request.data["commentToQuestion"]
         )
-        serializer = CommentToQuestionSerializer(commentToQuestion)
+            serializer = CommentToQuestionSerializer(commentToQuestion)
 
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CommentToQuestionViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
@@ -192,8 +203,9 @@ class CommentToQuestionViewWithPK(APIView):  # 댓글 수정삭제, get요청은
     def get_QuestionToManager(self, request, pk):
         try:
             commentToQuestion = CommentToQuestion.objects.get(pk=pk)
-            if (not commentToQuestion.isPrivate) or (
-                    request.user == commentToQuestion.writer) or True:  # True대신에 관리자 로직 넣을것
+            if (not commentToQuestion.questionToManager.isPrivate) or (
+                    request.user == commentToQuestion.questionToManager.writer and request.user.is_authenticated) \
+                    or (request.user.is_staff and request.user):  # True대신에 관리자 로직 넣을것
                 return commentToQuestion
             else:
                 return None
@@ -236,14 +248,14 @@ class CommentToQuestionViewWithPK(APIView):  # 댓글 수정삭제, get요청은
 class FeedbackToManagerView(APIView):
 
     def get(self, request):
-        if False:  # 관리자가 아니라면
+        if not(request.user.is_authenticated and request.user.is_staff):  # 관리자가 아니라면
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         feedbackToManager = FeedbackToManager.objects.all()
         serializer = FeedbacksToManagerSerializer(feedbackToManager, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        if False:  # 로그인 인증
+        if not(request.user and request.user.is_authenticated):  # 로그인 인증
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         serializer = FeedbackToManagerSerializer(data=request.data)
         if serializer.is_valid():  # validation 로직 손보기
@@ -255,6 +267,7 @@ class FeedbackToManagerView(APIView):
 
 # 수정기능 불필요해서 put 구현 안 함.
 class FeedbackToManagerViewWithPk(APIView):
+    permission_classes = [permissions.IsAdminUser]
     def get_feedbackToManager(self, pk):
         try:
             feedbackToManager = FeedbackToManager.objects.get(pk=pk)
