@@ -11,6 +11,7 @@ from .serializers import ContestDebatesSerializer, ContestDebateSerializer, Cont
 # serialize.save 안 쓰는 것도 고려해 볼 만한 대안임. read_only field 를 적극 활용하는 방법도 있음.
 
 class ContestDebateView(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
 
     def get(self, request):
         contestDebate = ContestDebate.objects.all()

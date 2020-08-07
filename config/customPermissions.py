@@ -21,14 +21,14 @@ class IsDeleteRequest(permissions.BasePermission):
         return request.method == "DELETE"
 
 
-class IsGetRequestOrAuthenticated(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return bool((request.user and request.user.is_authenticated) or request.method == "GET")
+
+
 
 
 #IsAuthenticatedOrReadOnly
-
-
+class IsGetRequestOrAuthenticated(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return bool((request.user and request.user.is_authenticated) or request.method == "GET")
 
 
 class IsGetRequestOrAdminUser(permissions.BasePermission):
