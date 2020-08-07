@@ -9,9 +9,11 @@ from rest_framework.views import APIView
 from api.contests.models import Contest, ContestFile, ContestUserAnswer
 from api.contests.serializer import ContestsSerializer, ContestSerializer, ContestFileSerializer, \
     ContestUserAnswerSerializer
+from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, IsWriterOrAdminUser
 
 
 class ContestView(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
     def get(self, request):
         contest = Contest.objects.all()
         serializer = ContestsSerializer(contest, many=True, context={'user': request.user})
@@ -33,6 +35,7 @@ class ContestView(APIView):
 
 
 class ContestViewWithPk(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
 
     def get_contest(self, pk):
         try:
@@ -76,6 +79,7 @@ class ContestViewWithPk(APIView):
 
 
 class ContestFileViewWithContestPK(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
 
     def get(self, request, pk):
         try:
@@ -125,6 +129,7 @@ def DeleteContestFileWithPK(request, pk):
 
 
 class ContestUserAnswerViewWithContestPK(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
     # 내림차순정렬
     def get(self, request, pk):
         contestUserAnswer = ContestUserAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
@@ -147,8 +152,8 @@ class ContestUserAnswerViewWithContestPK(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-class ContestUserAnswerViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
-
+class ContestUserAnswerViewWithPK(APIView):
+    permission_classes = [IsWriterOrAdminUser]
     def get_contestUserAnswer(self, pk):
         try:
             contestUserAnswer = ContestUserAnswer.objects.get(pk=pk)

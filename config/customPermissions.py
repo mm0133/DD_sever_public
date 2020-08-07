@@ -50,3 +50,9 @@ class IsGetRequestOrWriterOrAdminUser(permissions.BasePermission):
             return False
         else:
             return False
+
+class IsWriterOrAdminUser(permissions.BasePermission):
+    def has_object_permission(self,request, view, obj):
+        if request.user and ((request.user.is_authenticated and request.user== obj.writer)or request.user.is_staff):
+            return True
+        return False
