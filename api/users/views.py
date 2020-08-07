@@ -68,8 +68,8 @@ class CustomProfileView(APIView):
         if serializer.is_valid():#validate 로직 검토
             customProfile = serializer.save()
             if request.data["Image"]:
-                customProfile.image=""
-                customProfile.smallImage=""
+                customProfile.smallImage=request.data["Image"]
+                customProfile.save()
             #파일 용량낮춰서 저장하기. image는 자기 프로필에가면 조금 크게나오는 사진, smallimage는 댓글 옆에 작은사진
             serializer=CustomProfileSerializerForOwner(customProfile)
             return Response(serializer.data)

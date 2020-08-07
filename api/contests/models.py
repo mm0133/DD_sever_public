@@ -10,6 +10,7 @@ from api.contests.utils import comp_answer_upload_to, user_answer_upload_to
 class Contest(models.Model):
     writer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # step만 가능
     title = models.CharField(max_length=255)
+    subtitle = models.CharField(max_length=255)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 

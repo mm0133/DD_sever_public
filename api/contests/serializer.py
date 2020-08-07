@@ -13,7 +13,7 @@ class ContestsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contest
-        fields = ['id', 'title', 'createdAt', 'updatedAt', 'deadline', 'profileThumb',
+        fields = ['id', 'title', 'subtitle', 'createdAt', 'updatedAt', 'deadline', 'profileThumb',
                   'timeline', 'prize', 'isForTraining', 'difficulty', 'evaluationMethod',
                   'learningModel',
                   'isScraped', 'scrapNums', 'isFinished']
@@ -41,7 +41,7 @@ class ContestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contest
-        fields = ['id', 'writer', 'title', 'createdAt', 'updatedAt', 'contestAnswer', 'deadline',
+        fields = ['id', 'writer', 'title', 'subtitle', 'createdAt', 'updatedAt', 'contestAnswer', 'deadline',
                   'timeline', 'prize', 'isForTraining', 'winnerInterview', 'difficulty', 'evaluationMethod',
                   'learningModel', 'evaluationExplanation', 'contestExplanation', 'prizeExplanation', 'dataExplanation',
                   'profileThumb', 'backThumb', 'contestOverview',
