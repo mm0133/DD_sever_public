@@ -90,13 +90,15 @@ class ContestFileViewWithContestPK(APIView):
         if False:  # 관리자 인증필요
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        # 여러 개 한 꺼번에. 안 되면 그냥 for 문 돌리면 됨.
-        serializer = ContestFileSerializer(data=request.data, many=True)
-        if serializer.is_valid():  # validation 로직 손보기
-            contest = Contest.objects.get(pk=pk)
-            serializer.save(contest=contest)  # 되는지 확인해봐야함
-            print(serializer.data)
-            print(contest)
+        if True:
+            file = request.FILES['file']
+
+            contestFile = ContestFile.objects.create(
+                contest_id=pk,
+                file=file,
+            )
+
+            serializer = ContestFileSerializer(contestFile)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

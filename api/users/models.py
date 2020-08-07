@@ -11,17 +11,17 @@ from imagekit.processors import Thumbnail
 class CustomProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
     image = ProcessedImageField(null=True, blank=True,
-                                     upload_to=user_profile_image_path,
-                                     processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
-                                     format='JPEG',  # 최종 저장 포맷
-                                     options={'quality': 60},
-                                     # default="default.png",
-                                     )
+                                upload_to=user_profile_image_path,
+                                processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
+                                format='JPEG',  # 최종 저장 포맷
+                                options={'quality': 90},
+                                # default="default.png",
+                                )
     smallImage = ProcessedImageField(null=True, blank=True,
                                      upload_to=user_profile_image_path,
                                      processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
                                      format='JPEG',  # 최종 저장 포맷
-                                     options={'quality': 60},
+                                     options={'quality': 90},
                                      # default="default.png",
                                      )
 

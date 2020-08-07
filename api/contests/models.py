@@ -3,9 +3,10 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from imagekit.processors import Thumbnail
+from imagekit.models import ProcessedImageField
 
 from api.contests.utils import comp_answer_upload_to, user_answer_upload_to
-
 
 class Contest(models.Model):
     writer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # step만 가능
@@ -52,8 +53,20 @@ class Contest(models.Model):
     contestExplanation = models.TextField()  # 대회 설명
     prizeExplanation = models.TextField()  # 상금 설명
     dataExplanation = models.TextField()  # data 설명
-    profileThumb = models.ImageField(null=True, blank=True)
-    backThumb = models.ImageField(null=True, blank=True)
+    profileThumb = ProcessedImageField(null=True, blank=True,
+                                upload_to='',
+                                processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
+                                format='JPEG',  # 최종 저장 포맷
+                                options={'quality': 90},
+                                # default="default.png",
+                                )
+    profileThumb = ProcessedImageField(null=True, blank=True,
+                                       upload_to='',
+                                       processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
+                                       format='JPEG',  # 최종 저장 포맷
+                                       options={'quality': 90},
+                                       # default="default.png",
+                                       )
     contestOverview = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -78,6 +91,7 @@ class ContestFile(models.Model):
     file = models.FileField(null=True, blank=True)  # data file을 위함
 
 
+
 class ContestUserAnswer(models.Model):
     contest = models.ForeignKey(
         Contest, null=True, on_delete=models.SET_NULL, related_name="userAnswer"
@@ -87,7 +101,7 @@ class ContestUserAnswer(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
-    file = models.FileField(upload_to=user_answer_upload_to, null=True, blank=True)
+    file = models.FileField(upload_to='', null=True, blank=True)
 
     accuracy = models.FloatField(default=0)
 
