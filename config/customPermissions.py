@@ -37,7 +37,7 @@ class IsGetRequestOrAdminUser(permissions.BasePermission):
 
 
 
-class IsOwnerOrAdminUserOrGetRequest(permissions.BasePermission):
+class IsGetRequestOrWriterOrAdminUser(permissions.BasePermission):
     # 작성자만 접근, 작성자가 아니면 Read만 가능
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:

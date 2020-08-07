@@ -1,6 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from config.customPermissions import IsGetRequestOrAuthenticated, IsGetRequestOrWriterOrAdminUser
 from .models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
 from .serializers import ContestDebatesSerializer, ContestDebateSerializer, ContestCodeNotesSerializer, \
     ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer, DebateCommentSerializer, CodeNoteCommentSerializer, \
@@ -32,6 +34,7 @@ class ContestDebateView(APIView):
 
 
 class ContestDebateViewWithPk(APIView):
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]
 
     def get_contestDebate(self, pk):
         try:
@@ -75,6 +78,7 @@ class ContestDebateViewWithPk(APIView):
 
 
 class ContestCodeNoteView(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
 
     def get(self, request):
         contestCodeNote = ContestCodeNote.objects.all()
@@ -94,6 +98,7 @@ class ContestCodeNoteView(APIView):
 
 
 class ContestCodeNoteViewWithPk(APIView):
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]
 
     def get_contestCodeNote(self, pk):
         try:
@@ -137,6 +142,7 @@ class ContestCodeNoteViewWithPk(APIView):
 
 
 class VelogView(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
 
     def get(self, request):
         velog = Velog.objects.all()
@@ -156,6 +162,7 @@ class VelogView(APIView):
 
 
 class VelogViewWithPk(APIView):
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]
 
     def get_velog(self, pk):
         try:
@@ -200,6 +207,7 @@ class VelogViewWithPk(APIView):
 
 # Debate pk에 따라 달린 댓글들을 보낼예정 대댓글은 안보냄, 댓글생성시이용
 class DebateCommentViewWithDebatePK(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
 
     def get(self, request, pk):
         debateComment = DebateComment.objects.filter(contestDebate_id=pk)
@@ -222,7 +230,8 @@ class DebateCommentViewWithDebatePK(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-class DebateCommentViewWithPK(APIView):  # 댓글 수정 삭제. get 요청은 잘 안 쓸 것 같긴한데 나중에 혹시 ajax 에서 쓸 수 있으니 구현함.
+class DebateCommentViewWithPK(APIView):
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]# 댓글 수정 삭제. get 요청은 잘 안 쓸 것 같긴한데 나중에 혹시 ajax 에서 쓸 수 있으니 구현함.
 
     def get_debateComment(self, pk):
         try:
@@ -266,6 +275,7 @@ class DebateCommentViewWithPK(APIView):  # 댓글 수정 삭제. get 요청은 �
 
 
 class CodeNoteCommentViewWithCodeNotePK(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
 
     def get(self, request, pk):
         codeNoteComment = CodeNoteComment.objects.filter(contestCodeNote_id=pk)
@@ -288,7 +298,7 @@ class CodeNoteCommentViewWithCodeNotePK(APIView):
 
 
 class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
-
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]
     def get_codeNoteComment(self, pk):
         try:
             codeNoteComment = CodeNoteComment.objects.get(pk=pk)
@@ -331,7 +341,7 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
 
 
 class VelogCommentViewWithVelogPK(APIView):
-
+    permission_classes = [IsGetRequestOrAuthenticated]
     def get(self, request, pk):
         velogComment = VelogComment.objects.filter(Velog_id=pk)
         serializer = VelogCommentSerializer(velogComment, many=True, context={'user': request.user})
@@ -353,7 +363,7 @@ class VelogCommentViewWithVelogPK(APIView):
 
 
 class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
-
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]
     def get_velogComment(self, pk):
         try:
             velogComment = VelogComment.objects.get(pk=pk)
