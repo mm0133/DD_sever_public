@@ -1,4 +1,5 @@
-from rest_framework import status
+from rest_framework import status, permissions
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -403,3 +404,41 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def ContestDebateLike(request, pk):
+    pass
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def ContestCodeNoteLike(request, pk):
+    pass
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def VelogLike(request, pk):
+    pass
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def ContestDebateScrap(request, pk):
+    pass
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def ContestCodeNoteScrap(request, pk):
+    pass
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def VelogScrap(request, pk):
+    pass
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def DebateCommentLike(request, pk):
+    pass
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def CodeNoteCommentLike(request ,pk):
+    pass
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def VelogCommentLike(request, pk):
+    pass
