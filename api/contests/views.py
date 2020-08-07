@@ -10,9 +10,7 @@ from api.contests.models import Contest, ContestFile, ContestUserAnswer
 from api.contests.serializer import ContestsSerializer, ContestSerializer, ContestFileSerializer, \
     ContestUserAnswerSerializer
 
-
 class ContestView(APIView):
-
     def get(self, request):
         contest = Contest.objects.all()
         serializer = ContestsSerializer(contest, many=True, context={'user': request.user})

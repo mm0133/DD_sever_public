@@ -14,5 +14,5 @@ urlpatterns = [
     path("codenotecomment_codenote_pk/<int:pk>/",views.CodeNoteCommentViewWithCodeNotePK.as_view()),
     path("codenotecomment/<int:pk>/",views.CodeNoteCommentViewWithPK.as_view()),
     path("velogComment_with_velog_pk/<int:pk>/",views.VelogCommentViewWithVelogPK.as_view()),
-    path("velogcomment/<int:pk>/", views.VelogViewWithPk.as_view())
+    path("velogComment/<int:pk>/", views.VelogViewWithPk.as_view())
 ]
