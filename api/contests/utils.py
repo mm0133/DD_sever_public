@@ -5,8 +5,8 @@ from uuid import uuid4
 from api.contests.models import *
 
 
-def join_user():
-    return len(Answer.objects.all())
+# def join_user():
+#     return len(Answer.objects.all())
 
 
 def user_profile_image_path(instance, filename):
@@ -18,7 +18,7 @@ def user_answer_upload_to(instance, filename):
     # 유저가 올린 답안은은 MEDIA/user_<id>/<파일명> 에 저장될거야. 유저가 올린 파일명을 랜덤으로 바꿔서!
     uuid_name = uuid4().hex
     extension = os.path.splitext(filename)[-1].lower()  # 확장자 추출하고, 소문자로 변환
-    return 'comp_{}/user_{}/{}'.format(instance.comp, instance.user, uuid_name[:2] + filename)
+    return 'contest_{}/user_{}/{}'.format('wow', 'hello', uuid_name[:2] + filename)
 
 
 def comp_answer_upload_to(instance, filename):

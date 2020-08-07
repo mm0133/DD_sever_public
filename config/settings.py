@@ -163,3 +163,11 @@ STATIC_URL = "/static/"
 #     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
 #     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 # }
+
+# 파일 저장경로 관리
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') #개발자가 관리하는 파일들
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #사용자가 업로드한 파일 관리
+

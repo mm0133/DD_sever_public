@@ -10,6 +10,7 @@ from api.contests.models import Contest, ContestFile, ContestUserAnswer
 from api.contests.serializer import ContestsSerializer, ContestSerializer, ContestFileSerializer, \
     ContestUserAnswerSerializer
 
+
 class ContestView(APIView):
     def get(self, request):
         contest = Contest.objects.all()
@@ -25,7 +26,7 @@ class ContestView(APIView):
         if serializer.is_valid():  # validation 로직 손보기
             # writer가 null=True이기 때문에 프론트에서 넣어주지 않아도 .is_valid에서 에러가 나지 않는다.
             # 그래서 밑에서 witer로 넣어주는 것이다.
-            serializer.save(writer=request.user)  # 로그인 안하면 지금 오류남
+            serializer.save()  # 일단 임시로 안 넣어줌. # 로그인 안하면 지금 오류남
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -76,7 +77,7 @@ class ContestViewWithPk(APIView):
 
 class ContestFileViewWithContestPK(APIView):
 
-    def get(self, pk):
+    def get(self, request, pk):
         try:
             contestFile = ContestFile.objects.filter(contest_id=pk)
         except contestFile.DoesNotExist:
@@ -94,6 +95,8 @@ class ContestFileViewWithContestPK(APIView):
         if serializer.is_valid():  # validation 로직 손보기
             contest = Contest.objects.get(pk=pk)
             serializer.save(contest=contest)  # 되는지 확인해봐야함
+            print(serializer.data)
+            print(contest)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -15,7 +15,9 @@ class ContestsSerializer(serializers.ModelSerializer):
         model = Contest
         fields = ['id', 'title', 'createdAt', 'updatedAt', 'deadline', 'profileThumb',
                   'timeline', 'prize', 'isForTraining', 'difficulty', 'evaluationMethod',
-                  'learningModel', 'isScraped', 'scrapNums', 'isFinished']
+                  'learningModel',
+                  'isScraped', 'scrapNums', 'isFinished']
+        read_only_fields = ['isScraped', 'scrapNums', 'isFinished']
 
     def get_isScraped(self, obj):
         # context는 이 serializer를 호출할 때 넘겨준다. contest.views를 보면 확인 가능하다.
@@ -38,7 +40,7 @@ class ContestSerializer(serializers.ModelSerializer):
     isFinished = serializers.SerializerMethodField()
 
     class Meta:
-        model: Contest
+        model = Contest
         fields = ['id', 'writer', 'title', 'createdAt', 'updatedAt', 'contestAnswer', 'deadline',
                   'timeline', 'prize', 'isForTraining', 'winnerInterview', 'difficulty', 'evaluationMethod',
                   'learningModel', 'evaluationExplanation', 'contestExplanation', 'prizeExplanation', 'dataExplanation',
@@ -80,8 +82,8 @@ class ContestUserAnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ContestUserAnswer
-        fields = ['id', 'contest', 'writer', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank']
-        read_only_fields = ['createdAT', 'updatedAt', 'rank']
+        fields = ['id', 'contest', 'writer', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank', 'writerNickname']
+        read_only_fields = ['createdAT', 'updatedAt', 'rank', 'writerNickname']
         extra_kwargs = {'contest': {'write_only': True},
                         'writer': {'write_only': True},
                         'file': {'write_only': True}}
