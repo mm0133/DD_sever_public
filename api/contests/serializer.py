@@ -71,6 +71,7 @@ class ContestScrapSerializer(serializers.ModelSerializer):
 
 
 class ContestFileSerializer(serializers.ModelSerializer):
+    file = serializers.FileField(use_url=True)
     class Meta:
         model = ContestFile
         fields = ['id', 'contest', 'file']

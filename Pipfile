@@ -11,6 +11,8 @@ black = "*"
 django = "==2.2.7"
 pillow = "*"
 mysqlclient = "*"
+pilkit = "*"
+django-imagekit = "*"
 
 [requires]
 python_version = "3.7"
