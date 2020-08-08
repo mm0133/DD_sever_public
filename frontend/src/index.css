@@ -28,10 +28,10 @@
   font-family: "NanumSquareLight";
   src: url("fonts/NanumSquareL.ttf") format("truetype");
 }
-/* 닉스곤 */
+/* 한돈 */
 @font-face {
-  font-family: "Nixgon";
-  src: url("fonts/NIXGONFONTS M 2.0.ttf") format("truetype");
+  font-family: "Handon";
+  src: url("fonts/한돈 삼겹살체 600g.ttf") format("truetype");
 }
 
 body {
