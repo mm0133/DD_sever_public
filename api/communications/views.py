@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -232,7 +233,7 @@ class DebateCommentViewWithDebatePK(APIView):
 
 
 class DebateCommentViewWithPK(APIView):
-    permission_classes = [IsGetRequestOrWriterOrAdminUser]# 댓글 수정 삭제. get 요청은 잘 안 쓸 것 같긴한데 나중에 혹시 ajax 에서 쓸 수 있으니 구현함.
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]  # 댓글 수정 삭제. get 요청은 잘 안 쓸 것 같긴한데 나중에 혹시 ajax 에서 쓸 수 있으니 구현함.
 
     def get_debateComment(self, pk):
         try:
@@ -300,6 +301,7 @@ class CodeNoteCommentViewWithCodeNotePK(APIView):
 
 class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
     permission_classes = [IsGetRequestOrWriterOrAdminUser]
+
     def get_codeNoteComment(self, pk):
         try:
             codeNoteComment = CodeNoteComment.objects.get(pk=pk)
@@ -343,6 +345,7 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
 
 class VelogCommentViewWithVelogPK(APIView):
     permission_classes = [IsGetRequestOrAuthenticated]
+
     def get(self, request, pk):
         velogComment = VelogComment.objects.filter(Velog_id=pk)
         serializer = VelogCommentSerializer(velogComment, many=True, context={'user': request.user})
@@ -365,6 +368,7 @@ class VelogCommentViewWithVelogPK(APIView):
 
 class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
     permission_classes = [IsGetRequestOrWriterOrAdminUser]
+
     def get_velogComment(self, pk):
         try:
             velogComment = VelogComment.objects.get(pk=pk)
@@ -409,36 +413,88 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestDebateLike(request, pk):
-    pass
+    contestDebate = get_object_or_404(ContestDebate, pk=pk)
+    if request.user in contestDebate.likes:
+        contestDebate.likes.remove(request.user)
+    else:
+        contestDebate.likes.add(request.user)
+
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestCodeNoteLike(request, pk):
-    pass
+    contestCodeNote = get_object_or_404(ContestCodeNote, pk=pk)
+    if request.user in contestCodeNote.likes:
+        contestCodeNote.likes.remove(request.user)
+    else:
+        contestCodeNote.likes.add(request.user)
+
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def VelogLike(request, pk):
-    pass
+    velog = get_object_or_404(Velog, pk=pk)
+    if request.user in velog.likes:
+        velog.likes.remove(request.user)
+    else:
+        velog.likes.add(request.user)
+
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestDebateScrap(request, pk):
-    pass
+    contestDebate = get_object_or_404(ContestDebate, pk=pk)
+    if contestDebate in request.user.customProfile.debateScraps:
+        request.user.customProfile.debateScraps.add(contestDebate)
+    else:
+        request.user.customProfile.debateScraps.remove(contestDebate)
+
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestCodeNoteScrap(request, pk):
-    pass
+    contestCodeNote = get_object_or_404(ContestCodeNote, pk=pk)
+    if contestCodeNote in request.user.customProfile.debateScraps:
+        request.user.customProfile.debateScraps.add(contestCodeNote)
+    else:
+        request.user.customProfile.debateScraps.remove(contestCodeNote)
+
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def VelogScrap(request, pk):
-    pass
+    velog = get_object_or_404(Velog, pk=pk)
+    if velog in request.user.customProfile.debateScraps:
+        request.user.customProfile.debateScraps.add(velog)
+    else:
+        request.user.customProfile.debateScraps.remove(velog)
+
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def DebateCommentLike(request, pk):
-    pass
+    debateComment = get_object_or_404(DebateComment, pk=pk)
+    if request.user in debateComment.likes:
+        debateComment.likes.remove(request.user)
+    else:
+        debateComment.likes.add(request.user)
+
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
-def CodeNoteCommentLike(request ,pk):
-    pass
+def CodeNoteCommentLike(request, pk):
+    codeNoteComment = get_object_or_404(CodeNoteComment, pk=pk)
+    if request.user in codeNoteComment.likes:
+        codeNoteComment.likes.remove(request.user)
+    else:
+        codeNoteComment.likes.add(request.user)
+
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def VelogCommentLike(request, pk):
-    pass
+    velogComment = get_object_or_404(Velog, pk=pk)
+    if request.user in velogComment.likes:
+        velogComment.likes.remove(request.user)
+    else:
+        velogComment.likes.add(request.user)
