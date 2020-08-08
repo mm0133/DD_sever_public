@@ -416,8 +416,10 @@ def ContestDebateLike(request, pk):
     contestDebate = get_object_or_404(ContestDebate, pk=pk)
     if request.user in contestDebate.likes:
         contestDebate.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
     else:
         contestDebate.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
@@ -426,8 +428,10 @@ def ContestCodeNoteLike(request, pk):
     contestCodeNote = get_object_or_404(ContestCodeNote, pk=pk)
     if request.user in contestCodeNote.likes:
         contestCodeNote.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
     else:
         contestCodeNote.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
@@ -436,8 +440,10 @@ def VelogLike(request, pk):
     velog = get_object_or_404(Velog, pk=pk)
     if request.user in velog.likes:
         velog.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
     else:
         velog.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
@@ -446,8 +452,10 @@ def ContestDebateScrap(request, pk):
     contestDebate = get_object_or_404(ContestDebate, pk=pk)
     if contestDebate in request.user.customProfile.debateScraps:
         request.user.customProfile.debateScraps.add(contestDebate)
+        return Response(status=status.HTTP_200_OK)
     else:
         request.user.customProfile.debateScraps.remove(contestDebate)
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
@@ -456,8 +464,10 @@ def ContestCodeNoteScrap(request, pk):
     contestCodeNote = get_object_or_404(ContestCodeNote, pk=pk)
     if contestCodeNote in request.user.customProfile.debateScraps:
         request.user.customProfile.debateScraps.add(contestCodeNote)
+        return Response(status=status.HTTP_200_OK)
     else:
         request.user.customProfile.debateScraps.remove(contestCodeNote)
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
@@ -466,8 +476,10 @@ def VelogScrap(request, pk):
     velog = get_object_or_404(Velog, pk=pk)
     if velog in request.user.customProfile.debateScraps:
         request.user.customProfile.debateScraps.add(velog)
+        return Response(status=status.HTTP_200_OK)
     else:
         request.user.customProfile.debateScraps.remove(velog)
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
@@ -476,8 +488,10 @@ def DebateCommentLike(request, pk):
     debateComment = get_object_or_404(DebateComment, pk=pk)
     if request.user in debateComment.likes:
         debateComment.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
     else:
         debateComment.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
@@ -486,8 +500,10 @@ def CodeNoteCommentLike(request, pk):
     codeNoteComment = get_object_or_404(CodeNoteComment, pk=pk)
     if request.user in codeNoteComment.likes:
         codeNoteComment.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
     else:
         codeNoteComment.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
@@ -496,5 +512,7 @@ def VelogCommentLike(request, pk):
     velogComment = get_object_or_404(Velog, pk=pk)
     if request.user in velogComment.likes:
         velogComment.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
     else:
         velogComment.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)

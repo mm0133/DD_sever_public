@@ -203,5 +203,7 @@ def ContestScrap(request, pk):
     contest = get_object_or_404(Contest, pk=pk)
     if contest in request.user.customProfile.contestScraps:
         request.user.customProfile.debateScraps.add(contest)
+        return Response(status=status.HTTP_200_OK)
     else:
         request.user.customProfile.debateScraps.remove(contest)
+        return Response(status=status.HTTP_200_OK)
