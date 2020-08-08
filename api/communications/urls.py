@@ -4,6 +4,7 @@ app_name = "communications"
 
 urlpatterns = [
     path("contestdebate/", views.ContestDebateView.as_view()),
+    path("contestdebateCreate/<int:pk>/", views.ContestDebateCreateWithContestPk),
     path("contestdebate/<int:pk>/", views.ContestDebateViewWithPk.as_view()),
     path("contestdebate/<int:pk>/like/", views.ContestDebateLike),
     path("contestdebate/<int:pk>/scrap/", views.ContestDebateScrap),
@@ -23,5 +24,5 @@ urlpatterns = [
     path("codenotecomment/<int:pk>/like/", views.CodeNoteCommentLike),
     path("velogComment_with_velog_pk/<int:pk>/",views.VelogCommentViewWithVelogPK.as_view()),
     path("velogComment/<int:pk>/", views.VelogViewWithPk.as_view()),
-    path("velogComment/<int:pk>/like")
+    path("velogComment/<int:pk>/like", views.VelogCommentLike)
 ]

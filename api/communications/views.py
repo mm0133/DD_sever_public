@@ -13,6 +13,8 @@ from .serializers import ContestDebatesSerializer, ContestDebateSerializer, Cont
 
 # post, put validation 에서 hitnum, likes, writer 등등 추가적으로 추가/수정해야 함.
 # serialize.save 안 쓰는 것도 고려해 볼 만한 대안임. read_only field 를 적극 활용하는 방법도 있음.
+from ..contests.models import Contest
+
 
 class ContestDebateView(APIView):
     permission_classes = [IsGetRequestOrAuthenticated]
@@ -23,16 +25,22 @@ class ContestDebateView(APIView):
         # context = {'request':request} 로 request 객체 받아서 쓸 수도 있음
         return Response(serializer.data)
 
-    def post(self, request):
-        if False:  # 로그인 인증 로직 필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def ContestDebateCreateWithContestPk(request, pk):
+    contest = get_object_or_404(Contest, pk=pk)
+    print(contest)
+    print(request.data)
+    print(request.user)
+    contestDebate = ContestDebate.objects.create(
+        writer=request.user,
+        content=request.data["content"],
+        title=request.data["title"],
+        contest=contest
+    )
 
-        serializer = ContestDebateSerializer(data=request.data)
-        if serializer.is_valid():  # validation 로직 손보기
-            # serializer.save(writer=request.user)  # 로그인 안하면 지금 오류남
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer = ContestDebatesSerializer(contestDebate)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class ContestDebateViewWithPk(APIView):

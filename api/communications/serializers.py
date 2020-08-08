@@ -30,8 +30,8 @@ class LikeIncludedModelSerializer(serializers.ModelSerializer):
         return None
 
     def get_writerImage(self, obj):
-        if obj.writer:
-            return obj.writer.customProfile.SmallImage
+        if obj.writer.customProfile.smallImage:
+            return obj.writer.customProfile.smallImage
 
 
 class LikeScrapIncludedModelSerializer(LikeIncludedModelSerializer):
