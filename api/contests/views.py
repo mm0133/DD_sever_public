@@ -1,8 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import status, permissions
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -195,3 +195,13 @@ class ContestUserAnswerViewWithPK(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def ContestScrap(request, pk):
+    contest = get_object_or_404(Contest, pk=pk)
+    if contest in request.user.customProfile.contestScraps:
+        request.user.customProfile.debateScraps.add(contest)
+    else:
+        request.user.customProfile.debateScraps.remove(contest)
