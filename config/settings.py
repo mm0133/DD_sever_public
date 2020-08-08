@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -43,7 +44,12 @@ INSTALLED_APPS = [
     "api.educations",
     "api.managements",
     "api.users",
-    "rest_framework",
+
+    "rest_framework"
+    
+    #social login
+    'social_django',  # django social auth
+    'rest_social_auth',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +63,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
-CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
@@ -132,11 +137,93 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-SIMPLE_JWT = my_settings.SIMPLE_JWT
+
+SIMPLE_JWT=my_settings.SIMPLE_JWT
 
 # 파일 저장경로 관리
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # 개발자가 관리하는 파일들
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') #개발자가 관리하는 파일들
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 사용자가 업로드한 파일 관리
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #사용자가 업로드한 파일 관리
+
+
+#social login
+AUTHENTICATION_BACKENDS = (
+    # 'social_core.backends.facebook.FacebookOAuth2',
+    # and maybe some others ...
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+
+# social auth settings
+# valid redirect domain for all apps: http://restsocialexample.com:8000/
+SOCIAL_AUTH_FACEBOOK_KEY = '295137440610143'
+SOCIAL_AUTH_FACEBOOK_SECRET = '4b4aef291799a7b9aaf016689339e97f'
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', ]
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': ','.join([
+        # public_profile
+        'id', 'cover', 'name', 'first_name', 'last_name', 'age_range', 'link',
+        'gender', 'locale', 'picture', 'timezone', 'updated_time', 'verified',
+        # extra fields
+        'email',
+    ]),
+}
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
+    '976099811367-ihbmg1pfnniln9qgfacleiu41bhl3fqn.apps.googleusercontent.com'
+)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'JaiLLvY1BK97TSy5_xcGWDhp'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', ]
+
+SOCIAL_AUTH_TWITTER_KEY = 'gCrpEpNxpWkAE6Cul98OzAWTk'
+SOCIAL_AUTH_TWITTER_SECRET = '7SYSRpYY4amW5kiNXUAxUDdWS7G3nHytRIGHbDVTByzBfsqDJl'
+
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',  # OAuth1.0
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# SOCIAL_AUTH_PIPELINE = (
+#     'users.social_pipeline.auto_logout',  # custom action
+#     'social_core.pipeline.social_auth.social_details',
+#     'social_core.pipeline.social_auth.social_uid',
+#     'social_core.pipeline.social_auth.auth_allowed',
+#     'users.social_pipeline.check_for_email',  # custom action
+#     'social_core.pipeline.social_auth.social_user',
+#     'social_core.pipeline.user.get_username',
+#     'social_core.pipeline.user.create_user',
+#     'social_core.pipeline.social_auth.associate_user',
+#     'social_core.pipeline.social_auth.load_extra_data',
+#     'social_core.pipeline.user.user_details',
+#     'users.social_pipeline.save_avatar',  # custom action
+# )
+#
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(levelname)s:%(name)s: %(message)s '
+#                       '(%(asctime)s; %(filename)s:%(lineno)d)',
+#             'datefmt': "%Y-%m-%d %H:%M:%S",
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'rest_social_auth': {
+#             'handlers': ['console', ],
+#             'level': "DEBUG",
+#         },
+#     }
+# }
