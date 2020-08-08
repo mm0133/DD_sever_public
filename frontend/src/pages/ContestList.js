@@ -1,31 +1,23 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useReducer} from "react";
 import axios from "axios";
+import UseAsync from "../components/UseAsync";
+
 import ContestSingle from "../components/ContestSingle";
 
+
+const getContests = async () => {
+    const response = await axios.get(
+        "api/v1/contests/contest/"
+    );
+    return response.data;
+}
+
 const ContestList = () => {
-    const [contests, setContest] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [state, refetch] = UseAsync(getContests, []);
+    const {loading, data: contests, error} = state;
 
-    useEffect(() => {
-        const fetchContests = async () => {
-            try {
-                setContest(null);
-                setError(null);
-                setLoading(true);
-
-                const response = await axios.get("api/v1/contests/contest/");
-                setContest(response.data);
-            } catch (e) {
-                setError(e);
-            }
-            setLoading(false);
-        }
-        fetchContests();
-    }, [])
-
-    if (loading) return <div>"로딩중입니다"</div>
-    if (error) return <div>에러가 발생했습니다.</div>
+    if (loading) return <div>Loading</div>
+    if (error) return <div>Error</div>
     if (!contests) return null;
 
     return (
@@ -33,6 +25,7 @@ const ContestList = () => {
             {contests.map(contest =>
                 <ContestSingle
                     key={contest.id}
+
                     title={contest.title}
                     createdAt={contest.createdAt}
                     updatedAt={contest.updatedAt}

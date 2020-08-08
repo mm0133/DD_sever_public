@@ -5,6 +5,9 @@ import {faStar as faStarLine} from "@fortawesome/free-regular-svg-icons";
 
 import "./ContestSingle.scss";
 
+
+
+
 const ContestSingle = (props) => {
     return (
         <div className="contest">
