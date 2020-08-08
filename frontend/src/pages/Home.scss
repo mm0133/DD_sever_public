@@ -1,0 +1,149 @@
+@import "../components/index";
+
+//div {
+//  border: 1px solid #cccccc;
+//  box-sizing: border-box;
+//}
+
+// main-banner
+
+main-banner {
+  @include flex-box;
+  height: $height-mainBanner;
+  padding: 0 $padding-main;
+  background: $color-background-light;
+  overflow: hidden;
+
+  .catchphrase {
+    font-family: $font-title-regular;
+    font-size: 30px;
+    line-height: 45px;
+    margin: 20px 0 40px;
+
+    span {
+      font-family: $font-title-bold;
+      background: linear-gradient(to top, rgba(75, 101, 128, 0.3) 50%, transparent 50%);
+    }
+  }
+
+  .button {
+    width: 220px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+
+    border-radius: 100px;
+    background-color: $color-main-dark;
+
+    font-family: $font-title-bold;
+    font-size: 17px;
+    color: white;
+
+    &:hover > .overlay {
+      @include overlay;
+    }
+
+    .overlay {
+      transition-duration: 0.3s;
+    }
+  }
+
+  img {
+    width: 400px;
+    height: auto;
+    position: relative;
+    top: 80px;
+    right: 200px;
+    opacity: 0.7;
+  }
+
+  .contest-scrap {
+    $width: 380px;
+    $padding: 20px;
+
+    @include flex-box-column;
+    width: $width;
+    height: 220px;
+    background-color: white;
+    padding: $padding;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.07);
+
+    .title {
+      font-family: $font-text-bold;
+      padding-bottom: 5px;
+      border-bottom: 1px solid $color-background-light; // 구분선
+      width: $width - $padding * 2;
+    }
+
+    .content {
+      font-family: $font-text-light;
+      font-size: 14px;
+      padding-top: 10px;
+    }
+
+    .more-contest {
+      font-family: $font-title-regular;
+      font-size: 14px;
+      color: $color-text-light;
+    }
+  }
+}
+
+// contest
+
+contest {
+  .header {
+    @include flex-box;
+    padding: $padding-top $padding-main 0;
+
+    .title {
+      @include flex-box;
+      font-family: $font-title-extraBold;
+      font-size: $font-size-title;
+      color: $color-main-dark;
+
+      .icon-wrap {
+        $size: 26px;
+
+        width: $size;
+        height: $size;
+        text-align: center;
+        line-height: $size;
+
+        margin: -1px 5px 0 0;
+
+        background-color: $color-main-dark;
+        border-radius: 100px;
+
+        .icon {
+          margin: 0 auto;
+          font-size: 12px;
+          color: white;
+        }
+      }
+
+      .subtitle {
+        font-family: $font-text-regular;
+        font-size: $font-size-subtitle;
+        color: $color-text-light;
+
+        margin-left: 10px;
+      }
+    }
+
+    .more {
+      font-family: $font-title-bold;
+      font-size: 14px;
+
+      span {
+        font-family: $font-arrow;
+        color: $color-text-light;
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .contest-list {
+    padding: 0 $padding-main;
+  }
+}

@@ -14,7 +14,6 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -44,8 +43,7 @@ INSTALLED_APPS = [
     "api.educations",
     "api.managements",
     "api.users",
-
-    "rest_framework"
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -59,6 +57,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
+CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
@@ -133,13 +132,11 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-
-SIMPLE_JWT=my_settings.SIMPLE_JWT
+SIMPLE_JWT = my_settings.SIMPLE_JWT
 
 # 파일 저장경로 관리
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static') #개발자가 관리하는 파일들
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # 개발자가 관리하는 파일들
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #사용자가 업로드한 파일 관리
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 사용자가 업로드한 파일 관리

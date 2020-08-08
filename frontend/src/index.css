@@ -1,0 +1,49 @@
+/* 노토산스 */
+@font-face {
+  font-family: "NotoSansBold";
+  src: url("fonts/NotoSansCJKkr-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansRegular";
+  src: url("fonts/NotoSansCJKkr-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NotoSansLight";
+  src: url("fonts/NotoSansCJKkr-Light.ttf") format("truetype");
+}
+/* 나눔스퀘어 */
+@font-face {
+  font-family: "NanumSquareExtraBold";
+  src: url("fonts/NanumSquareEB.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareBold";
+  src: url("fonts/NanumSquareB.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareRegualr";
+  src: url("fonts/NanumSquareR.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquareLight";
+  src: url("fonts/NanumSquareL.ttf") format("truetype");
+}
+/* 한돈 */
+@font-face {
+  font-family: "Handon";
+  src: url("fonts/한돈 삼겹살체 600g.ttf") format("truetype");
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
