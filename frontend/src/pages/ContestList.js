@@ -1,8 +1,8 @@
 import React, {useEffect, useReducer} from "react";
 import axios from "axios";
 import UseAsync from "../components/UseAsync";
-
 import ContestSingle from "../components/ContestSingle";
+
 
 
 const getContests = async () => {
@@ -13,7 +13,7 @@ const getContests = async () => {
 }
 
 const ContestList = () => {
-    const [state, refetch] = UseAsync(getContests, []);
+    const [state, fetchData] = UseAsync(getContests, []);
     const {loading, data: contests, error} = state;
 
     if (loading) return <div>Loading</div>
@@ -27,6 +27,7 @@ const ContestList = () => {
                     key={contest.id}
 
                     title={contest.title}
+                    subtitle={contest.subtitle}
                     createdAt={contest.createdAt}
                     updatedAt={contest.updatedAt}
                     deadline={contest.deadline}

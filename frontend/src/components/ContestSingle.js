@@ -3,21 +3,27 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCalendar, faTrophy, faUser} from "@fortawesome/free-solid-svg-icons";
 import {faStar as faStarLine} from "@fortawesome/free-regular-svg-icons";
 
+import {getDDay, getDifficulty, getEvaluation} from "./Utils" // D-day 계산 함수
+
 import "./ContestSingle.scss";
 
 
-
-
 const ContestSingle = (props) => {
+    const prize = props.isForTraining ? "연습" : `${props.prize}만`;
+    const dDay = getDDay(`${props.deadline}`);
+    const difficulty = getDifficulty(props.difficulty).type;
+    const colorDifficulty = getDifficulty(props.difficulty).color;
+    const evaluation = getEvaluation(props.evaluationMethod);
+
     return (
         <div className="contest">
             <div className="content-wrap">
-                <div className="contest-image"><img src="" alt=""/></div>
+                <div className="contest-image"><img src={props.profileThumb} alt=""/></div>
                 <div className="content">
                     <div>
-                        <div className="title">{props.title}<span>{props.prize}만</span></div>
+                        <div className="title">{props.title}<span>{prize}</span></div>
                         <div className="subtitle">
-                            8개의 감정을 기준으로 얼굴 사진 분류하기
+                            {props.subtitle}
                             <span className="bar">ㅣ</span>
                             <span className="classification">{props.learningModel}</span>
                         </div>
@@ -33,13 +39,13 @@ const ContestSingle = (props) => {
                             <div className="icon-wrap">
                                 <FontAwesomeIcon icon={faCalendar} className="icon"/>
                             </div>
-                            <div>D-120</div>
+                            <div>D-{dDay}</div>
                         </div>
                         <div className="summary">
                             <div className="icon-wrap">
                                 <FontAwesomeIcon icon={faTrophy} className="icon trophy"/>
                             </div>
-                            <div>정확도 Accuracy</div>
+                            <div>{evaluation}</div>
                         </div>
                     </div>
                 </div>
@@ -47,8 +53,8 @@ const ContestSingle = (props) => {
             <div className="participate">
                 <div className="top-side">
                     <div className="difficulty">
-                        <div className="circle"></div>
-                        {props.difficulty}
+                        <div className="circle" style={{backgroundColor: `${colorDifficulty}`}} />
+                        {difficulty}
                     </div>
                     <FontAwesomeIcon icon={faStarLine} className="scrap"/>
                 </div>
