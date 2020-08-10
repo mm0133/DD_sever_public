@@ -17,7 +17,7 @@ django-imagekit = "*"
 rest-social-auth = "*"
 social-auth-core = "*"
 social-auth-app-django = "*"
-=======
+
 djangorestframework = "*"
 djangorestframework-jwt = "*"
 djangorestframework-simplejwt = "*"

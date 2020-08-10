@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
 from rest_framework import status, permissions
@@ -14,6 +14,7 @@ from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuth
 
 class ContestView(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
+
     def get(self, request):
         contest = Contest.objects.all()
         serializer = ContestsSerializer(contest, many=True, context={'user': request.user})
@@ -21,9 +22,6 @@ class ContestView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        if False:  # 관리자 인증필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = ContestSerializer(data=request.data)
         if serializer.is_valid():  # validation 로직 손보기
             # writer가 null=True이기 때문에 프론트에서 넣어주지 않아도 .is_valid에서 에러가 나지 않는다.
@@ -39,7 +37,8 @@ class ContestViewWithPk(APIView):
 
     def get_contest(self, pk):
         try:
-            contest = Contest.objects.get(pk=pk)
+            contest = get_object_or_404(Contest, pk=pk)
+            self.check_object_permissions(self.request, contest)
             return contest
         except contest.DoesNotExist:
             return None
@@ -89,27 +88,23 @@ class ContestFileViewWithContestPK(APIView):
         serializer = ContestFileSerializer(contestFile, many=True)
         return Response(serializer.data)
 
-    # 다중업로드 기능(한 번에 여러 파일 제출) 확인해봐야함
+    # 다중업로드 가능!
     def post(self, request, pk):
-        if False:  # 관리자 인증필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        if True:
-            file = request.FILES['file']
+        files = dict((request.data).lists())['file']
 
+        for file in files:
+            print(file)
             contestFile = ContestFile.objects.create(
                 contest_id=pk,
                 file=file,
             )
 
-            serializer = ContestFileSerializer(contestFile)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        contestFile = ContestFile.objects.filter(contest_id=pk)
+        serializer = ContestFileSerializer(contestFile, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
-        if False:  # 관리자가 아니라면
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
         try:
             contestFile = ContestFile.objects.filter(contest_id=pk)
         except contestFile.DoesNotExist:
@@ -120,8 +115,9 @@ class ContestFileViewWithContestPK(APIView):
 
 @api_view(['DELETE'])
 def DeleteContestFileWithPK(request, pk):
-    if False:  # 관리자가 아니라면
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    if not request.user.is_staff:
+        Response(status=status.HTTP_403_FORBIDDEN)
+
     try:
         contestFile = ContestFile.objects.get(pk=pk)
     except contestFile.DoesNotExist:
@@ -132,6 +128,7 @@ def DeleteContestFileWithPK(request, pk):
 
 class ContestUserAnswerViewWithContestPK(APIView):
     permission_classes = [IsGetRequestOrAuthenticated]
+
     # 내림차순정렬
     def get(self, request, pk):
         contestUserAnswer = ContestUserAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
@@ -139,12 +136,10 @@ class ContestUserAnswerViewWithContestPK(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk):
-        if False:  # 로그인 인증 로직 필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
         contestUserAnswer = ContestUserAnswer.objects.create(
             writer=request.user,
             contest_id=pk,
-            file=request.data["file"],
+            file=request.data['file']
         )
         # 정확도 계산 로직 넣어야함
         contestUserAnswer.accuracy = contestUserAnswer.calculateAccuracy()
@@ -156,9 +151,11 @@ class ContestUserAnswerViewWithContestPK(APIView):
 
 class ContestUserAnswerViewWithPK(APIView):
     permission_classes = [IsWriterOrAdminUser]
+
     def get_contestUserAnswer(self, pk):
         try:
             contestUserAnswer = ContestUserAnswer.objects.get(pk=pk)
+            self.check_object_permissions(self.request, contestUserAnswer)
             return contestUserAnswer
         except contestUserAnswer.DoesNotExist:
             return None
@@ -176,10 +173,7 @@ class ContestUserAnswerViewWithPK(APIView):
         if contestUserAnswer == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if False:  # request.user == self.writer  or 관리자
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        serializer = ContestUserAnswerSerializer(contestUserAnswer, data=request.data, partial=True, )
+        serializer = ContestUserAnswerSerializer(contestUserAnswer, data=request.data, partial=True)
         if serializer.is_valid():  # validate 로직 추가
             contestUserAnswer = serializer.save()
             return Response(ContestUserAnswerSerializer(contestUserAnswer).data)

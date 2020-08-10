@@ -10,28 +10,23 @@ from .serializers import ContestDebatesSerializer, ContestDebateSerializer, Cont
     ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer, DebateCommentSerializer, CodeNoteCommentSerializer, \
     VelogCommentSerializer
 
-
 # post, put validation 에서 hitnum, likes, writer 등등 추가적으로 추가/수정해야 함.
 # serialize.save 안 쓰는 것도 고려해 볼 만한 대안임. read_only field 를 적극 활용하는 방법도 있음.
 from ..contests.models import Contest
 
 
 class ContestDebateView(APIView):
-    permission_classes = [IsGetRequestOrAuthenticated]
-
     def get(self, request):
         contestDebate = ContestDebate.objects.all()
         serializer = ContestDebatesSerializer(contestDebate, many=True, context={'user': request.user})
         # context = {'request':request} 로 request 객체 받아서 쓸 수도 있음
         return Response(serializer.data)
 
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestDebateCreateWithContestPk(request, pk):
     contest = get_object_or_404(Contest, pk=pk)
-    print(contest)
-    print(request.data)
-    print(request.user)
     contestDebate = ContestDebate.objects.create(
         writer=request.user,
         content=request.data["content"],
@@ -48,7 +43,8 @@ class ContestDebateViewWithPk(APIView):
 
     def get_contestDebate(self, pk):
         try:
-            contestDebate = ContestDebate.objects.get(pk=pk)
+            contestDebate = get_object_or_404(ContestDebate, pk=pk)
+            self.check_object_permissions(self.request, contestDebate)
             return contestDebate
         except contestDebate.DoesNotExist:
             return None
@@ -88,23 +84,26 @@ class ContestDebateViewWithPk(APIView):
 
 
 class ContestCodeNoteView(APIView):
-    permission_classes = [IsGetRequestOrAuthenticated]
 
     def get(self, request):
         contestCodeNote = ContestCodeNote.objects.all()
         serializer = ContestCodeNotesSerializer(contestCodeNote, many=True, context={'user': request.user})
         return Response(serializer.data)
 
-    def post(self, request):
-        if False:  # 로그인 인증 로직 필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        serializer = ContestCodeNoteSerializer(data=request.data)
-        if serializer.is_valid():  # validation 로직 손보기
-            serializer.save(writer=request.user)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def ContestCodenoteCreateWithContestPk(request, pk):
+    contest = get_object_or_404(Contest, pk=pk)
+    contestCodenote = ContestCodeNote.objects.create(
+        writer=request.user,
+        content=request.data["content"],
+        title=request.data["title"],
+        contest=contest
+    )
+
+    serializer = CodeNoteCommentSerializer(contestCodenote)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class ContestCodeNoteViewWithPk(APIView):
@@ -113,6 +112,7 @@ class ContestCodeNoteViewWithPk(APIView):
     def get_contestCodeNote(self, pk):
         try:
             contestCodeNote = ContestCodeNote.objects.get(pk=pk)
+            self.check_object_permissions(self.request, contestCodeNote)
             return contestCodeNote
         except contestCodeNote.DoesNotExist:
             return None
@@ -160,9 +160,6 @@ class VelogView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        if False:  # 로그인 인증 로직 필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = VelogSerializer(data=request.data)
         if serializer.is_valid():  # validation 로직 손보기
             serializer.save(writer=request.user)
@@ -177,6 +174,7 @@ class VelogViewWithPk(APIView):
     def get_velog(self, pk):
         try:
             velog = Velog.objects.get(pk=pk)
+            self.check_object_permissions(self.request, velog)
             return velog
         except velog.DoesNotExist:
             return None
@@ -225,15 +223,22 @@ class DebateCommentViewWithDebatePK(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk):
-        if False:  # 로그인 인증 로직 필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         # serializer 를 안 쓰고 그냥 처리함.
+        # parent_debateComment를 프론트엔드에서 주지 않으면 대댓이 아니라 그냥 댓글이라고 판단 가능.
+        # 에러가 안 나려면 밑과 같이 처리해줘야 한다.
+        if 'debateComment' in request.data:
+            parent_debateComment_id = request.data['debateComment']
+            # 다른 debate에 달려 있는 debateComment에 대댓을 달지 못하게 하는 코드
+            parent_debateComment = get_object_or_404(DebateComment, pk=parent_debateComment_id)
+            if parent_debateComment.contestDebate.id is not pk:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        else:
+            parent_debateComment_id = None
         debateComment = DebateComment.objects.create(
             writer=request.user,
             content=request.data["content"],
             contestDebate_id=pk,
-            debateComment_id=request.data["debateComment"]
+            debateComment_id=parent_debateComment_id
         )
         serializer = DebateCommentSerializer(debateComment)
 
@@ -246,6 +251,7 @@ class DebateCommentViewWithPK(APIView):
     def get_debateComment(self, pk):
         try:
             debateComment = DebateComment.objects.get(pk=pk)
+            self.check_object_permissions(self.request, debateComment)
             return debateComment
         except debateComment.DoesNotExist:
             return None
@@ -293,16 +299,22 @@ class CodeNoteCommentViewWithCodeNotePK(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk):
-        if False:  # 로그인 인증 로직 필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if 'codenoteComment' in request.data:
+            parent_codenoteComment_id = request.data['codenoteComment']
+            # 다른 debate에 달려 있는 codenoteComment에 대댓을 달지 못하게 하는 코드
+            parent_codenoteComment = get_object_or_404(CodeNoteComment, pk=parent_codenoteComment_id)
+            if parent_codenoteComment.codenoteComment.id is not pk:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        else:
+            parent_codenoteComment_id = None
 
         codeNoteComment = CodeNoteComment.objects.create(
             writer=request.user,
             content=request.data["content"],
             contestCodeNote_id=pk,
-            codeNoteComment_id=request.data["debateComment"]
+            codeNoteComment_id=parent_codenoteComment_id
         )
-        serializer = DebateCommentSerializer(codeNoteComment)
+        serializer = CodeNoteCommentSerializer(codeNoteComment)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -313,6 +325,7 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
     def get_codeNoteComment(self, pk):
         try:
             codeNoteComment = CodeNoteComment.objects.get(pk=pk)
+            self.check_object_permissions(self.request, codeNoteComment)
             return codeNoteComment
         except codeNoteComment.DoesNotExist:
             return None
@@ -355,19 +368,27 @@ class VelogCommentViewWithVelogPK(APIView):
     permission_classes = [IsGetRequestOrAuthenticated]
 
     def get(self, request, pk):
-        velogComment = VelogComment.objects.filter(Velog_id=pk)
+        velogComment = VelogComment.objects.filter(velog_id=pk)
         serializer = VelogCommentSerializer(velogComment, many=True, context={'user': request.user})
         return Response(serializer.data)
 
     def post(self, request, pk):
-        if False:  # 로그인 인증 로직 필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
+        if 'velogComment' in request.data:
+            parent_velogComment_id = request.data['velogComment']
+            # 다른 debate에 달려 있는 velogComment에 대댓을 달지 못하게 하는 코드
+            parent_velogComment = get_object_or_404(VelogComment, pk=parent_velogComment_id)
+            if parent_velogComment.velogComment.id is not pk:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        else:
+            parent_velogComment_id = None
         velogComment = VelogComment.objects.create(
             writer=request.user,
             content=request.data["content"],
             velog_id=pk,
-            velogComment_id=request.data["velogComment"]
+            # VelogComment에 VelogComment가 대문자로 시작해서 이렇게 적음
+            # 나중에 모델 수정할 때 같이 고쳐야 함.
+            # 다민
+            VelogComment_id=parent_velogComment_id
         )
         serializer = VelogCommentSerializer(velogComment)
 
@@ -380,6 +401,7 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
     def get_velogComment(self, pk):
         try:
             velogComment = VelogComment.objects.get(pk=pk)
+            self.check_object_permissions(self.request, velogComment)
             return velogComment
         except velogComment.DoesNotExist:
             return None
@@ -418,109 +440,112 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
+# like 를 안 한 상태에서 like 를 하거나, 스크랩을 안 한 상태에서 scrap 을 하면 202_ACCEPTED
+# status 를 줘서 프론트엔드 단에서 구별할 수 있게 해 주었다.
+
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestDebateLike(request, pk):
     contestDebate = get_object_or_404(ContestDebate, pk=pk)
-    if request.user in contestDebate.likes:
+    if contestDebate.likes.filter(id=request.user.id).exists():
         contestDebate.likes.remove(request.user)
         return Response(status=status.HTTP_200_OK)
     else:
         contestDebate.likes.add(request.user)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestCodeNoteLike(request, pk):
-    contestCodeNote = get_object_or_404(ContestCodeNote, pk=pk)
-    if request.user in contestCodeNote.likes:
-        contestCodeNote.likes.remove(request.user)
+    contestCodenote = get_object_or_404(ContestCodeNote, pk=pk)
+    if contestCodenote.likes.filter(id=request.user.id).exists():
+        contestCodenote.likes.remove(request.user)
         return Response(status=status.HTTP_200_OK)
     else:
-        contestCodeNote.likes.add(request.user)
-        return Response(status=status.HTTP_200_OK)
+        contestCodenote.likes.add(request.user)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def VelogLike(request, pk):
     velog = get_object_or_404(Velog, pk=pk)
-    if request.user in velog.likes:
+    if velog.likes.filter(id=request.user.id).exists():
         velog.likes.remove(request.user)
         return Response(status=status.HTTP_200_OK)
     else:
         velog.likes.add(request.user)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestDebateScrap(request, pk):
     contestDebate = get_object_or_404(ContestDebate, pk=pk)
-    if contestDebate in request.user.customProfile.debateScraps:
-        request.user.customProfile.debateScraps.add(contestDebate)
-        return Response(status=status.HTTP_200_OK)
-    else:
+    if contestDebate.scrapProfiles.filter(id=request.user.customProfile.id).exists():
         request.user.customProfile.debateScraps.remove(contestDebate)
         return Response(status=status.HTTP_200_OK)
+    else:
+        request.user.customProfile.debateScraps.add(contestDebate)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
-def ContestCodeNoteScrap(request, pk):
-    contestCodeNote = get_object_or_404(ContestCodeNote, pk=pk)
-    if contestCodeNote in request.user.customProfile.debateScraps:
-        request.user.customProfile.debateScraps.add(contestCodeNote)
+def ContestCodenoteScrap(request, pk):
+    contestCodenote = get_object_or_404(ContestCodeNote, pk=pk)
+    if contestCodenote.scrapProfiles.filter(id=request.user.customProfile.id).exists():
+        request.user.customProfile.codeNoteScraps.remove(contestCodenote)
         return Response(status=status.HTTP_200_OK)
     else:
-        request.user.customProfile.debateScraps.remove(contestCodeNote)
-        return Response(status=status.HTTP_200_OK)
+        request.user.customProfile.codeNoteScraps.add(contestCodenote)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def VelogScrap(request, pk):
     velog = get_object_or_404(Velog, pk=pk)
-    if velog in request.user.customProfile.debateScraps:
-        request.user.customProfile.debateScraps.add(velog)
+    if velog.scrapProfiles.filter(id=request.user.customProfile.id).exists():
+        request.user.customProfile.velogScraps.remove(velog)
         return Response(status=status.HTTP_200_OK)
     else:
-        request.user.customProfile.debateScraps.remove(velog)
-        return Response(status=status.HTTP_200_OK)
+        request.user.customProfile.velogScraps.add(velog)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def DebateCommentLike(request, pk):
     debateComment = get_object_or_404(DebateComment, pk=pk)
-    if request.user in debateComment.likes:
+    if debateComment.likes.filter(id=request.user.id).exists():
         debateComment.likes.remove(request.user)
         return Response(status=status.HTTP_200_OK)
     else:
         debateComment.likes.add(request.user)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def CodeNoteCommentLike(request, pk):
     codeNoteComment = get_object_or_404(CodeNoteComment, pk=pk)
-    if request.user in codeNoteComment.likes:
+    if codeNoteComment.likes.filter(id=request.user.id).exists():
         codeNoteComment.likes.remove(request.user)
         return Response(status=status.HTTP_200_OK)
     else:
         codeNoteComment.likes.add(request.user)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def VelogCommentLike(request, pk):
-    velogComment = get_object_or_404(Velog, pk=pk)
-    if request.user in velogComment.likes:
+    velogComment = get_object_or_404(VelogComment, pk=pk)
+    if velogComment.likes.filter(id=request.user.id).exists():
         velogComment.likes.remove(request.user)
         return Response(status=status.HTTP_200_OK)
     else:
         velogComment.likes.add(request.user)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_202_ACCEPTED)
