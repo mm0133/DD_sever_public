@@ -16,7 +16,6 @@ from ..contests.models import Contest
 
 
 class ContestDebateView(APIView):
-
     def get(self, request):
         contestDebate = ContestDebate.objects.all()
         serializer = ContestDebatesSerializer(contestDebate, many=True, context={'user': request.user})

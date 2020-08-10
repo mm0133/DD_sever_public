@@ -86,11 +86,10 @@ class ContestUserAnswerSerializer(serializers.ModelSerializer):
         fields = ['id', 'contest', 'writer', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank', 'writerNickname']
         read_only_fields = ['createdAT', 'updatedAt', 'rank', 'writerNickname']
         extra_kwargs = {'contest': {'write_only': True},
-                        'writer': {'write_only': True},
-                        'file': {'write_only': True}}
+                        'writer': {'write_only': True}}
 
-        def get_writerNickname(self, obj):
-            if obj.writer:
-                return obj.writer.customProfile.nickname
-            return None
-        # accuracy
+    def get_writerNickname(self, obj):
+        if obj.writer:
+            return obj.writer.customProfile.nickname
+        return None
+

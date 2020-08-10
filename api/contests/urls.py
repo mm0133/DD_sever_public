@@ -7,8 +7,12 @@ urlpatterns = [
     path("contest/", views.ContestView.as_view()),
     path("contest/<int:pk>/", views.ContestViewWithPk.as_view()),
     path("contest/<int:pk>/scrap/", views.ContestScrap),
-    path("contestfile_contest_pk/<int:pk>/", views.ContestFileViewWithContestPK.as_view()),
+    path("contestfile_with_contest_pk/<int:pk>/", views.ContestFileViewWithContestPK.as_view()),
     path("contestfile_delete/<int:pk>/", views.DeleteContestFileWithPK),
-    path("contest_user_answer_contest_pk/<int:pk>/", views.ContestUserAnswerViewWithContestPK.as_view()),
-    path("contest_user_answer_pk/<int:pk>/", views.ContestFileViewWithContestPK.as_view()),
+    path("contestuseranswer_with_contest_pk/<int:pk>/", views.ContestUserAnswerViewWithContestPK.as_view()),
+    path("contestuseranswer/<int:pk>/", views.ContestUserAnswerViewWithPK.as_view()),
 ]
+
+
+
+
