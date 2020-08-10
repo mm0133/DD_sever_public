@@ -11,7 +11,10 @@ class App extends Component {
                 <Header/>
                 <Route exact path="/" component={Home}/>
                 <Route path="/contest" component={ContestList}/>
-                <Route path="/contest/:id" component={ContestDetail} />
+                <Route
+                    path="/contest/:id"
+                    render={() => <ContestDetail />}
+                />
             </div>
         );
     }
