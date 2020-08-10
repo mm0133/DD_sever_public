@@ -14,10 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
+from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_social_auth.views import SocialJWTPairOnlyAuthView, SocialJWTPairUserAuthView
+
+from api.users.customPipeline import social_signup_profile
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -28,6 +32,22 @@ urlpatterns = [
     path("api/v1/managements/", include("api.managements.urls")),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    path("login/social/profile/", social_signup_profile),
+
+    url(r'', include('social_django.urls', namespace='social')),
+    url(r'^api/login/', include('rest_social_auth.urls_jwt_pair')),
+
+
+    # returns token only
+    url(r'^social/jwt-pair/(?:(?P<provider>[a-zA-Z0-9_-]+)/?)?$',
+        SocialJWTPairOnlyAuthView.as_view(),
+        name='login_social_jwt_pair'),
+    # returns token + user_data
+    url(r'^social/jwt-pair-user/(?:(?P<provider>[a-zA-Z0-9_-]+)/?)?$',
+        SocialJWTPairUserAuthView.as_view(),
+        name='login_social_jwt_pair_user'),
+
 ]
 
 urlpatterns += \
