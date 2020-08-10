@@ -21,7 +21,7 @@ const Home = () => {
 
     return (
         <div>
-            {!contests ? <div>Error</div> :
+            {!contests ? <div>{null}</div> :
                 <div className="total-wrap">
                     <main-banner>
                         <div style={{zIndex: 1}}>
@@ -31,7 +31,7 @@ const Home = () => {
                                 <span>머신러닝을 원하는 모두</span>에게<br/>
                                 열린 공간입니다.
                             </div>
-                            <NavLink to="/contest/all" className="link">
+                            <NavLink to="/contest" className="link">
                                 <div className="button">
                                     <div className="overlay">단계별 대회 둘러보기</div>
                                 </div>
@@ -43,7 +43,7 @@ const Home = () => {
                                 <div className="title">스크랩한 대회</div>
                                 <div className="content">스크랩한 대회가 없습니다.</div>
                             </div>
-                            <NavLink to="/contest/all" className="link more-contest">+ 대회 둘러보기</NavLink>
+                            <NavLink to="/contest" className="link more-contest">+ 대회 둘러보기</NavLink>
                         </div>
                     </main-banner>
 
@@ -103,6 +103,7 @@ const Home = () => {
                                 <ContestSingle
                                     key={contest.id}
 
+                                    id={contest.id}
                                     title={contest.title}
                                     subtitle={contest.subtitle}
                                     createdAt={contest.createdAt}
