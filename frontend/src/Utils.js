@@ -1,9 +1,12 @@
-// 2020-08-29T00:00:00+09:00
+import axios from "axios";
+
+
 export const getDDay = (deadline) => {
+    // 2020-08-29T00:00:00+09:00
     const dDayArray = deadline.substring(0, 10).split("-").map(day => Number(day));
 
     const [year, month, date] = dDayArray;
-    const dDay = new Date(year, month-1, date);
+    const dDay = new Date(year, month - 1, date);
     let now = new Date();
     let gap = now.getTime() - dDay.getTime();
 
