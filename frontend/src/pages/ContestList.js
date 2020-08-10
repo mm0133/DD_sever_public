@@ -1,54 +1,76 @@
-import React, {useState, useEffect} from "react";
-import axios from "axios";
+import React, {useEffect, useState} from "react";
+import {NavLink, Route} from "react-router-dom";
+import {getContests} from "../Api";
 import ContestSingle from "../components/ContestSingle";
+import axios from "axios";
+import useAsync from "../UseAsync";
+
 
 const ContestList = () => {
-    const [contests, setContest] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [state, refetch] = useAsync(getContests, []);
+    const {data: contests} = state;
 
-    useEffect(() => {
-        const fetchContests = async () => {
-            try {
-                setContest(null);
-                setError(null);
-                setLoading(true);
+    let filter = contests ? contests : null;
+    console.log(filter);
 
-                const response = await axios.get("api/v1/contests/contest/");
-                setContest(response.data);
-            } catch (e) {
-                setError(e);
-            }
-            setLoading(false);
-        }
-        fetchContests();
-    }, [])
-
-    if (loading) return <div>"로딩중입니다"</div>
-    if (error) return <div>에러가 발생했습니다.</div>
-    if (!contests) return null;
+    const getContestForTraining = () => {
+        filter = contests ? contests.filter(contest => contest.isForTraining) : null;
+    }
+    const getContestNotForTraining = () => {
+        filter = contests ? contests.filter(contest => !contest.isForTraining) : null;
+        console.log(filter);
+    }
 
     return (
         <div>
-            {contests.map(contest =>
-                <ContestSingle
-                    key={contest.id}
-                    title={contest.title}
-                    createdAt={contest.createdAt}
-                    updatedAt={contest.updatedAt}
-                    deadline={contest.deadline}
-                    profileThumb={contest.profileThumb}
-                    timeline={contest.timeline}
-                    prize={contest.prize}
-                    isForTraining={contest.isForTraining}
-                    difficulty={contest.difficulty}
-                    evaluationMethod={contest.evaluationMethod}
-                    learningModel={contest.learningModel}
+            {!contests ? <div>{null}</div> :
+                <div className="total-wrap">
+                    <main-banner>
+                        <div className="title">대회 Contest</div>
+                        <div className="subtitle">머신러닝을 원하는 모두를 위한 대회입니다.</div>
+                    </main-banner>
 
-                    isScrapped={contest.isScrapped}
-                    scrapNums={contest.scrapNums}
-                    isFinished={contest.isFinished}
-                />)
+                    <nav>
+                        <div className="button-list">
+                            <div className="button">전체</div>
+                            <button className="button" onClick={getContestNotForTraining}>실전 대회</button>
+                            <div className="button">연습 대회</div>
+                        </div>
+
+                        <div className="tag-list">
+                            <div className="tag">초급</div>
+                            <div className="tag">중급</div>
+                            <div className="tag">고급</div>
+                        </div>
+                    </nav>
+
+                    <contest>
+                        <div>
+                            {filter.map(contest =>
+                                <ContestSingle
+                                    key={contest.id}
+
+                                    title={contest.title}
+                                    subtitle={contest.subtitle}
+                                    createdAt={contest.createdAt}
+                                    updatedAt={contest.updatedAt}
+                                    deadline={contest.deadline}
+                                    profileThumb={contest.profileThumb}
+                                    timeline={contest.timeline}
+                                    prize={contest.prize}
+                                    isForTraining={contest.isForTraining}
+                                    difficulty={contest.difficulty}
+                                    evaluationMethod={contest.evaluationMethod}
+                                    learningModel={contest.learningModel}
+
+                                    isScrapped={contest.isScrapped}
+                                    scrapNums={contest.scrapNums}
+                                    isFinished={contest.isFinished}
+                                />)
+                            }
+                        </div>
+                    </contest>
+                </div>
             }
         </div>
     );
