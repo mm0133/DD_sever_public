@@ -1,11 +1,7 @@
 {
     "_meta": {
         "hash": {
-<<<<<<< HEAD
-            "sha256": "8c5690ef964329048c563f0d81bc9cda24b7be234432f4105f28caf0013befc2"
-=======
-            "sha256": "aecadcc7021a40be2d51ebee85fd10be8e6280e33f32398b1eeeb145468f8e0a"
->>>>>>> d09e6b72b081164d5446f9432ad8b99bacb09129
+            "sha256": "6bedc9cbda8d0893d10d7d8952ab0a52e59cc4e652699defb578f7c9ec79690f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -128,18 +124,6 @@
                 "sha256:6dd02d5a4bd2516fb93f80360673bf540c3b6641fec8766b1da2870a5aa00b32",
                 "sha256:8b1ac62c581dbc5799b03e535854b92fc4053ecfe74bad3f9c05782063d4196b"
             ],
-<<<<<<< HEAD
-            "markers": "python_version >= '3.5'",
-            "version": "==3.11.1"
-        },
-        "idna": {
-            "hashes": [
-                "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6",
-                "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"
-            ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==2.10"
-=======
             "index": "pypi",
             "version": "==3.11.1"
         },
@@ -158,7 +142,14 @@
             ],
             "index": "pypi",
             "version": "==4.4.0"
->>>>>>> d09e6b72b081164d5446f9432ad8b99bacb09129
+        },
+        "idna": {
+            "hashes": [
+                "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6",
+                "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==2.10"
         },
         "mysqlclient": {
             "hashes": [
@@ -217,7 +208,6 @@
             "index": "pypi",
             "version": "==7.2.0"
         },
-<<<<<<< HEAD
         "pycparser": {
             "hashes": [
                 "sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0",
@@ -226,8 +216,6 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==2.20"
         },
-=======
->>>>>>> d09e6b72b081164d5446f9432ad8b99bacb09129
         "pyjwt": {
             "hashes": [
                 "sha256:5c6eca3c2940464d106b99ba83b00c6add741c9becaec087fb7ccdefea71350e",
@@ -235,7 +223,6 @@
             ],
             "version": "==1.7.1"
         },
-<<<<<<< HEAD
         "python3-openid": {
             "hashes": [
                 "sha256:33fbf6928f401e0b790151ed2b5290b02545e8775f982485205a066f874aaeaf",
@@ -244,8 +231,6 @@
             "markers": "python_version >= '3.0'",
             "version": "==3.2.0"
         },
-=======
->>>>>>> d09e6b72b081164d5446f9432ad8b99bacb09129
         "pytz": {
             "hashes": [
                 "sha256:a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed",
@@ -282,7 +267,7 @@
                 "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
                 "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==1.15.0"
         },
         "social-auth-app-django": {
