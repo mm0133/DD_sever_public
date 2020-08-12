@@ -3,8 +3,8 @@ from . import views
 app_name = "users"
 
 urlpatterns = [
+    path("myPage/", views.get_myPage),  # get
     path("profile/<str:nickname>/", views.get_Profile), #get
-    path("myPage/", views.get_myPage),#get
     path("my_profile/", views.CustomProfileView.as_view()), #get, post(처음에만), put
     path("user_teams/<str:nickname>/", views.get_teams),#get
     path("teams/",views.post_team),#post

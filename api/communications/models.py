@@ -137,6 +137,6 @@ class VelogComment(models.Model):
     )
 
     # 대댓글(재귀)
-    VelogComment = models.ForeignKey(
+    velogComment = models.ForeignKey(
         "self", on_delete=models.SET_NULL, null=True, blank=True
     )

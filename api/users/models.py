@@ -11,12 +11,12 @@ from imagekit.processors import Thumbnail
 class CustomProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
     image = ProcessedImageField(null=True, blank=True,
-                                     upload_to=user_profile_image_path,
-                                     processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
-                                     format='JPEG',  # 최종 저장 포맷
-                                     options={'quality': 60},
-                                     # default="default.png",
-                                     )
+                                upload_to=user_profile_image_path,
+                                processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
+                                format='JPEG',  # 최종 저장 포맷
+                                options={'quality': 60},
+                                # default="default.png",
+                                )
     smallImage = ProcessedImageField(null=True, blank=True,
                                      upload_to=user_profile_image_path,
                                      processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
@@ -32,17 +32,17 @@ class CustomProfile(models.Model):
     # json으로 어떤 대회에서(id값이 key가 된다) 어떤 rank(1~5)를 들고 있는지 기록해둔다.
     contestRankDictionary = models.TextField(default="{}")
 
-    contestScrpas = models.ManyToManyField(Contest, related_name="scrapProfiles", blank=True)
+    contestScraps = models.ManyToManyField(Contest, related_name="scrapProfiles", blank=True)
     debateScraps = models.ManyToManyField(ContestDebate, related_name="scrapProfiles", blank=True)
     codeNoteScraps = models.ManyToManyField(ContestCodeNote, related_name="scrapProfiles", blank=True)
     velogScraps = models.ManyToManyField(Velog, related_name="scrapProfiles", blank=True)
     createdAT = models.DateTimeField(auto_now_add=True)
     updatedAT = models.DateTimeField(auto_now=True)
 
-    isRealNameAuthenticated= models.BooleanField(default=False)
-    isConsentingEmail=models.BooleanField(default=False)
-    isConsentingSMS=models.BooleanField(default=False)
-    lecturePackages=models.ManyToManyField(LecturePackage)
+    isRealNameAuthenticated = models.BooleanField(default=False)
+    isConsentingEmail = models.BooleanField(default=False)
+    isConsentingSMS = models.BooleanField(default=False)
+    lecturePackages = models.ManyToManyField(LecturePackage)
 
     def __str__(self):
         return f"{self.user.username} Profile"
@@ -51,28 +51,28 @@ class CustomProfile(models.Model):
         return ContestUserAnswer.objects.filter(writer=self.user).order_by("-createdAt")
 
     def myContestsNow(self):
-        myContests = ContestUserAnswer.objects.filter(writer=self.user).order_by(
+        myContestAnswers = ContestUserAnswer.objects.filter(writer=self.user).order_by(
             "-createdAt"
         )
         returnList = []
-        for contest in myContests:
-            if not contest.isFinished:
-                returnList.append(contest)
+        for contestAnswer in myContestAnswers:
+            if not contestAnswer.contest.isFinished:
+                returnList.append(contestAnswer.contest)
         return returnList
 
     def myContestsFinished(self):
-        myContests = ContestUserAnswer.objects.filter(writer=self.user).order_by(
+        myContestAnswers = ContestUserAnswer.objects.filter(writer=self.user).order_by(
             "-createdAt"
         )
         returnList = []
-        for contest in myContests:
-            if contest.isFinished:
-                returnList.append(contest)
+        for contestAnswer in myContestAnswers:
+            if contestAnswer.contest.isFinished:
+                returnList.append(contestAnswer.contest)
         return returnList
 
 
 class Team(models.Model):
-    name= models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     createdAT = models.DateTimeField(auto_now_add=True)
     updatedAT = models.DateTimeField(auto_now=True)
     smallImage = ProcessedImageField(null=True, blank=True,
@@ -83,7 +83,8 @@ class Team(models.Model):
                                      # default="default.png",
                                      )
 
-    representative = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='representingTeam')#delete 조심히 할것
-    members = models.ManyToManyField(User,related_name='teams')
+    representative = models.ForeignKey(User, null=True, on_delete=models.CASCADE,
+                                       related_name='representingTeam')  # delete 조심히 할것
+    members = models.ManyToManyField(User, related_name='teams')
 
-    get_anotheruser=lambda mem:mem[0]
+    get_anotheruser = lambda mem: mem[0]
