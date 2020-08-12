@@ -6,9 +6,9 @@ from api.users.models import CustomProfile
 
 
 @partial
-def require_profile(strategy, details, user=None, *args, **kwargs):
+def require_profile_data(strategy, details, user=None, *args, **kwargs):
     if not user:
-        if 'password' in kwargs['request'].session:
+        if 'nickname' in kwargs['request'].session:
             return {'email': kwargs['request'].session['email'],
                     'nickname': kwargs['request'].session['nickname'],
                     'phoneNumber': kwargs['request'].session['phoneNumber']}
@@ -29,7 +29,7 @@ def social_signup_profile(request):
 
 
 
-@partial
+
 def create_CustomProfile(backend, user, response, is_new=False, *args, **kwargs):
     if is_new:
         CustomProfile.objects.create(
@@ -38,3 +38,6 @@ def create_CustomProfile(backend, user, response, is_new=False, *args, **kwargs)
             nickname=kwargs.get('nickname'),
             phoneNumber=kwargs.get('phoneNumber'),
         )
+        return
+    else:
+        return
