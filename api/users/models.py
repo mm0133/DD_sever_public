@@ -3,7 +3,7 @@ from api.communications.models import ContestCodeNote, ContestDebate, Velog
 from api.contests.models import Contest, ContestUserAnswer
 from api.contests.utils import user_profile_image_path
 from django.contrib.auth.models import User
-
+from api.educations.models import LecturePackage
 from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
 
@@ -39,6 +39,11 @@ class CustomProfile(models.Model):
     createdAT = models.DateTimeField(auto_now_add=True)
     updatedAT = models.DateTimeField(auto_now=True)
 
+    isRealNameAuthenticated= models.BooleanField(default=False)
+    isConsentingEmail=models.BooleanField(default=False)
+    isConsentingSMS=models.BooleanField(default=False)
+    lecturePackages=models.ManyToManyField(LecturePackage)
+
     def __str__(self):
         return f"{self.user.username} Profile"
 
@@ -64,3 +69,21 @@ class CustomProfile(models.Model):
             if contest.isFinished:
                 returnList.append(contest)
         return returnList
+
+
+class Team(models.Model):
+    name= models.CharField(max_length=255)
+    createdAT = models.DateTimeField(auto_now_add=True)
+    updatedAT = models.DateTimeField(auto_now=True)
+    smallImage = ProcessedImageField(null=True, blank=True,
+                                     upload_to=user_profile_image_path,
+                                     processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
+                                     format='JPEG',  # 최종 저장 포맷
+                                     options={'quality': 60},
+                                     # default="default.png",
+                                     )
+
+    representative = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='representingTeam')#delete 조심히 할것
+    members = models.ManyToManyField(User,related_name='teams')
+
+    get_anotheruser=lambda mem:mem[0]

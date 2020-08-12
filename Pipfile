@@ -19,7 +19,7 @@ social-auth-core = "*"
 social-auth-app-django = "*"
 
 djangorestframework = "*"
-djangorestframework-jwt = "*"
+djangorestframewgitork-jwt = "*"
 djangorestframework-simplejwt = "*"
 
 [requires]

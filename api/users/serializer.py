@@ -1,8 +1,9 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from api.communications.models import ContestDebate, ContestCodeNote
 from api.communications.serializers import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
-from api.users.models import CustomProfile
+from api.users.models import CustomProfile, Team
 
 
 class MyCustomProfileSerializer(serializers.ModelSerializer):
@@ -16,10 +17,11 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
     debateScraps = serializers.SerializerMethodField()
     codeNoteScraps = serializers.SerializerMethodField()
     velogScraps = serializers.SerializerMethodField()
-
+    teams = serializers.SerializerMethodField()
     class Meta:
         model = CustomProfile
-        fields = ['image', 'user', 'nickname', 'contestRankDictionary', ]
+        fields = ['image', 'user', 'nickname', 'contestRankDictionary', 'myContestsNow', 'myContestsFinished',
+                  'contestDebates', 'contestCodeNotes', 'velogs', 'contestScraps', 'debateScraps', 'codeNoteScraps', 'velogScraps','teams']
 
     def get_myContestsNow(self, obj):
         list = []
@@ -92,17 +94,20 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
             return list
         return None
 
+    def get_teams(self, obj):
+        teams=obj.teams
+        serializer = TeamsSerializer(teams, many=True)
+        return serializer.data
+
+
 
 class CustomProfileSerializer(serializers.ModelSerializer):
-    isProfileMine = serializers.SerializerMethodField()
+
     velogs = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomProfile
-        fields = ['Image', 'nickname', 'contestRankDictionary']
-
-    def get_isProfileMine(self, obj):
-        return self.context.user == obj.user
+        fields = ['Image', 'nickname', 'contestRankDictionary','isProfileMine']
 
     def get_velogs(self, obj):
         velogs = ContestCodeNote.objects.filter(writer=obj.user)
@@ -122,3 +127,37 @@ class CustomProfileSerializerForPut(serializers.ModelSerializer):
     class Meta:
         model = CustomProfile
         fields = ['nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email']
+
+
+class MemberSerializer(serializers.ModelSerializer):
+    nickname = serializers.SerializerMethodField()
+    smallImage = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['nickname', 'smallImage']
+
+    def get_nickname(self, obj):
+        return obj.customProfile.nickname
+
+    def get_smallImage(self, obj):
+        return obj.customProfile.smallImage
+
+
+class TeamsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ['id', 'name', 'representative', 'smallImage']
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    members = serializers.SerializerMethodField()
+    isRepresentative = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Team
+        fields = ['id', 'name', 'representative', 'members', 'smallImage', 'createdAt', 'isRepresentative']
+
+    def get_members(self, obj):
+        membersQueryset = obj.members.all()
+        return MemberSerializer(membersQueryset, many=True).data
