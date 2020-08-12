@@ -107,7 +107,7 @@ class CustomProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomProfile
-        fields = ['Image', 'nickname', 'contestRankDictionary','isProfileMine']
+        fields = ['Image', 'nickname', 'contestRankDictionary','velogs']
 
     def get_velogs(self, obj):
         velogs = ContestCodeNote.objects.filter(writer=obj.user)

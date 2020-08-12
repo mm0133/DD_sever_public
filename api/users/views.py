@@ -137,7 +137,9 @@ def member_add(request, teamName):
         team.members.add(member)
         return Response(status=status.HTTP_200_OK)
     return Response(status=status.HTTP_401_UNAUTHORIZED)
-
+# {
+#     "memberNickname":"nickname"
+# }
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
@@ -154,9 +156,12 @@ def member_delete(request, teamName):
             if team.members.exclude(id=request.user.id):
                 team.representative = team.members.exclude(id=request.user.id)[0]
                 team.save()
+                team.members.remove(member)
             else:
                 team.delete()
-        team.members.remove(member)
+        else:
+            team.members.remove(member)
+
         return Response(status=status.HTTP_200_OK)
     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -181,13 +186,14 @@ def change_representative(request, teamName):
 @permission_classes([permissions.IsAuthenticated])
 def delete_user(request):
     teams = Team.objects.filter(representative=request.user)
-    for team in teams:
-        otherMembers = team.members.exclude(id=request.user.id)
-        if otherMembers:
-            team.representative = otherMembers[0]
-            team.save()
-        else:
-            team.delete()
+    if teams:
+        for team in teams:
+            otherMembers = team.members.exclude(id=request.user.id)
+            if otherMembers:
+                team.representative = otherMembers[0]
+                team.save()
+            else:
+                team.delete()
     request.user.delete()
     return Response(status=status.HTTP_200_OK)
 
