@@ -3,6 +3,11 @@ from . import views
 app_name = "educations"
 
 urlpatterns = [
-    path("eduvideolectures/", views.EduVideoLectureView.as_view()),
-    path("eduvideolectures/<int:pk>/", views.EduVideoLectureViewWithPk.as_view()),
+    path("lecturepackage/", views.LecturePackageView.as_view()),
+    path("lecturepackage/<int:pk>/", views.LecturePackageViewWithPk.as_view()),
+    path("eduvideolecture_with_package_pk/<int:pk>/",
+         views.EduVideoLectureViewWithPackagePK.as_view()),
+    path("eduvideolecture/<int:pk>/",
+         views.EduVideoLectureViewWithVideoPk.as_view()),
 ]
+

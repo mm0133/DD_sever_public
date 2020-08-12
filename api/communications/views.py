@@ -62,9 +62,6 @@ class ContestDebateViewWithPk(APIView):
         if contestDebate == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if False:  # request.user == self.writer  or 관리자
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = ContestDebateSerializer(contestDebate, data=request.data, partial=True)
         if serializer.is_valid():  # validate 로직 추가
             contestDebate = serializer.save()
@@ -76,11 +73,8 @@ class ContestDebateViewWithPk(APIView):
         contestDebate = self.get_contestDebate(pk)
         if contestDebate == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # request.user == self.writer  or 관리자
-            contestDebate.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        contestDebate.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 class ContestCodeNoteView(APIView):
@@ -130,9 +124,6 @@ class ContestCodeNoteViewWithPk(APIView):
         if contestCodeNote == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if False:  # request.user == self.writer  or 관리자
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = ContestCodeNoteSerializer(contestCodeNote, data=request.data, partial=True)
         if serializer.is_valid():  # validate 로직 검토
             contestCodeNote = serializer.save()
@@ -144,11 +135,8 @@ class ContestCodeNoteViewWithPk(APIView):
         contestCodeNote = self.get_contestCodeNote(pk)
         if contestCodeNote == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # request.user == self.writer  or 관리자
-            contestCodeNote.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        contestCodeNote.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 class VelogView(APIView):
@@ -192,9 +180,6 @@ class VelogViewWithPk(APIView):
         if velog == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if False:  # request.user == self.writer  or 관리자
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = VelogSerializer(velog, data=request.data, partial=True)
         if serializer.is_valid():  # validate 로직 추가
             velog = serializer.save()
@@ -206,11 +191,8 @@ class VelogViewWithPk(APIView):
         velog = self.get_velog(pk)
         if velog == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # request.user == self.writer  or 관리자
-            velog.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        velog.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 # Debate pk에 따라 달린 댓글들을 보낼예정 대댓글은 안보냄, 댓글생성시이용
@@ -269,9 +251,6 @@ class DebateCommentViewWithPK(APIView):
         if debateComment == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if False:  # request.user == self.writer  or 관리자
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = DebateCommentSerializer(debateComment, data=request.data, partial=True, )
         if serializer.is_valid():  # validate 로직 추가
             debateComment = serializer.save()
@@ -283,11 +262,8 @@ class DebateCommentViewWithPK(APIView):
         debateComment = self.get_debateComment(pk)
         if debateComment == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # request.user == self.writer  or 관리자
-            debateComment.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        debateComment.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 class CodeNoteCommentViewWithCodeNotePK(APIView):
@@ -343,9 +319,6 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
         if codeNoteComment == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if False:  # request.user == self.writer  or 관리자
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = CodeNoteCommentSerializer(codeNoteComment, data=request.data, partial=True, )
         if serializer.is_valid():  # validate 로직 추가
             codeNoteComment = serializer.save()
@@ -357,11 +330,8 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
         codeNoteComment = self.get_codeNoteComment(pk)
         if codeNoteComment == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # request.user == self.writer  or 관리자
-            codeNoteComment.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        codeNoteComment.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 class VelogCommentViewWithVelogPK(APIView):
@@ -419,9 +389,6 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
         if velogComment == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if False:  # request.user == self.writer  or 관리자
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = VelogCommentSerializer(velogComment, data=request.data, partial=True, )
         if serializer.is_valid():  # validate 로직 추가
             velogComment = serializer.save()
@@ -433,11 +400,8 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
         velogComment = self.get_velogComment(pk)
         if velogComment == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # request.user == self.writer  or 관리자
-            velogComment.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        velogComment.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 # like 를 안 한 상태에서 like 를 하거나, 스크랩을 안 한 상태에서 scrap 을 하면 202_ACCEPTED

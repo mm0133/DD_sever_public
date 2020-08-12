@@ -3,33 +3,77 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from config.customPermissions import IsGetRequestOrAdminUser
-from .models import EduVideoLecture
-from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer
+from .models import EduVideoLecture, LecturePackage
+from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer
 
 
-class EduVideoLectureView(APIView):
+class LecturePackageView(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
     def get(self, request):
-        lecture = EduVideoLecture.objects.all()
-        serializer = EduVideoLecturesSerializer(lecture, many=True).data
+        lecture = LecturePackage.objects.all()
+        serializer = LecturePackageSerializer(lecture, many=True).data
         return Response(serializer)
 
     def post(self, request):
-        if False:  # 관리자 로직 추가 필요
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        serializer = LecturePackageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(writer=request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-        if True:  # validation 추가
-            serializer = EduVideoLectureSerializer(data=request.data)
-            if serializer.is_valid():  # validation 로직 손보기
-                serializer.save(writer=request.user)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+class LecturePackageViewWithPk(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
+
+    def get_lecturePackage(self, pk):
+        try:
+            lecturePackage = LecturePackage.objects.get(pk=pk)
+            return lecturePackage
+        except lecturePackage.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+
+        lecturePackage = self.get_lecturePackage(pk)
+        if lecturePackage == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = LecturePackageSerializer(lecturePackage)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        lecturePackage = self.get_lecturePackage(pk)
+        if lecturePackage == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = LecturePackageSerializer(lecturePackage, data=request.data, partial=True)
+        if serializer.is_valid():
+            lecturePackage = serializer.save()
+            return Response(LecturePackageSerializer(lecturePackage).data)
         else:
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        videolecture = self.get_lecturePackage(pk)
+        videolecture.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
-class EduVideoLectureViewWithPk(APIView):
+class EduVideoLectureViewWithPackagePK(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
+
+    def get(self, request, pk):
+        videoLectures = EduVideoLecture.objects.filter(lecturePackage_id=pk)
+        serializer = EduVideoLecturesSerializer(videoLectures, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        serializer = EduVideoLectureSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(writer=request.user, lecturePackage_id=pk)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class EduVideoLectureViewWithVideoPk(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
     def get_videoLecture(self, pk):
@@ -43,20 +87,13 @@ class EduVideoLectureViewWithPk(APIView):
         videoLecture = self.get_videoLecture(pk)
         if videoLecture == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # 로그인 로직 추가 필요
-            serializer = EduVideoLectureSerializer(videoLecture).data
-            return Response(serializer)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = EduVideoLectureSerializer(videoLecture).data
+        return Response(serializer)
 
-    # update
     def put(self, request, pk):
         videoLecture = self.get_videoLecture(pk)
         if videoLecture == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        if False:  # 관리자 권한
-            return Response(status=status.HTTP_403_FORBIDDEN)
 
         serializer = EduVideoLectureSerializer(videoLecture, data=request.data, partial=True)
         if serializer.is_valid():  # validate 로직 추가
@@ -67,12 +104,5 @@ class EduVideoLectureViewWithPk(APIView):
 
     def delete(self, request, pk):
         videolecture = self.get_videoLecture(pk)
-        if False:  # videolecture.user != request.user: #관리자 로직 로그인 추가 필요
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        if True:  # 관리자 로직
-            videolecture.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-
+        videolecture.delete()
+        return Response(status=status.HTTP_200_OK)

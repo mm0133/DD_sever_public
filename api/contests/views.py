@@ -26,7 +26,7 @@ class ContestView(APIView):
         if serializer.is_valid():  # validation 로직 손보기
             # writer가 null=True이기 때문에 프론트에서 넣어주지 않아도 .is_valid에서 에러가 나지 않는다.
             # 그래서 밑에서 witer로 넣어주는 것이다.
-            serializer.save()  # 일단 임시로 안 넣어줌. # 로그인 안하면 지금 오류남
+            serializer.save(writer=request.user)  # 일단 임시로 안 넣어줌. # 로그인 안하면 지금 오류남
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -56,9 +56,6 @@ class ContestViewWithPk(APIView):
         if contest == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if False:  # 관리자가 아니면
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = ContestSerializer(contest, data=request.data, partial=True, context={'user': request.user})
         if serializer.is_valid():  # validate 로직 검토
             contest = serializer.save()
@@ -70,11 +67,9 @@ class ContestViewWithPk(APIView):
         contest = self.get_contest(pk)
         if contest == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # 관리자면
-            contest.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        contest.delete()
+        return Response(status=status.HTTP_200_OK)
+
 
 
 class ContestFileViewWithContestPK(APIView):
@@ -184,11 +179,8 @@ class ContestUserAnswerViewWithPK(APIView):
         contestUserAnswer = self.get_contestUserAnswer(pk)
         if contestUserAnswer == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if True:  # request.user == contestUserAnswer.writer  or 관리자
-            contestUserAnswer.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        contestUserAnswer.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 @permission_classes([permissions.IsAuthenticated])
