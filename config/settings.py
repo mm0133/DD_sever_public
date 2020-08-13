@@ -26,7 +26,7 @@ SECRET_KEY = "$c(@dpj2jqn7q+p8zi#qux_9^=nr+(!ms@6xr3_p)8goeu_4mq"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -47,9 +47,11 @@ INSTALLED_APPS = [
 
     "rest_framework",
 
-    #social login
+    # social login
     'social_django',  # django social auth
     'rest_social_auth',
+
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -60,6 +62,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -107,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
 TIME_ZONE = "Asia/Seoul"
 
@@ -122,17 +125,12 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-
 # 파일 저장경로 관리
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static') #개발자가 관리하는 파일들
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # 개발자가 관리하는 파일들
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #사용자가 업로드한 파일 관리
-
-
-
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 사용자가 업로드한 파일 관리
 
 from . import my_settings
 
@@ -150,12 +148,10 @@ REST_FRAMEWORK = {
     )
 }
 
+# authentication
+SIMPLE_JWT = my_settings.SIMPLE_JWT
 
-#authentication
-SIMPLE_JWT=my_settings.SIMPLE_JWT
-
-
-#social login
+# social login
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.naver.NaverOAuth2',
@@ -163,7 +159,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
 )
 
-REST_SOCIAL_OAUTH_REDIRECT_URI='/'
+REST_SOCIAL_OAUTH_REDIRECT_URI = '/'
 REST_SOCIAL_DOMAIN_FROM_ORIGIN = False
 
 # SOCIAL_AUTH_GITHUB_KEY = 'a1b2c3d4'
@@ -175,7 +171,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
 )
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '468545293049-p195m8hbli0ss99614cb2siqf4rgt04k.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', ]
-
 
 # SOCIAL_AUTH_NAVER_KEY = ''
 # SOCIAL_AUTH_NAVER_SECRET = ''
@@ -196,3 +191,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True

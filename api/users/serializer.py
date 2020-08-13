@@ -1,7 +1,10 @@
+from encodings.utf_8 import encode
+from encodings.utf_8_sig import decode
+
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from api.communications.models import ContestDebate, ContestCodeNote
+from api.communications.models import ContestDebate, ContestCodeNote, Velog
 from api.communications.serializers import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
 from api.users.models import CustomProfile, Team
 
@@ -52,7 +55,7 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
 
     def get_velogs(self, obj):
 
-        velogs = ContestCodeNote.objects.filter(writer=obj.user)
+        velogs = Velog.objects.filter(writer=obj.user)
         serializer = VelogsSerializer(velogs, many=True)
 
         return serializer.data
@@ -108,10 +111,10 @@ class CustomProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomProfile
-        fields = ['Image', 'nickname', 'contestRankDictionary', 'velogs']
+        fields = ['image', 'nickname', 'contestRankDictionary', 'velogs']
 
     def get_velogs(self, obj):
-        velogs = ContestCodeNote.objects.filter(writer=obj.user)
+        velogs = Velog.objects.filter(writer=obj.user)
         serializer = VelogsSerializer(velogs, many=True)
 
         return serializer.data
@@ -120,14 +123,14 @@ class CustomProfileSerializer(serializers.ModelSerializer):
 class CustomProfileSerializerForOwner(serializers.ModelSerializer):
     class Meta:
         model = CustomProfile
-        fields = ['Image', 'nickname', 'user', 'phoneNumber', 'email']
+        fields = ['image', 'nickname', 'user', 'phoneNumber', 'email']
         read_only_fields = ['user', 'email', 'phoneNumber']  # 현재 read only 핗요없긴함 혹시몰라남김
 
 
 class CustomProfileSerializerForPut(serializers.ModelSerializer):
     class Meta:
         model = CustomProfile
-        fields = ['nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email']
+        fields = ['nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email', 'image']
 
 
 class MemberSerializer(serializers.ModelSerializer):
@@ -136,7 +139,7 @@ class MemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['nickname', 'smallImage']
+        fields = ['nickname']
 
     def get_nickname(self, obj):
         return obj.customProfile.nickname
@@ -160,5 +163,9 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'representative', 'members', 'smallImage', 'createdAt', 'isRepresentative']
 
     def get_members(self, obj):
-        membersQueryset = obj.members.all()
-        return MemberSerializer(membersQueryset, many=True).data
+        members = obj.members.all()
+        return MemberSerializer(members, many=True).data
+
+    def get_isRepresentative(self, obj):
+        user = self.context.get("user")
+        return user == obj.representative

@@ -1,7 +1,7 @@
 from django.db import models
 from api.communications.models import ContestCodeNote, ContestDebate, Velog
 from api.contests.models import Contest, ContestUserAnswer
-from api.contests.utils import user_profile_image_path
+from api.contests.utils import user_profile_image_path, team_profile_image_path
 from django.contrib.auth.models import User
 from api.educations.models import LecturePackage
 from imagekit.models import ProcessedImageField
@@ -12,22 +12,22 @@ class CustomProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
     image = ProcessedImageField(null=True, blank=True,
                                 upload_to=user_profile_image_path,
-                                processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
-                                format='JPEG',  # 최종 저장 포맷
+                                processors=[Thumbnail(256, 256)],
+                                format='JPEG',
                                 options={'quality': 60},
-                                # default="default.png",
+                                default="user_5/profile",
                                 )
     smallImage = ProcessedImageField(null=True, blank=True,
                                      upload_to=user_profile_image_path,
-                                     processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
-                                     format='JPEG',  # 최종 저장 포맷
+                                     processors=[Thumbnail(64, 64)],
+                                     format='JPEG',
                                      options={'quality': 60},
-                                     # default="default.png",
+                                     default="user_5/profile",
                                      )
 
     email = models.EmailField()
-    phoneNumber = models.CharField(max_length=11, null=True, blank=True)
-    nickname = models.CharField(max_length=255, null=True, blank=True)
+    phoneNumber = models.CharField(max_length=11)
+    nickname = models.CharField(max_length=255)
 
     # json으로 어떤 대회에서(id값이 key가 된다) 어떤 rank(1~5)를 들고 있는지 기록해둔다.
     contestRankDictionary = models.TextField(default="{}")
@@ -42,7 +42,7 @@ class CustomProfile(models.Model):
     isRealNameAuthenticated = models.BooleanField(default=False)
     isConsentingEmail = models.BooleanField(default=False)
     isConsentingSMS = models.BooleanField(default=False)
-    lecturePackages = models.ManyToManyField(LecturePackage)
+    lecturePackages = models.ManyToManyField(LecturePackage, blank=True)
 
     def __str__(self):
         return f"{self.user.username} Profile"
@@ -73,18 +73,16 @@ class CustomProfile(models.Model):
 
 class Team(models.Model):
     name = models.CharField(max_length=255)
-    createdAT = models.DateTimeField(auto_now_add=True)
-    updatedAT = models.DateTimeField(auto_now=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
     smallImage = ProcessedImageField(null=True, blank=True,
-                                     upload_to=user_profile_image_path,
+                                     upload_to=team_profile_image_path,
                                      processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
                                      format='JPEG',  # 최종 저장 포맷
                                      options={'quality': 60},
-                                     # default="default.png",
+                                     default="user_6/profile",
                                      )
 
     representative = models.ForeignKey(User, null=True, on_delete=models.CASCADE,
                                        related_name='representingTeam')  # delete 조심히 할것
     members = models.ManyToManyField(User, related_name='teams')
-
-    get_anotheruser = lambda mem: mem[0]

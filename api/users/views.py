@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -7,69 +8,67 @@ from rest_framework.views import APIView
 from api.users.models import CustomProfile, Team
 from api.users.serializer import CustomProfileSerializer, CustomProfileSerializerForOwner, \
     CustomProfileSerializerForPut, MyCustomProfileSerializer, TeamsSerializer, TeamSerializer
-
-
-@api_view(['GET'])
-def get_Profile(request, nickname):
-    profile = CustomProfile.objects.get(nickname=nickname)
-    serializer = CustomProfileSerializer(profile, context={"user": request.user})
-    return Response(serializer.data)
+from config.customExceptions import DDCustomException, get_value_or_error
+from annoying.functions import get_object_or_None
 
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_myPage(request):
     profile = CustomProfile.objects.get(user=request.user)
-    serializer = MyCustomProfileSerializer(profile, context={"user": request.user})
+    serializer = MyCustomProfileSerializer(profile)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_Profile(request, nickname):
+    profile = get_object_or_404(CustomProfile, nickname=nickname)
+    serializer = CustomProfileSerializer(profile)
+    print(serializer)
     return Response(serializer.data)
 
 
 class CustomProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_CustomProfile(self, request):
-        try:
-            customProfile = CustomProfile.objects.get(user=request.user)
-            if False:  # 본인인증관련 비밀번호한번더 입력? 이런거 있어야할듯
-                return None
-            return customProfile
-        except customProfile.DoesNotExist:
+    def get_customProfile(self, request):
+        customProfile = get_object_or_404(CustomProfile, user=request.user)
+        if False:  # 비밀번호 한번 더 입력하는 url 로 리다이렉트시키기.
             return None
+        return customProfile
 
+    # 개인정보 수정으로 갔을 때 현재 상태 띄우려면 본인이 수정할 수 있는 정보에 대한 compact 한 세트가 있으면 좋음.
+    # 그래서 MyCustomProfileSerializer 와 달리 적은 항목만 리턴하는 시리얼라이저를 쓰는 것이다.
     def get(self, request):
         customProfile = self.get_customProfile(request)
-        if customProfile == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            serializer = CustomProfileSerializerForOwner(customProfile)
-            return Response(serializer.data)
+        # MyCustomProfileSerializer와 다른 점은 그냥 수정용이라는 것
+        serializer = CustomProfileSerializerForOwner(customProfile)
+        return Response(serializer.data)
 
     def post(self, request):
 
-        if CustomProfile.objects.get(user=request.user):
-            return Response(status.HTTP_400_BAD_REQUEST)
+        if get_object_or_None(CustomProfile, user=request.user):
+            raise DDCustomException(f"{request.user.username}'s profile already exits.")
 
         profile = CustomProfile.objects.create(
             user=request.user,
-            nickname=request.data["nickname"],
-            phoneNumber=request.data["phoneNumber"],
-            email=request.data["email"]
+            nickname=get_value_or_error(request.data, "nickname"),
+            phoneNumber=get_value_or_error(request.data, "phoneNumber"),
+            email=get_value_or_error(request.data, "email")
         )
         serializer = CustomProfileSerializerForOwner(profile).data
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer, status=status.HTTP_200_OK)
 
-    def put(self, request, pk):
+    def put(self, request):
         customProfile = self.get_customProfile(request)
-        if customProfile == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = CustomProfileSerializerForPut(customProfile, data=request.data, partial=True)
-        if serializer.is_valid():  # validate 로직 검토
+        if serializer.is_valid():
             customProfile = serializer.save()
-            if request.data["Image"]:
-                customProfile.smallImage = request.data["Image"]
+            if get_object_or_None(request.data, "image"):
+                customProfile.smallImage = request.data["image"]
                 customProfile.save()
-            # 파일 용량낮춰서 저장하기. image는 자기 프로필에가면 조금 크게나오는 사진, smallimage는 댓글 옆에 작은사진
+            # 파일 용량낮춰서 저장하기. image 는 자기 프로필에가면 조금 크게나오는 사진, smallImage 는 댓글 옆에 작은사진
             serializer = CustomProfileSerializerForOwner(customProfile)
             return Response(serializer.data)
         else:
@@ -78,9 +77,9 @@ class CustomProfileView(APIView):
 
 @api_view(['GET'])
 def get_teams(request, nickname):
-    user = CustomProfile.objects.get(nickname=nickname).user
-    Teams = Team.objects.filter(id=user.id)
-    serializer = TeamsSerializer(Teams, many=True)
+    user = get_object_or_404(CustomProfile, nickname=nickname).user
+    teams = user.teams
+    serializer = TeamsSerializer(teams, many=True)
     return Response(serializer.data)
 
 
@@ -92,32 +91,24 @@ def post_team(request):
         representative=request.user,
     )
     team.members.add(request.user)
-    serializer = TeamSerializer(team)
+    serializer = TeamSerializer(team, context={"user": request.user})
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class TeamViewWithTeamName(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_Team(self, request, teamName):
-        try:
-            team = Team.objects.get(name=teamName)
-            return team
-        except team.DoesNotExist:
-            return None
-
-    def get(self, request, teamName):
-        team = self.get_team(request, teamName)
-        if team == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            serializer = TeamSerializer(team)
-            return Response(serializer.data)
+    def get(self, request, pk):
+        team = get_object_or_404(Team, id=pk)
+        print(team)
+        serializer = TeamSerializer(team, context={"user": request.user})
+        print(serializer)
+        print(serializer.data)
+        return Response(data=serializer.data)
 
     def delete(self, request, teamName):
-        team = self.get_team(request, teamName)
-        if team == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        team = get_object_or_404(Team, name=teamName)
+
         if team.representative == request.user or request.user.is_staff:
             team.delete()
             return Response(status=status.HTTP_200_OK)
@@ -137,6 +128,8 @@ def member_add(request, teamName):
         team.members.add(member)
         return Response(status=status.HTTP_200_OK)
     return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
 # {
 #     "memberNickname":"nickname"
 # }
