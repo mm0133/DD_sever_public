@@ -15,14 +15,14 @@ class CustomProfile(models.Model):
                                 processors=[Thumbnail(256, 256)],
                                 format='JPEG',
                                 options={'quality': 60},
-                                default="user_5/profile",
+                                default="user_1/profile",
                                 )
     smallImage = ProcessedImageField(null=True, blank=True,
                                      upload_to=user_profile_image_path,
                                      processors=[Thumbnail(64, 64)],
                                      format='JPEG',
                                      options={'quality': 60},
-                                     default="user_5/profile",
+                                     default="user_1/profile",
                                      )
 
     email = models.EmailField()
@@ -80,7 +80,7 @@ class Team(models.Model):
                                      processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
                                      format='JPEG',  # 최종 저장 포맷
                                      options={'quality': 60},
-                                     default="user_6/profile",
+                                     default="user_1/profile",
                                      )
 
     representative = models.ForeignKey(User, null=True, on_delete=models.CASCADE,

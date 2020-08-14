@@ -75,7 +75,7 @@ class CustomProfileView(APIView):
 
 
 @api_view(['GET'])
-def rnjget_teams(request, nickname):
+def get_teams(request, nickname):
     user = get_object_or_404(CustomProfile, nickname=nickname).user
     teams = user.teams
     serializer = TeamsSerializer(teams, many=True)
