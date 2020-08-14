@@ -9,14 +9,21 @@ from api.contests.models import *
 #     return len(Answer.objects.all())
 
 
-def user_profile_image_path(instance, filename):
+def customProfileImagePath(instance, filename):
+
     # 프로필은 MEDIA/user_<id>/<profile> 에 저장될거야. 그냥 파일명으로!
-    return 'user_{}/profile'.format(instance.user.id)
+    return f'users/customProfile/image/{instance.user.id}/{uuid4().hex}/image{instance.user.id}_{uuid4().hex}'
+
+def customProfileSmallImage(instance, filename):
+    uuidText=uuid4().hex
+    # 프로필은 MEDIA/user_<id>/<profile> 에 저장될거야. 그냥 파일명으로!
+    return f'users/customProfile/smallImage/{instance.user.id}/{uuidText}/smallImage{instance.user.id}_{uuid4().hex}'
 
 
 def team_profile_image_path(instance, filename):
+    uuidText = uuid4().hex
     # 프로필은 MEDIA/user_<id>/<profile> 에 저장될거야. 그냥 파일명으로!
-    return 'team_{}/profile'.format(instance.id)
+    return f'users/team/{instance.id}/profile'
 
 
 def user_answer_upload_to(instance, filename):
@@ -40,3 +47,4 @@ def date_percent(comp):
     else:
         percent = round(interval / total, 2) * 100
     return percent
+

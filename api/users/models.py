@@ -7,18 +7,20 @@ from api.educations.models import LecturePackage
 from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
 
+from config.FilePath import customProfileImagePath
+
 
 class CustomProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
     image = ProcessedImageField(null=True, blank=True,
-                                upload_to=user_profile_image_path,
+                                upload_to=customProfileImagePath,
                                 processors=[Thumbnail(256, 256)],
                                 format='JPEG',
                                 options={'quality': 60},
                                 default="user_1/profile",
                                 )
     smallImage = ProcessedImageField(null=True, blank=True,
-                                     upload_to=user_profile_image_path,
+                                     upload_to=customProfileSmallImage,
                                      processors=[Thumbnail(64, 64)],
                                      format='JPEG',
                                      options={'quality': 60},
