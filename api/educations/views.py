@@ -35,14 +35,14 @@ class LecturePackageViewWithPk(APIView):
     def get(self, request, pk):
 
         lecturePackage = self.get_lecturePackage(pk)
-        if lecturePackage == None:
+        if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = LecturePackageSerializer(lecturePackage)
         return Response(serializer.data)
 
     def put(self, request, pk):
         lecturePackage = self.get_lecturePackage(pk)
-        if lecturePackage == None:
+        if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = LecturePackageSerializer(lecturePackage, data=request.data, partial=True)
@@ -85,14 +85,14 @@ class EduVideoLectureViewWithVideoPk(APIView):
 
     def get(self, request, pk):
         videoLecture = self.get_videoLecture(pk)
-        if videoLecture == None:
+        if videoLecture is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = EduVideoLectureSerializer(videoLecture).data
         return Response(serializer)
 
     def put(self, request, pk):
         videoLecture = self.get_videoLecture(pk)
-        if videoLecture == None:
+        if videoLecture is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = EduVideoLectureSerializer(videoLecture, data=request.data, partial=True)

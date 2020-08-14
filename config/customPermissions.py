@@ -21,11 +21,7 @@ class IsDeleteRequest(permissions.BasePermission):
         return request.method == "DELETE"
 
 
-
-
-
-
-#IsAuthenticatedOrReadOnly
+# IsAuthenticatedOrReadOnly
 class IsGetRequestOrAuthenticated(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool((request.user and request.user.is_authenticated) or request.method == "GET")
@@ -34,7 +30,6 @@ class IsGetRequestOrAuthenticated(permissions.BasePermission):
 class IsGetRequestOrAdminUser(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool((request.user and request.user.is_staff) or request.method == "GET")
-
 
 
 class IsGetRequestOrWriterOrAdminUser(permissions.BasePermission):
@@ -51,14 +46,17 @@ class IsGetRequestOrWriterOrAdminUser(permissions.BasePermission):
         else:
             return False
 
+
 class IsWriterOrAdminUser(permissions.BasePermission):
-    def has_object_permission(self,request, view, obj):
-        if request.user and ((request.user.is_authenticated and request.user== obj.writer)or request.user.is_staff):
+    def has_object_permission(self, request, view, obj):
+        if request.user and ((request.user.is_authenticated and request.user == obj.writer) or request.user.is_staff):
             return True
         return False
 
+
 class IsRepresentativeOrAdminUser(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.user and ((request.user.is_authenticated and request.user == obj.representative) or request.user.is_staff):
+        if request.user and (
+                (request.user.is_authenticated and request.user == obj.representative) or request.user.is_staff):
             return True
         return False

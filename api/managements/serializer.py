@@ -4,20 +4,8 @@ from api.managements.models import Notice, QuestionToManager, CommentToQuestion,
 
 
 class WriterNicknameImageSerializer(serializers.ModelSerializer):
-    writerNickname = serializers.SerializerMethodField()
-    writerImage = serializers.SerializerMethodField()
-
-    def get_writerNickname(self, obj):
-        if obj.writer.customProfile.nickname:
-            return obj.writer.customProfile.nickname
-        else:
-            return None
-
-    def get_writerImage(self, obj):
-        if obj.writer.customProfile.smallImage:
-            return obj.writer.customProfile.smallImage
-        else:
-            return None
+    writerNickname = serializers.CharField(source='writer.customProfile.nickname')
+    writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
 
 
 class NoticesSerializer(WriterNicknameImageSerializer):

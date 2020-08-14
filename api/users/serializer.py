@@ -142,8 +142,6 @@ class MemberSerializer(serializers.ModelSerializer):
         fields = ['nickname', 'smallImage']
 
 
-
-
 class TeamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
@@ -160,12 +158,8 @@ class TeamSerializer(serializers.ModelSerializer):
 
     def get_members(self, obj):
         members = obj.members.all()
-        # qeurysets = CustomProfile.objects.none()
-        # for member in members:
-        #     qeurysets = qeurysets | CustomProfile.objects.filter(user=member)
-
-        # return MemberSerializer(qeurysets, many=True).data
         return MemberSerializer(members, many=True).data
+
     def get_isRepresentative(self, obj):
         user = self.context.get("user")
         return user == obj.representative

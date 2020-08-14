@@ -86,3 +86,6 @@ class Team(models.Model):
     representative = models.ForeignKey(User, null=True, on_delete=models.CASCADE,
                                        related_name='representingTeam')  # delete 조심히 할것
     members = models.ManyToManyField(User, related_name='teams')
+
+    def __str__(self):
+        return f"Team {self.name} "

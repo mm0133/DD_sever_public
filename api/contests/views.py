@@ -45,7 +45,7 @@ class ContestViewWithPk(APIView):
 
     def get(self, request, pk):
         contest = self.get_contest(pk)
-        if contest == None:
+        if contest is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = ContestSerializer(contest)
@@ -53,7 +53,7 @@ class ContestViewWithPk(APIView):
 
     def put(self, request, pk):
         contest = self.get_contest(pk)
-        if contest == None:
+        if contest is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = ContestSerializer(contest, data=request.data, partial=True, context={'user': request.user})
@@ -65,7 +65,7 @@ class ContestViewWithPk(APIView):
 
     def delete(self, request, pk):
         contest = self.get_contest(pk)
-        if contest == None:
+        if contest is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         contest.delete()
         return Response(status=status.HTTP_200_OK)
@@ -127,6 +127,7 @@ class ContestUserAnswerViewWithContestPK(APIView):
     # 내림차순정렬
     def get(self, request, pk):
         contestUserAnswer = ContestUserAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
+        print(contestUserAnswer)
         serializer = ContestUserAnswerSerializer(contestUserAnswer, many=True)
         return Response(serializer.data)
 
@@ -157,7 +158,7 @@ class ContestUserAnswerViewWithPK(APIView):
 
     def get(self, request, pk):
         contestUserAnswer = self.get_contestUserAnswer(pk)
-        if contestUserAnswer == None:
+        if contestUserAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = ContestUserAnswerSerializer(contestUserAnswer)
@@ -165,7 +166,7 @@ class ContestUserAnswerViewWithPK(APIView):
 
     def put(self, request, pk):
         contestUserAnswer = self.get_contestUserAnswer(pk)
-        if contestUserAnswer == None:
+        if contestUserAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = ContestUserAnswerSerializer(contestUserAnswer, data=request.data, partial=True)
@@ -177,7 +178,7 @@ class ContestUserAnswerViewWithPK(APIView):
 
     def delete(self, request, pk):
         contestUserAnswer = self.get_contestUserAnswer(pk)
-        if contestUserAnswer == None:
+        if contestUserAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         contestUserAnswer.delete()
         return Response(status=status.HTTP_200_OK)

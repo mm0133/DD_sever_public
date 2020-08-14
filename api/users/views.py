@@ -24,7 +24,6 @@ def get_myPage(request):
 def get_Profile(request, nickname):
     profile = get_object_or_404(CustomProfile, nickname=nickname)
     serializer = CustomProfileSerializer(profile)
-    print(serializer)
     return Response(serializer.data)
 
 
@@ -38,10 +37,10 @@ class CustomProfileView(APIView):
         return customProfile
 
     # 개인정보 수정으로 갔을 때 현재 상태 띄우려면 본인이 수정할 수 있는 정보에 대한 compact 한 세트가 있으면 좋음.
-    # 그래서 MyCustomProfileSerializer 와 달리 적은 항목만 리턴하는 시리얼라이저를 쓰는 것이다.
+    # 그래서 MyCustomProfileSerializer 와 달리 적은 항목만 리턴하는 serializer  쓰는 것이다.
     def get(self, request):
         customProfile = self.get_customProfile(request)
-        # MyCustomProfileSerializer와 다른 점은 그냥 수정용이라는 것
+        # MyCustomProfileSerializer 와 다른 점은 그냥 수정용이라는 것
         serializer = CustomProfileSerializerForOwner(customProfile)
         return Response(serializer.data)
 
@@ -98,12 +97,9 @@ def post_team(request):
 class TeamViewWithTeamName(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, pk):
-        team = get_object_or_404(Team, id=pk)
-        print(team)
+    def get(self, request, teamName):
+        team = get_object_or_404(Team, name=teamName)
         serializer = TeamSerializer(team, context={"user": request.user})
-        print(serializer)
-        print(serializer.data)
         return Response(data=serializer.data)
 
     def delete(self, request, teamName):
@@ -118,21 +114,15 @@ class TeamViewWithTeamName(APIView):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_add(request, teamName):
-    try:
-        team = Team.objects.get(name=teamName)
-    except team.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    team = get_object_or_404(Team, name=teamName)
+
     if team.representative == request.user or request.user.is_staff:
-        member = CustomProfile.objects.get(nickname=request.data["memberNickname"]).user
-        team = Team.objects.get(name=teamName)
+        member = get_object_or_404(CustomProfile, nickname= get_value_or_error(request.data, "memberNickname")).user
         team.members.add(member)
         return Response(status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(f"you are neither team {teamName}'s representative nor staff user!",
+                    status=status.HTTP_401_UNAUTHORIZED)
 
-
-# {
-#     "memberNickname":"nickname"
-# }
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])

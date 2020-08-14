@@ -9,10 +9,10 @@ from api.communications.models import ContestDebate, ContestCodeNote, Velog, Deb
 # 복수형은 글 목록에 띄울 것들이다.
 
 class LikeIncludedModelSerializer(serializers.ModelSerializer):
-    likeNums = serializers.SerializerMethodField()
     isLiked = serializers.SerializerMethodField()
-    writerNickname = serializers.SerializerMethodField()
-    writerImage = serializers.SerializerMethodField()
+    likeNums = serializers.IntegerField(source='likes.count')
+    writerNickname = serializers.CharField(source='writer.customProfile.nickname')
+    writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
 
     def get_isLiked(self, obj):
         user = self.context.get("user")
@@ -21,32 +21,16 @@ class LikeIncludedModelSerializer(serializers.ModelSerializer):
                 return user in obj.likes.all()
         return False
 
-    def get_likeNums(self, obj):
-        return obj.likes.count()
-
-    def get_writerNickname(self, obj):
-        if obj.writer:
-            return obj.writer.customProfile.nickname
-        return None
-
-    def get_writerImage(self, obj):
-        if obj.writer.customProfile.smallImage:
-            return obj.writer.customProfile.smallImage
-
 
 class LikeScrapIncludedModelSerializer(LikeIncludedModelSerializer):
     isScraped = serializers.SerializerMethodField()
-    scrapNums = serializers.SerializerMethodField()
+    scrapNums = serializers.IntegerField(source='scrapsCount')
 
     def get_isScraped(self, obj):
         user = self.context.get("user")
-        if user:
-            if user.is_authenticated:  # user.is_authenticated: 로그인시
-                return obj.isScraped(user)
+        if user.is_authenticated:
+            return obj.isScraped(user)
         return False
-
-    def get_scrapNums(self, obj):
-        return obj.scrapsCount()
 
 
 # 단수형과 복수형이 용도가 다름.

@@ -51,7 +51,7 @@ class ContestDebateViewWithPk(APIView):
 
     def get(self, request, pk):
         contestDebate = self.get_contestDebate(pk)
-        if contestDebate == None:
+        if contestDebate is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = ContestDebateSerializer(contestDebate, context={'user': request.user})
@@ -59,7 +59,7 @@ class ContestDebateViewWithPk(APIView):
 
     def put(self, request, pk):
         contestDebate = self.get_contestDebate(pk)
-        if contestDebate == None:
+        if contestDebate is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = ContestDebateSerializer(contestDebate, data=request.data, partial=True)
@@ -71,7 +71,7 @@ class ContestDebateViewWithPk(APIView):
 
     def delete(self, request, pk):
         contestDebate = self.get_contestDebate(pk)
-        if contestDebate == None:
+        if contestDebate is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         contestDebate.delete()
         return Response(status=status.HTTP_200_OK)
@@ -113,7 +113,7 @@ class ContestCodeNoteViewWithPk(APIView):
 
     def get(self, request, pk):
         contestCodeNote = self.get_contestCodeNote(pk)
-        if contestCodeNote == None:
+        if contestCodeNote is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = ContestCodeNoteSerializer(contestCodeNote, context={'user': request.user})
@@ -121,7 +121,7 @@ class ContestCodeNoteViewWithPk(APIView):
 
     def put(self, request, pk):
         contestCodeNote = self.get_contestCodeNote(pk)
-        if contestCodeNote == None:
+        if contestCodeNote is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = ContestCodeNoteSerializer(contestCodeNote, data=request.data, partial=True)
@@ -133,7 +133,7 @@ class ContestCodeNoteViewWithPk(APIView):
 
     def delete(self, request, pk):
         contestCodeNote = self.get_contestCodeNote(pk)
-        if contestCodeNote == None:
+        if contestCodeNote is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         contestCodeNote.delete()
         return Response(status=status.HTTP_200_OK)
@@ -169,7 +169,7 @@ class VelogViewWithPk(APIView):
 
     def get(self, request, pk):
         velog = self.get_velog(pk)
-        if velog == None:
+        if velog is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = VelogSerializer(velog, context={'user': request.user})
@@ -177,7 +177,7 @@ class VelogViewWithPk(APIView):
 
     def put(self, request, pk):
         velog = self.get_velog(pk)
-        if velog == None:
+        if velog is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = VelogSerializer(velog, data=request.data, partial=True)
@@ -189,7 +189,7 @@ class VelogViewWithPk(APIView):
 
     def delete(self, request, pk):
         velog = self.get_velog(pk)
-        if velog == None:
+        if velog is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         velog.delete()
         return Response(status=status.HTTP_200_OK)
@@ -240,7 +240,7 @@ class DebateCommentViewWithPK(APIView):
 
     def get(self, request, pk):
         debateComment = self.get_debateComment(pk)
-        if debateComment == None:
+        if debateComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = DebateCommentSerializer(debateComment, context={'user': request.user})
@@ -248,7 +248,7 @@ class DebateCommentViewWithPK(APIView):
 
     def put(self, request, pk):
         debateComment = self.get_debateComment(pk)
-        if debateComment == None:
+        if debateComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = DebateCommentSerializer(debateComment, data=request.data, partial=True, )
@@ -260,7 +260,7 @@ class DebateCommentViewWithPK(APIView):
 
     def delete(self, request, pk):
         debateComment = self.get_debateComment(pk)
-        if debateComment == None:
+        if debateComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         debateComment.delete()
         return Response(status=status.HTTP_200_OK)
@@ -308,7 +308,7 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
 
     def get(self, request, pk):
         codeNoteComment = self.get_codeNoteComment(pk)
-        if codeNoteComment == None:
+        if codeNoteComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = CodeNoteCommentSerializer(codeNoteComment, context={'user': request.user})
@@ -316,7 +316,7 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
 
     def put(self, request, pk):
         codeNoteComment = self.get_codeNoteComment(pk)
-        if codeNoteComment == None:
+        if codeNoteComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = CodeNoteCommentSerializer(codeNoteComment, data=request.data, partial=True, )
@@ -328,7 +328,7 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
 
     def delete(self, request, pk):
         codeNoteComment = self.get_codeNoteComment(pk)
-        if codeNoteComment == None:
+        if codeNoteComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         codeNoteComment.delete()
         return Response(status=status.HTTP_200_OK)
@@ -379,7 +379,7 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
 
     def get(self, request, pk):
         velogComment = self.get_velogComment(pk)
-        if velogComment == None:
+        if velogComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = VelogCommentSerializer(velogComment, context={'user': request.user})
@@ -387,7 +387,7 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
 
     def put(self, request, pk):
         velogComment = self.get_velogComment(pk)
-        if velogComment == None:
+        if velogComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = VelogCommentSerializer(velogComment, data=request.data, partial=True, )
@@ -399,7 +399,7 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
 
     def delete(self, request, pk):
         velogComment = self.get_velogComment(pk)
-        if velogComment == None:
+        if velogComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         velogComment.delete()
         return Response(status=status.HTTP_200_OK)
