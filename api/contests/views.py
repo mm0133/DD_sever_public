@@ -22,7 +22,7 @@ class ContestView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ContestSerializer(data=request.data)
+        serializer = ContestSerializer(data=request.data, context={'user': request.user})
         if serializer.is_valid():  # validation 로직 손보기
             # writer가 null=True이기 때문에 프론트에서 넣어주지 않아도 .is_valid에서 에러가 나지 않는다.
             # 그래서 밑에서 witer로 넣어주는 것이다.
@@ -59,7 +59,7 @@ class ContestViewWithPk(APIView):
         serializer = ContestSerializer(contest, data=request.data, partial=True, context={'user': request.user})
         if serializer.is_valid():  # validate 로직 검토
             contest = serializer.save()
-            return Response(ContestSerializer(contest).data)
+            return Response(ContestSerializer(contest, context={'user': request.user}).data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -80,7 +80,7 @@ class ContestFileViewWithContestPK(APIView):
             contestFile = ContestFile.objects.filter(contest_id=pk)
         except contestFile.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = ContestFileSerializer(contestFile, many=True)
+        serializer = ContestFileSerializer(contestFile, context={'user': request.user}, many=True)
         return Response(serializer.data)
 
     # 다중업로드 가능!
@@ -96,7 +96,7 @@ class ContestFileViewWithContestPK(APIView):
             )
 
         contestFile = ContestFile.objects.filter(contest_id=pk)
-        serializer = ContestFileSerializer(contestFile, many=True)
+        serializer = ContestFileSerializer(contestFile, context={'user': request.user}, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
@@ -128,7 +128,7 @@ class ContestUserAnswerViewWithContestPK(APIView):
     def get(self, request, pk):
         contestUserAnswer = ContestUserAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
         print(contestUserAnswer)
-        serializer = ContestUserAnswerSerializer(contestUserAnswer, many=True)
+        serializer = ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user}, many=True)
         return Response(serializer.data)
 
     def post(self, request, pk):
@@ -140,7 +140,7 @@ class ContestUserAnswerViewWithContestPK(APIView):
         # 정확도 계산 로직 넣어야함
         contestUserAnswer.accuracy = contestUserAnswer.calculateAccuracy()
         contestUserAnswer.save()
-        serializer = ContestUserAnswerSerializer(contestUserAnswer)
+        serializer = ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user})
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -161,7 +161,7 @@ class ContestUserAnswerViewWithPK(APIView):
         if contestUserAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = ContestUserAnswerSerializer(contestUserAnswer)
+            serializer = ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user})
             return Response(serializer.data)
 
     def put(self, request, pk):
@@ -169,10 +169,10 @@ class ContestUserAnswerViewWithPK(APIView):
         if contestUserAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ContestUserAnswerSerializer(contestUserAnswer, data=request.data, partial=True)
+        serializer = ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user}, data=request.data, partial=True)
         if serializer.is_valid():  # validate 로직 추가
             contestUserAnswer = serializer.save()
-            return Response(ContestUserAnswerSerializer(contestUserAnswer).data)
+            return Response(ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user}).data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

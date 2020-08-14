@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.users.models import CustomProfile, Team
+from api.users.models import CustomProfile, Team, TeamInvite
 from api.users.serializer import CustomProfileSerializer, CustomProfileSerializerForOwner, \
     CustomProfileSerializerForPut, MyCustomProfileSerializer, TeamsSerializer, TeamSerializer
 from config.customExceptions import DDCustomException, get_value_or_error
@@ -113,15 +113,32 @@ class TeamViewWithTeamName(APIView):
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
-def member_add(request, teamName):
+def member_invite(request, teamName):
     team = get_object_or_404(Team, name=teamName)
-
+    memberNickname = get_value_or_error(request.data, "memberNickname")
+    invitingMessage = get_object_or_None(request.data, "invitingMessage")
+    if memberNickname == request.user.customProfile.nickname:
+        return Response(f"you can't invite yourself!", status=status.HTTP_403_FORBIDDEN)
     if team.representative == request.user or request.user.is_staff:
-        member = get_object_or_404(
-            CustomProfile,
-            nickname=get_value_or_error(request.data, "memberNickname")
-        ).user
-        team.members.add(member)
+        member = get_object_or_404(CustomProfile, nickname=memberNickname).user
+        TeamInvite.objects.create(
+            inviter=request.user,
+            invitee=member,
+            invitingMessage=invitingMessage
+        )
+        return Response(status=status.HTTP_200_OK)
+    return Response(f"you are neither team {teamName}'s representative nor staff user!",
+                    status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def member_invite_accept(request, teamName):
+    team = get_object_or_404(Team, name=teamName)
+    yesOrNo = get_value_or_error(request.data, "yesOrNo")
+    teamInvite = get_object_or_None(TeamInvite, invitee=request.user)
+    if team.representative == request.user or request.user.is_staff:
+
         return Response(status=status.HTTP_200_OK)
     return Response(f"you are neither team {teamName}'s representative nor staff user!",
                     status=status.HTTP_401_UNAUTHORIZED)

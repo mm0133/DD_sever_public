@@ -89,3 +89,9 @@ class Team(models.Model):
 
     def __str__(self):
         return f"Team {self.name} "
+
+
+class TeamInvite(models.Model):
+    inviter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitingSend')
+    invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitingReceive')
+    invitingMessage = models.TextField(blank=True, null=True)

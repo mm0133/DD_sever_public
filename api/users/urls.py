@@ -11,7 +11,7 @@ urlpatterns = [
     path("team_create/", views.post_team),  # post
     path("team_by_user_nickname/<str:nickname>/", views.get_teams),  # get
     path("team/<str:teamName>/", views.TeamViewWithTeamName.as_view()),  # get delete
-    path("team/<str:teamName>/member_add/", views.member_add),  # post
+    path("team/<str:teamName>/member_invite/", views.member_invite),  # post
     path("team/<str:teamName>/member_delete/", views.member_delete),  # post 삭제시 팀대표 자동으로 옮겨줌 팀탈퇴, 대표자가 팀원삭제 모두이거 쓰셈
     path("team/<str:teamName>/change_representative/", views.change_representative),  # post
 
