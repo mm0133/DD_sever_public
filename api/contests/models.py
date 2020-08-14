@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.utils import timezone
 
 from django.conf import settings
@@ -8,6 +10,8 @@ from imagekit.models import ProcessedImageField
 
 from api.contests.utils import comp_answer_upload_to, user_answer_upload_to
 from api.contests.validators import validate_file_size
+
+
 
 
 class Contest(models.Model):
@@ -96,6 +100,9 @@ class ContestFile(models.Model):
 class ContestUserAnswer(models.Model):
     contest = models.ForeignKey(
         Contest, null=True, on_delete=models.SET_NULL, related_name="userAnswer"
+    )
+    team = models.ForeignKey(
+        'users.Team', null=True, on_delete=models.SET_NULL, related_name="teamAnswer"
     )
     writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
