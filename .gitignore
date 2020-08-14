@@ -154,3 +154,5 @@ user_1/
 test/
 
 frontend/node_modules/
+
+Pipfile.lock

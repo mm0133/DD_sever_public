@@ -117,7 +117,10 @@ def member_add(request, teamName):
     team = get_object_or_404(Team, name=teamName)
 
     if team.representative == request.user or request.user.is_staff:
-        member = get_object_or_404(CustomProfile, nickname= get_value_or_error(request.data, "memberNickname")).user
+        member = get_object_or_404(
+            CustomProfile,
+            nickname=get_value_or_error(request.data, "memberNickname")
+        ).user
         team.members.add(member)
         return Response(status=status.HTTP_200_OK)
     return Response(f"you are neither team {teamName}'s representative nor staff user!",
