@@ -8,10 +8,9 @@ from django.db import models
 from imagekit.processors import Thumbnail
 from imagekit.models import ProcessedImageField
 
-from api.contests.utils import comp_answer_upload_to, user_answer_upload_to
+
 from api.contests.validators import validate_file_size
-
-
+from config.FilePath import customProfileImagePath
 
 
 class Contest(models.Model):
@@ -23,7 +22,7 @@ class Contest(models.Model):
 
     # 채점을 위한 data를 contestAnswer에 저장함.
     contestAnswer = models.FileField(
-        null=True, blank=True, upload_to=comp_answer_upload_to
+        null=True, blank=True, upload_to=customProfileImagePath
     )
     deadline = models.DateTimeField()
     timeline = models.TextField()  # 여러 날짜들을 text로 저장했다가 json으로 변환해서 프론트로 넘김

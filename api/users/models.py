@@ -1,13 +1,12 @@
 from django.db import models
 from api.communications.models import ContestCodeNote, ContestDebate, Velog
 from api.contests.models import Contest, ContestUserAnswer
-from api.contests.utils import user_profile_image_path, team_profile_image_path
 from django.contrib.auth.models import User
 from api.educations.models import LecturePackage
 from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
 
-from config.FilePath import customProfileImagePath
+from config.FilePath import customProfileImagePath, customProfileSmallImage, teamSmallImagePath, teamImagePath
 
 
 class CustomProfile(models.Model):
@@ -77,8 +76,15 @@ class Team(models.Model):
     name = models.CharField(max_length=255)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
+    Image = ProcessedImageField(null=True, blank=True,
+                                upload_to=teamImagePath,
+                                processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
+                                format='JPEG',  # 최종 저장 포맷
+                                options={'quality': 60},
+                                default="user_1/profile",
+                                )
     smallImage = ProcessedImageField(null=True, blank=True,
-                                     upload_to=team_profile_image_path,
+                                     upload_to=teamSmallImagePath,
                                      processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
                                      format='JPEG',  # 최종 저장 포맷
                                      options={'quality': 60},

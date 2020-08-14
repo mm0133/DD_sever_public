@@ -10,27 +10,21 @@ from api.contests.models import *
 
 
 def customProfileImagePath(instance, filename):
-
-    # 프로필은 MEDIA/user_<id>/<profile> 에 저장될거야. 그냥 파일명으로!
     return f'users/customProfile/image/{instance.user.id}/{uuid4().hex}/image{instance.user.id}_{uuid4().hex}'
 
 def customProfileSmallImage(instance, filename):
-    uuidText=uuid4().hex
-    # 프로필은 MEDIA/user_<id>/<profile> 에 저장될거야. 그냥 파일명으로!
-    return f'users/customProfile/smallImage/{instance.user.id}/{uuidText}/smallImage{instance.user.id}_{uuid4().hex}'
+    return f'users/customProfile/smallImage/{instance.user.id}/{uuid4().hex}/smallImage{instance.user.id}_{uuid4().hex}'
 
 
-def team_profile_image_path(instance, filename):
-    uuidText = uuid4().hex
-    # 프로필은 MEDIA/user_<id>/<profile> 에 저장될거야. 그냥 파일명으로!
-    return f'users/team/{instance.id}/profile'
+def teamImagePath(instance, filename):
+    return f'users/team/image/{instance.user.id}/{uuid4().hex}/image{instance.user.id}_{uuid4().hex}'
 
 
-def user_answer_upload_to(instance, filename):
+def teamSmallImagePath(instance, filename):
     # 유저가 올린 답안은은 MEDIA/user_<id>/<파일명> 에 저장될거야. 유저가 올린 파일명을 랜덤으로 바꿔서!
     uuid_name = uuid4().hex
     extension = os.path.splitext(filename)[-1].lower()  # 확장자 추출하고, 소문자로 변환
-    return 'contest_{}/user_{}/{}'.format('wow', 'hello', uuid_name[:2] + filename)
+    return f'users/customProfile/smallImage/{instance.user.id}/{uuid4().hex}/smallImage{instance.user.id}_{uuid4().hex}'
 
 
 def comp_answer_upload_to(instance, filename):
