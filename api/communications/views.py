@@ -358,11 +358,12 @@ class VelogCommentViewWithVelogPK(APIView):
             # VelogComment에 VelogComment가 대문자로 시작해서 이렇게 적음
             # 나중에 모델 수정할 때 같이 고쳐야 함.
             # 다민
-            VelogComment_id=parent_velogComment_id
+            velogComment_id=parent_velogComment_id
         )
         serializer = VelogCommentSerializer(velogComment)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
 
 class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈

@@ -1,7 +1,10 @@
+from encodings.utf_8 import encode
+from encodings.utf_8_sig import decode
+
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from api.communications.models import ContestDebate, ContestCodeNote
+from api.communications.models import ContestDebate, ContestCodeNote, Velog
 from api.communications.serializers import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
 from api.users.models import CustomProfile, Team
 
@@ -18,10 +21,12 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
     codeNoteScraps = serializers.SerializerMethodField()
     velogScraps = serializers.SerializerMethodField()
     teams = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomProfile
         fields = ['image', 'user', 'nickname', 'contestRankDictionary', 'myContestsNow', 'myContestsFinished',
-                  'contestDebates', 'contestCodeNotes', 'velogs', 'contestScraps', 'debateScraps', 'codeNoteScraps', 'velogScraps','teams']
+                  'contestDebates', 'contestCodeNotes', 'velogs', 'contestScraps', 'debateScraps', 'codeNoteScraps',
+                  'velogScraps', 'teams']
 
     def get_myContestsNow(self, obj):
         list = []
@@ -50,22 +55,23 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
 
     def get_velogs(self, obj):
 
-        velogs = ContestCodeNote.objects.filter(writer=obj.user)
+        velogs = Velog.objects.filter(writer=obj.user)
         serializer = VelogsSerializer(velogs, many=True)
 
         return serializer.data
 
     def get_contestScraps(self, obj):
-        contestScrapList = obj.contestScraps
+        contestScrapList = obj.contestScraps.all()
         if contestScrapList:
             list = []
             for contest in contestScrapList:
                 list.append({"id": contest.id, "profileThumb": contest.profileThumb, "title": contest.title})
             return list
-        return None
+        else:
+            return None
 
     def get_debateScraps(self, obj):
-        debateScrapList = obj.debateScraps
+        debateScrapList = obj.debateScraps.all()
         if debateScrapList:
             list = []
             for debate in debateScrapList:
@@ -75,7 +81,7 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return None
 
     def get_codeNoteScraps(self, obj):
-        codeNoteScrapList = obj.codeNoteScraps
+        codeNoteScrapList = obj.codeNoteScraps.all()
         if codeNoteScrapList:
             list = []
             for codeNote in codeNoteScrapList:
@@ -85,7 +91,7 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return None
 
     def get_velogScraps(self, obj):
-        velogScrapList = obj.velogScraps
+        velogScrapList = obj.velogScraps.all()
         if velogScrapList:
             list = []
             for velog in velogScrapList:
@@ -95,22 +101,20 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return None
 
     def get_teams(self, obj):
-        teams=obj.teams
+        teams = obj.user.teams
         serializer = TeamsSerializer(teams, many=True)
         return serializer.data
 
 
-
 class CustomProfileSerializer(serializers.ModelSerializer):
-
     velogs = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomProfile
-        fields = ['Image', 'nickname', 'contestRankDictionary','velogs']
+        fields = ['image', 'nickname', 'contestRankDictionary', 'velogs']
 
     def get_velogs(self, obj):
-        velogs = ContestCodeNote.objects.filter(writer=obj.user)
+        velogs = Velog.objects.filter(writer=obj.user)
         serializer = VelogsSerializer(velogs, many=True)
 
         return serializer.data
@@ -119,29 +123,25 @@ class CustomProfileSerializer(serializers.ModelSerializer):
 class CustomProfileSerializerForOwner(serializers.ModelSerializer):
     class Meta:
         model = CustomProfile
-        fields = ['Image', 'nickname', 'user', 'phoneNumber', 'email']
+        fields = ['image', 'nickname', 'user', 'phoneNumber', 'email']
         read_only_fields = ['user', 'email', 'phoneNumber']  # 현재 read only 핗요없긴함 혹시몰라남김
 
 
 class CustomProfileSerializerForPut(serializers.ModelSerializer):
     class Meta:
         model = CustomProfile
-        fields = ['nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email']
+        fields = ['nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email', 'image']
 
 
 class MemberSerializer(serializers.ModelSerializer):
-    nickname = serializers.SerializerMethodField()
-    smallImage = serializers.SerializerMethodField()
+    nickname = serializers.CharField(source='customProfile.nickname')
+    smallImage = serializers.ImageField(source='customProfile.smallImage')
 
     class Meta:
         model = User
         fields = ['nickname', 'smallImage']
 
-    def get_nickname(self, obj):
-        return obj.customProfile.nickname
 
-    def get_smallImage(self, obj):
-        return obj.customProfile.smallImage
 
 
 class TeamsSerializer(serializers.ModelSerializer):
@@ -159,5 +159,13 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'representative', 'members', 'smallImage', 'createdAt', 'isRepresentative']
 
     def get_members(self, obj):
-        membersQueryset = obj.members.all()
-        return MemberSerializer(membersQueryset, many=True).data
+        members = obj.members.all()
+        # qeurysets = CustomProfile.objects.none()
+        # for member in members:
+        #     qeurysets = qeurysets | CustomProfile.objects.filter(user=member)
+
+        # return MemberSerializer(qeurysets, many=True).data
+        return MemberSerializer(members, many=True).data
+    def get_isRepresentative(self, obj):
+        user = self.context.get("user")
+        return user == obj.representative

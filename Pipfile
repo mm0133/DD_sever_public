@@ -13,14 +13,14 @@ pillow = "*"
 mysqlclient = "*"
 pilkit = "*"
 django-imagekit = "*"
-
 rest-social-auth = "*"
 social-auth-core = "*"
 social-auth-app-django = "*"
-
 djangorestframework = "*"
 djangorestframewgitork-jwt = "*"
 djangorestframework-simplejwt = "*"
+django-annoying = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.7"

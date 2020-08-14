@@ -14,6 +14,11 @@ def user_profile_image_path(instance, filename):
     return 'user_{}/profile'.format(instance.user.id)
 
 
+def team_profile_image_path(instance, filename):
+    # 프로필은 MEDIA/user_<id>/<profile> 에 저장될거야. 그냥 파일명으로!
+    return 'team_{}/profile'.format(instance.id)
+
+
 def user_answer_upload_to(instance, filename):
     # 유저가 올린 답안은은 MEDIA/user_<id>/<파일명> 에 저장될거야. 유저가 올린 파일명을 랜덤으로 바꿔서!
     uuid_name = uuid4().hex
