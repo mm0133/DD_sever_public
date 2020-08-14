@@ -64,14 +64,14 @@ class Contest(models.Model):
                                        processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
                                        format='JPEG',  # 최종 저장 포맷
                                        options={'quality': 90},
-                                       # default="default.png",
+                                       default="user_1/profile",
                                        )
     backThumb = ProcessedImageField(null=True, blank=True,
                                     upload_to='',
                                     processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
                                     format='JPEG',  # 최종 저장 포맷
                                     options={'quality': 90},
-                                    # default="default.png",
+                                    default="user_1/profile",
                                     )
     contestOverview = models.TextField(null=True, blank=True)
 

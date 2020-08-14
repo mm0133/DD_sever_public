@@ -86,7 +86,7 @@ def get_teams(request, nickname):
 @permission_classes([permissions.IsAuthenticated])
 def post_team(request):
     team = Team.objects.create(
-        name=request.data["name"],
+        name=request.data["teamName"],
         representative=request.user,
     )
     team.members.add(request.user)
@@ -95,8 +95,6 @@ def post_team(request):
 
 
 class TeamViewWithTeamName(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
     def get(self, request, teamName):
         team = get_object_or_404(Team, name=teamName)
         serializer = TeamSerializer(team, context={"user": request.user})

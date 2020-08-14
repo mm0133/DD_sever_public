@@ -10,7 +10,41 @@ from api.contests.models import Contest
 from api.users.models import CustomProfile, Team
 
 
+class ContestSerializerForScrap(serializers.ModelSerializer):
+    class Meta:
+        model = Contest
+        fields = ["id", "profileThumb", "title"]
+
+
+class DebateSerializerForScrap(serializers.ModelSerializer):
+    writerNickname = serializers.CharField(source='writer.customProfile.nickname')
+    writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
+
+    class Meta:
+        model = ContestDebate
+        fields = ["id", "title", "writerNickname", "writerImage"]
+
+
+class CodenoteSerializerForScrap(serializers.ModelSerializer):
+    writerNickname = serializers.CharField(source='writer.customProfile.nickname')
+    writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
+
+    class Meta:
+        model = ContestCodeNote
+        fields = ["id", "title", "writerNickname", "writerImage"]
+
+
+class VelogSerializerForScrap(serializers.ModelSerializer):
+    writerNickname = serializers.CharField(source='writer.customProfile.nickname')
+    writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
+
+    class Meta:
+        model = Velog
+        fields = ["id", "title", "writerNickname", "writerImage"]
+
+
 class MyCustomProfileSerializer(serializers.ModelSerializer):
+    teams = serializers.SerializerMethodField()
     myContestsNow = serializers.SerializerMethodField()
     myContestsFinished = serializers.SerializerMethodField()
     contestDebates = serializers.SerializerMethodField()
@@ -19,15 +53,20 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
 
     contestScraps = serializers.SerializerMethodField()
     debateScraps = serializers.SerializerMethodField()
-    codeNoteScraps = serializers.SerializerMethodField()
+    codenoteScraps = serializers.SerializerMethodField()
     velogScraps = serializers.SerializerMethodField()
-    teams = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomProfile
-        fields = ['image', 'user', 'nickname', 'contestRankDictionary', 'myContestsNow', 'myContestsFinished',
-                  'contestDebates', 'contestCodeNotes', 'velogs', 'contestScraps', 'debateScraps', 'codeNoteScraps',
-                  'velogScraps', 'teams']
+        fields = ['image', 'user', 'nickname', 'contestRankDictionary',
+                  'teams', 'myContestsNow', 'myContestsFinished',
+                  'contestDebates', 'contestCodeNotes', 'velogs',
+                  'contestScraps', 'debateScraps', 'codenoteScraps', 'velogScraps']
+
+    def get_teams(self, obj):
+        teams = obj.user.teams
+        serializer = TeamsSerializer(teams, many=True)
+        return serializer.data
 
     def get_myContestsNow(self, obj):
         list = []
@@ -44,67 +83,38 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
     def get_contestDebates(self, obj):
 
         contestDebates = ContestDebate.objects.filter(writer=obj.user)
-        serializer = ContestDebatesSerializer(contestDebates, many=True)
+        serializer = ContestDebatesSerializer(contestDebates, many=True, context={"user": obj.user})
 
         return serializer.data
 
     def get_contestCodeNotes(self, obj):
         contestCodeNotes = ContestCodeNote.objects.filter(writer=obj.user)
-        serializer = ContestCodeNotesSerializer(contestCodeNotes, many=True)
+        serializer = ContestCodeNotesSerializer(contestCodeNotes, many=True, context={"user": obj.user})
 
         return serializer.data
 
     def get_velogs(self, obj):
 
         velogs = Velog.objects.filter(writer=obj.user)
-        serializer = VelogsSerializer(velogs, many=True)
+        serializer = VelogsSerializer(velogs, many=True, context={"user": obj.user})
 
         return serializer.data
 
     def get_contestScraps(self, obj):
-        contestScrapList = obj.contestScraps.all()
-        if contestScrapList:
-            list = []
-            for contest in contestScrapList:
-                list.append({"id": contest.id, "profileThumb": contest.profileThumb, "title": contest.title})
-            return list
-        else:
-            return None
+        contestScraps = obj.contestScraps.all()
+        return ContestSerializerForScrap(contestScraps, many=True, context={"user": obj.user}).data
 
     def get_debateScraps(self, obj):
-        debateScrapList = obj.debateScraps.all()
-        if debateScrapList:
-            list = []
-            for debate in debateScrapList:
-                list.append({"id": debate.id, "writerNickname": debate.writer.customProfile.nickname,
-                             "writerImage": debate.writer.customProfile.smallImage, "title": debate.title})
-            return list
-        return None
+        debateScraps = obj.contestScraps.all()
+        return DebateSerializerForScrap(debateScraps, many=True, context={"user": obj.user}).data
 
-    def get_codeNoteScraps(self, obj):
-        codeNoteScrapList = obj.codeNoteScraps.all()
-        if codeNoteScrapList:
-            list = []
-            for codeNote in codeNoteScrapList:
-                list.append({"id": codeNote.id, "writerNickname": codeNote.writer.customProfile.nickname,
-                             "writerImage": codeNote.writer.customProfile.smallImage, "title": codeNote.title})
-            return list
-        return None
+    def get_codenoteScraps(self, obj):
+        codenoteScraps = obj.codeNoteScraps.all()
+        return DebateSerializerForScrap(codenoteScraps, many=True, context={"user": obj.user}).data
 
     def get_velogScraps(self, obj):
-        velogScrapList = obj.velogScraps.all()
-        if velogScrapList:
-            list = []
-            for velog in velogScrapList:
-                list.append({"id": velog.id, "writerNickname": velog.writer.customProfile.nickname,
-                             "writerImage": velog.writer.customProfile.smallImage, "title": velog.title})
-            return list
-        return None
-
-    def get_teams(self, obj):
-        teams = obj.user.teams
-        serializer = TeamsSerializer(teams, many=True)
-        return serializer.data
+        velogScraps = obj.velogScraps.all()
+        return VelogSerializerForScrap(velogScraps, many=True, context={"user": obj.user}).data
 
 
 class CustomProfileSerializer(serializers.ModelSerializer):
