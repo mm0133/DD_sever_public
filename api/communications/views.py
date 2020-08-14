@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from config.customPermissions import IsGetRequestOrAuthenticated, IsGetRequestOrWriterOrAdminUser
+from config.utils import hitCountRespose
 from .models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
 from .serializers import ContestDebatesSerializer, ContestDebateSerializer, ContestCodeNotesSerializer, \
     ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer, DebateCommentSerializer, CodeNoteCommentSerializer, \
@@ -55,7 +56,7 @@ class ContestDebateViewWithPk(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = ContestDebateSerializer(contestDebate, context={'user': request.user})
-            return Response(serializer.data)
+            return hitCountRespose(request, contestDebate, Response(serializer.data))
 
     def put(self, request, pk):
         contestDebate = self.get_contestDebate(pk)
@@ -363,7 +364,6 @@ class VelogCommentViewWithVelogPK(APIView):
         serializer = VelogCommentSerializer(velogComment)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
-
 
 
 class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
