@@ -18,6 +18,7 @@ def hitCountRespose(request, object, response):
     if request.COOKIES.get(cookie_name) is not None:
         cookies = request.COOKIES.get(cookie_name)
         cookies_dict = json.loads(cookies)
+        print(cookies_dict)
         if objName in cookies_dict:
             if not object.id in cookies_dict[objName]:
                 cookies_dict[objName]=cookies_dict[objName].append(object.id)

@@ -35,7 +35,7 @@ def ContestDebateCreateWithContestPk(request, pk):
         contest=contest
     )
 
-    serializer = ContestDebatesSerializer(contestDebate)
+    serializer = ContestDebatesSerializer(contestDebate, context={"user":request.user})
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -63,7 +63,7 @@ class ContestDebateViewWithPk(APIView):
         if contestDebate is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ContestDebateSerializer(contestDebate, data=request.data, partial=True)
+        serializer = ContestDebateSerializer(contestDebate, data=request.data, partial=True, context={"user":request.user})
         if serializer.is_valid():  # validate 로직 추가
             contestDebate = serializer.save()
             return Response(ContestDebateSerializer(contestDebate).data)
@@ -97,7 +97,7 @@ def ContestCodenoteCreateWithContestPk(request, pk):
         contest=contest
     )
 
-    serializer = CodeNoteCommentSerializer(contestCodenote)
+    serializer = CodeNoteCommentSerializer(contestCodenote,  context={"user":request.user})
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -125,7 +125,7 @@ class ContestCodeNoteViewWithPk(APIView):
         if contestCodeNote is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ContestCodeNoteSerializer(contestCodeNote, data=request.data, partial=True)
+        serializer = ContestCodeNoteSerializer(contestCodeNote, data=request.data, partial=True, context={"user":request.user})
         if serializer.is_valid():  # validate 로직 검토
             contestCodeNote = serializer.save()
             return Response(ContestCodeNoteSerializer(contestCodeNote).data)
@@ -149,7 +149,7 @@ class VelogView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = VelogSerializer(data=request.data)
+        serializer = VelogSerializer(data=request.data, context={"user":request.user})
         if serializer.is_valid():  # validation 로직 손보기
             serializer.save(writer=request.user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -181,7 +181,7 @@ class VelogViewWithPk(APIView):
         if velog is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = VelogSerializer(velog, data=request.data, partial=True)
+        serializer = VelogSerializer(velog, data=request.data, partial=True, context={"user":request.user})
         if serializer.is_valid():  # validate 로직 추가
             velog = serializer.save()
             return Response(VelogSerializer(velog).data)
@@ -223,7 +223,7 @@ class DebateCommentViewWithDebatePK(APIView):
             contestDebate_id=pk,
             debateComment_id=parent_debateComment_id
         )
-        serializer = DebateCommentSerializer(debateComment)
+        serializer = DebateCommentSerializer(debateComment, context={"user":request.user})
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -252,7 +252,7 @@ class DebateCommentViewWithPK(APIView):
         if debateComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = DebateCommentSerializer(debateComment, data=request.data, partial=True, )
+        serializer = DebateCommentSerializer(debateComment, data=request.data, partial=True, context={"user":request.user})
         if serializer.is_valid():  # validate 로직 추가
             debateComment = serializer.save()
             return Response(DebateCommentSerializer(debateComment).data)
@@ -291,7 +291,7 @@ class CodeNoteCommentViewWithCodeNotePK(APIView):
             contestCodeNote_id=pk,
             codeNoteComment_id=parent_codenoteComment_id
         )
-        serializer = CodeNoteCommentSerializer(codeNoteComment)
+        serializer = CodeNoteCommentSerializer(codeNoteComment,context={"user":request.user})
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -320,7 +320,7 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
         if codeNoteComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = CodeNoteCommentSerializer(codeNoteComment, data=request.data, partial=True, )
+        serializer = CodeNoteCommentSerializer(codeNoteComment, data=request.data, partial=True, context={"user":request.user})
         if serializer.is_valid():  # validate 로직 추가
             codeNoteComment = serializer.save()
             return Response(CodeNoteCommentSerializer(codeNoteComment).data)
@@ -361,7 +361,7 @@ class VelogCommentViewWithVelogPK(APIView):
             # 다민
             velogComment_id=parent_velogComment_id
         )
-        serializer = VelogCommentSerializer(velogComment)
+        serializer = VelogCommentSerializer(velogComment, context={"user":request.user})
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -390,7 +390,7 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
         if velogComment is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = VelogCommentSerializer(velogComment, data=request.data, partial=True, )
+        serializer = VelogCommentSerializer(velogComment, data=request.data, partial=True, context={"user":request.user})
         if serializer.is_valid():  # validate 로직 추가
             velogComment = serializer.save()
             return Response(VelogCommentSerializer(velogComment).data)
