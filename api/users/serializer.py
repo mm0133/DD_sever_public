@@ -134,18 +134,14 @@ class CustomProfileSerializerForPut(serializers.ModelSerializer):
 
 
 class MemberSerializer(serializers.ModelSerializer):
-    nickname = serializers.SerializerMethodField()
-    smallImage = serializers.SerializerMethodField()
+    nickname = serializers.CharField(source='customProfile.nickname')
+    smallImage = serializers.ImageField(source='customProfile.smallImage')
 
     class Meta:
         model = User
-        fields = ['nickname']
+        fields = ['nickname', 'smallImage']
 
-    def get_nickname(self, obj):
-        return obj.customProfile.nickname
 
-    def get_smallImage(self, obj):
-        return obj.customProfile.smallImage
 
 
 class TeamsSerializer(serializers.ModelSerializer):
@@ -164,8 +160,12 @@ class TeamSerializer(serializers.ModelSerializer):
 
     def get_members(self, obj):
         members = obj.members.all()
-        return MemberSerializer(members, many=True).data
+        # qeurysets = CustomProfile.objects.none()
+        # for member in members:
+        #     qeurysets = qeurysets | CustomProfile.objects.filter(user=member)
 
+        # return MemberSerializer(qeurysets, many=True).data
+        return MemberSerializer(members, many=True).data
     def get_isRepresentative(self, obj):
         user = self.context.get("user")
         return user == obj.representative
