@@ -75,7 +75,7 @@ class CustomProfileView(APIView):
 
 
 @api_view(['GET'])
-def get_teams(request, nickname):
+def rnjget_teams(request, nickname):
     user = get_object_or_404(CustomProfile, nickname=nickname).user
     teams = user.teams
     serializer = TeamsSerializer(teams, many=True)
@@ -118,7 +118,7 @@ def member_invite(request, teamName):
     memberNickname = get_value_or_error(request.data, "memberNickname")
     invitingMessage = get_object_or_None(request.data, "invitingMessage")
     if memberNickname == request.user.customProfile.nickname:
-        return Response(f"you can't invite yourself!", status=status.HTTP_403_FORBIDDEN)
+        return Response("you can't invite yourself!", status=status.HTTP_403_FORBIDDEN)
     if team.representative == request.user or request.user.is_staff:
         member = get_object_or_404(CustomProfile, nickname=memberNickname).user
         TeamInvite.objects.create(
@@ -135,26 +135,29 @@ def member_invite(request, teamName):
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_accept(request, teamName):
     team = get_object_or_404(Team, name=teamName)
-    yesOrNo = get_value_or_error(request.data, "yesOrNo")
-    teamInvite = get_object_or_None(TeamInvite, invitee=request.user)
-    if team.representative == request.user or request.user.is_staff:
+    isAccepted = get_value_or_error(request.data, "isAccepted")
+    teamInvite = get_object_or_404(TeamInvite, inviter=team.representative, invitee=request.user)
+    if teamInvite.invitee == request.user or request.user.is_staff:
+        if isAccepted:
+            team.members.add(teamInvite.invitee)
+            teamInvite.isAccepted = True
 
+        teamInvite.isFinished = True
+        teamInvite.save()
         return Response(status=status.HTTP_200_OK)
-    return Response(f"you are neither team {teamName}'s representative nor staff user!",
-                    status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(f"you are neither team {teamName}'s invitee nor staff user!",
+                        status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_delete(request, teamName):
-    try:
-        team = Team.objects.get(name=teamName)
-    except team.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    if team.representative == request.user or request.user.is_staff or request.data[
-        "memberNickname"] == request.user.customProfile.nickname:
-        member = CustomProfile.objects.get(nickname=request.data["memberNickname"]).user
-        team = Team.objects.get(name=teamName)
+    team = get_object_or_404(Team, name=teamName)
+    memberNickname = get_value_or_error(request.data, "memberNickname")
+    if team.representative == request.user or request.user.is_staff or \
+            memberNickname == request.user.customProfile.nickname:
+        member = get_object_or_404(CustomProfile, nickname=memberNickname).user
         if member == team.representative:
             if team.members.exclude(id=request.user.id):
                 team.representative = team.members.exclude(id=request.user.id)[0]
@@ -172,13 +175,10 @@ def member_delete(request, teamName):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def change_representative(request, teamName):
-    try:
-        team = Team.objects.get(name=teamName)
-    except team.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    team = get_object_or_404(Team, name=teamName)
+    memberNickname = get_value_or_error(request.data, "memberNickname")
     if team.representative == request.user or request.user.is_staff:
-        member = CustomProfile.objects.get(nickname=request.data["memberNickname"]).user
-        team = Team.objects.get(name=teamName)
+        member = get_object_or_404(CustomProfile, nickname=memberNickname).user
         team.representative = member
         team.save()
         return Response(status=status.HTTP_200_OK)

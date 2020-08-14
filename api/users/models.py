@@ -95,3 +95,5 @@ class TeamInvite(models.Model):
     inviter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitingSend')
     invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitingReceive')
     invitingMessage = models.TextField(blank=True, null=True)
+    isAccepted = models.BooleanField(default=False)
+    isFinished = models.BooleanField(default=False)

@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from api.communications.models import ContestDebate, ContestCodeNote, Velog
 from api.communications.serializers import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
+from api.contests.models import Contest
 from api.users.models import CustomProfile, Team
 
 
