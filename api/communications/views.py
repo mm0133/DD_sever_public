@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from config.customPermissions import IsGetRequestOrAuthenticated, IsGetRequestOrWriterOrAdminUser
-from config.utils import hitCountRespose
+from config.utils import HitCountRespose
 from .models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
 from .serializers import ContestDebatesSerializer, ContestDebateSerializer, ContestCodeNotesSerializer, \
     ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer, DebateCommentSerializer, CodeNoteCommentSerializer, \
@@ -56,7 +56,7 @@ class ContestDebateViewWithPk(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = ContestDebateSerializer(contestDebate, context={'user': request.user})
-            return hitCountRespose(request, contestDebate, Response(serializer.data))
+            return HitCountRespose(request, contestDebate, Response(serializer.data))
 
     def put(self, request, pk):
         contestDebate = self.get_contestDebate(pk)
@@ -118,7 +118,7 @@ class ContestCodeNoteViewWithPk(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = ContestCodeNoteSerializer(contestCodeNote, context={'user': request.user})
-            return Response(serializer.data)
+            return HitCountRespose(request, contestCodeNote, Response(serializer.data))
 
     def put(self, request, pk):
         contestCodeNote = self.get_contestCodeNote(pk)
@@ -174,7 +174,7 @@ class VelogViewWithPk(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             serializer = VelogSerializer(velog, context={'user': request.user})
-            return Response(serializer.data)
+            return HitCountRespose(request, velog, Response(serializer.data))
 
     def put(self, request, pk):
         velog = self.get_velog(pk)

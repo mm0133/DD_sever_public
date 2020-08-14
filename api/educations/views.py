@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from config.customPermissions import IsGetRequestOrAdminUser
+from config.utils import HitCountRespose
 from .models import EduVideoLecture, LecturePackage
 from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer
 
@@ -38,7 +39,7 @@ class LecturePackageViewWithPk(APIView):
         if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = LecturePackageSerializer(lecturePackage)
-        return Response(serializer.data)
+        return HitCountRespose(request, lecturePackage, Response(serializer.data))
 
     def put(self, request, pk):
         lecturePackage = self.get_lecturePackage(pk)
@@ -88,7 +89,7 @@ class EduVideoLectureViewWithVideoPk(APIView):
         if videoLecture is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = EduVideoLectureSerializer(videoLecture).data
-        return Response(serializer)
+        return HitCountRespose(request, videoLecture, Response(serializer.data))
 
     def put(self, request, pk):
         videoLecture = self.get_videoLecture(pk)

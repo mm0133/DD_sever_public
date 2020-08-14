@@ -2,7 +2,7 @@ import datetime
 import json
 
 
-def hitCountRespose(request, object, response):
+def HitCountRespose(request, object, response):
 
     # [1] 로그인 확인
     if not request.user.is_authenticated:
@@ -45,4 +45,5 @@ def hitCountRespose(request, object, response):
     response.set_cookie(cookie_name, returnCookies, expires=expires)
 
     return response
+
 
