@@ -2,7 +2,7 @@ import datetime
 import json
 
 
-def hitCountRespose(request, response, object):
+def hitCountRespose(request, object, response):
 
     # [1] 로그인 확인
     if not request.user.is_authenticated:
