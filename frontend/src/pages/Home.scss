@@ -263,8 +263,34 @@ contest {
 }
 
 .manual {
+  @include flex-box-column;
+  justify-content: center;
+
   width: $width-main;
   height: 120px;
   margin: $padding-top auto;
+  padding: 0 30px;
   background-color: $color-background-light;
+
+  .subtitle {
+    font-family: $font-text-regular;
+    font-size: 18px;
+
+    span {
+      font-family: $font-ink;
+      font-size: 22px;
+      color: $color-main-dark;
+      margin: 0 8px;
+    }
+  }
+
+  .title {
+    font-family: $font-title-regular;
+    font-size: 28px;
+    margin-top: 8px;
+
+    span {
+      font-family: $font-title-bold;
+    }
+  }
 }

@@ -184,7 +184,7 @@ const Home = () => {
                     </div>
 
                     <div className="manual">
-                        <div className="subtitle">당신을 위한 <span>완벽한</span> 데이타덕 가이드</div>
+                        <div className="subtitle">당신을 위한<span>완벽한</span>데이타덕 가이드</div>
                         <div className="title">데이타덕 <span>사용설명서</span></div>
                     </div>
 
