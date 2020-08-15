@@ -71,9 +71,7 @@ class ContestParticipantAnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ContestParticipantAnswer
-        fields = ['id', 'isTeam', 'name', 'contest', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank','teamMembers' ]
-        read_only_fields = ['createdAT', 'updatedAt', 'rank', 'writerNickname',]
-        extra_kwargs = {'contest': {'write_only': True},
-                        'user': {'write_only': True},
-                        'team': {'write_only': True}}
+        fields = ['id', 'isTeam', 'name', 'contest', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank', 'teamMembers']
+        read_only_fields = ['createdAT', 'updatedAt', 'rank', 'name', 'isTeam', 'teamMembers']
+        extra_kwargs = {'contest': {'write_only': True},}
 
