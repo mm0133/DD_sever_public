@@ -100,8 +100,11 @@ class Team(models.Model):
 
 
 class TeamInvite(models.Model):
-    inviter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitingSend')
-    invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitingReceive')
+    team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.CASCADE, related_name="teamInvite")
+    invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='teamInviteReceived')
     invitingMessage = models.TextField(blank=True, null=True)
     isAccepted = models.BooleanField(default=False)
     isFinished = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"teamInvite from team {self.team.name}' to {self.invitee.customProfile.nickname}"

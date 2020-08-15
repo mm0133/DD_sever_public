@@ -117,10 +117,12 @@ def member_invite(request, teamName):
     invitingMessage = get_object_or_None(request.data, "invitingMessage")
     if memberNickname == request.user.customProfile.nickname:
         return Response("you can't invite yourself!", status=status.HTTP_403_FORBIDDEN)
+    elif get_object_or_None(TeamInvite, team=team, invitee=request.user):
+        return Response(f"you already invited {memberNickname} to team {teamName} ", status=status.HTTP_403_FORBIDDEN)
     if team.representative == request.user or request.user.is_staff:
         member = get_object_or_404(CustomProfile, nickname=memberNickname).user
         TeamInvite.objects.create(
-            inviter=request.user,
+            team=team,
             invitee=member,
             invitingMessage=invitingMessage
         )
@@ -134,7 +136,7 @@ def member_invite(request, teamName):
 def member_invite_accept(request, teamName):
     team = get_object_or_404(Team, name=teamName)
     isAccepted = get_value_or_error(request.data, "isAccepted")
-    teamInvite = get_object_or_404(TeamInvite, inviter=team.representative, invitee=request.user)
+    teamInvite = get_object_or_404(TeamInvite, team=team, invitee=request.user)
     if teamInvite.invitee == request.user or request.user.is_staff:
         if isAccepted:
             team.members.add(teamInvite.invitee)
@@ -145,6 +147,19 @@ def member_invite_accept(request, teamName):
         return Response(status=status.HTTP_200_OK)
     else:
         return Response(f"you are neither team {teamName}'s invitee nor staff user!",
+                        status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def member_invite_cancel(request, teamName):
+    team = get_object_or_404(Team, name=teamName)
+    teamInvite = get_object_or_404(TeamInvite, inviter=team.representative, invitee=request.user)
+    if team.representative == request.user or request.user.is_staff:
+        teamInvite.delete()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(f"you are neither team {teamName}'s representative nor staff user!",
                         status=status.HTTP_401_UNAUTHORIZED)
 
 
