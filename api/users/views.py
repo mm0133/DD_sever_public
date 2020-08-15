@@ -212,7 +212,8 @@ def change_representative(request, teamName):
         team.representative = member
         team.save()
         return Response(status=status.HTTP_200_OK)
-    else: return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['delete'])
@@ -247,3 +248,7 @@ def delete_user_pk(request, pk):
     Response(status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def password_check(request):
+    pass

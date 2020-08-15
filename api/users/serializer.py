@@ -132,10 +132,9 @@ class CustomProfileSerializer(serializers.ModelSerializer):
 
 
 class CustomProfileSerializerForChange(serializers.ModelSerializer):
-    password = serializers.CharField(source='user.password')
     class Meta:
         model = CustomProfile
-        fields = ['nickname', 'phoneNumber', 'email', 'image', 'password']
+        fields = ['nickname', 'phoneNumber', 'email', 'image']
 
 
 class MemberSerializer(serializers.ModelSerializer):
@@ -188,7 +187,7 @@ class TeamInviteSerializerForAccept(serializers.ModelSerializer):
         fields = ["isAccepted"]
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializerForPassword(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["username", "password"]

@@ -3,7 +3,7 @@ from uuid import uuid4
 
 
 def customProfileImagePath(instance, filename):
-    return f'users/CustomProfile/image/user{instance.user.id}/{uuid4().hex}/{instance.id}_{uuid4().hex}'
+    return f'users/CustomProfile/image/user{instance.user.id}/{uuid4().hex}/{instance.id}_{uuid4().hex}.jpeg'
 
 
 def customProfileSmallImage(instance, filename):
