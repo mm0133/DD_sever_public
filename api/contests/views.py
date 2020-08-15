@@ -9,7 +9,8 @@ from rest_framework.views import APIView
 from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from api.contests.serializer import ContestsSerializer, ContestSerializer, ContestFileSerializer, \
     ContestParticipantAnswerSerializer
-from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, IsWriterOrAdminUser
+from api.users.models import Team
+from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, IsGetRequestOrTeamRepresentativeOrOwner
 
 
 class ContestView(APIView):
@@ -22,7 +23,7 @@ class ContestView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ContestSerializer(data=request.data, context={'user': request.user})
+        serializer = ContestSerializer(data=request.data, context={'user': request.user}),
         if serializer.is_valid():  # validation 로직 손보기
             # writer가 null=True이기 때문에 프론트에서 넣어주지 않아도 .is_valid에서 에러가 나지 않는다.
             # 그래서 밑에서 witer로 넣어주는 것이다.
@@ -132,11 +133,33 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk):
-        contestParticipantAnswer = ContestParticipantAnswer.objects.create(
-            writer=request.user,
-            contest_id=pk,
-            file=request.data['file']
-        )
+
+        if request.data['teamName']:
+            teamName= request.data['teamName']
+            team=Team.objects.filter(name=teamName)
+            if team.representative!= request.user or (not request.user.is_staff):
+                return Response(data="팀의 대표만 답 제출을 할 수 있습니다.")
+            teamMembers=[]
+            for member in team.members.all():
+                teamMembers.append(member.customProfile.nickname)
+
+            contestParticipantAnswer = ContestParticipantAnswer.objects.create(
+                isTeam=True,
+                team=team,
+                name=teamName,
+                teamMembers=teamMembers,
+                contest_id=pk,
+                file=request.data['file']
+            )
+
+        else:
+            contestParticipantAnswer = ContestParticipantAnswer.objects.create(
+                isTeam=False,
+                user=request.user,
+                name=request.user.customProfile.nickname,
+                contest_id=pk,
+                file=request.data['file']
+            )
         # 정확도 계산 로직 넣어야함
         contestParticipantAnswer.accuracy = contestParticipantAnswer.calculateAccuracy()
         contestParticipantAnswer.save()
@@ -146,7 +169,7 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
 
 
 class ContestParticipantAnswerViewWithPK(APIView):
-    permission_classes = [IsWriterOrAdminUser]
+    permission_classes = [IsGetRequestOrTeamRepresentativeOrOwner]
 
     def get_contestParticipantAnswer(self, pk):
         try:
