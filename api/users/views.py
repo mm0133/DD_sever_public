@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.users.models import CustomProfile, Team, TeamInvite
-from api.users.serializer import CustomProfileSerializer, CustomProfileSerializerForOwner, \
-    CustomProfileSerializerForPut, MyCustomProfileSerializer, TeamsSerializer, TeamSerializer, \
-    CustomProfileSerializerForPost
+from api.users.serializer import CustomProfileSerializer, MyCustomProfileSerializer, \
+    CustomProfileSerializerForChange, TeamsSerializer, TeamSerializer, TeamsSerializerForPost, \
+    TeamInviteSerializerForAccept
 from config.customExceptions import DDCustomException, get_value_or_error
 from annoying.functions import get_object_or_None
 
@@ -42,7 +42,7 @@ class CustomProfileView(APIView):
     def get(self, request):
         customProfile = self.get_customProfile(request)
         # MyCustomProfileSerializer 와 다른 점은 그냥 수정용이라는 것
-        serializer = CustomProfileSerializerForOwner(customProfile)
+        serializer = CustomProfileSerializerForChange(customProfile)
         return Response(serializer.data)
 
     def post(self, request):
@@ -50,25 +50,25 @@ class CustomProfileView(APIView):
         if get_object_or_None(CustomProfile, user=request.user):
             return Response(f"{request.user.username}'s profile already exits.", status=status.HTTP_403_FORBIDDEN)
 
-        serializer = CustomProfileSerializerForPost(data=request.data, context={"user": request.user})
+        serializer = CustomProfileSerializerForChange(data=request.data, context={"user": request.user})
         if serializer.is_valid():
             serializer.save(user=request.user)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            image = get_object_or_None(request.data, "image")
+            if image:
+                serializer.save(smallImage=image)
+            return Response(data=serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
         customProfile = self.get_customProfile(request)
 
-        serializer = CustomProfileSerializerForPut(customProfile, data=request.data, partial=True)
+        serializer = CustomProfileSerializerForChange(customProfile, data=request.data, partial=True)
         if serializer.is_valid():
-            customProfile = serializer.save()
-            if get_object_or_None(request.data, "image"):
-                customProfile.smallImage = request.data["image"]
-                customProfile.save()
-            # 파일 용량낮춰서 저장하기. image 는 자기 프로필에가면 조금 크게나오는 사진, smallImage 는 댓글 옆에 작은사진
-            serializer = CustomProfileSerializerForOwner(customProfile)
-            return Response(serializer.data)
+            image = get_object_or_None(request.data, "image")
+            if image:
+                serializer.save(smallImage=image)
+            return Response(data=serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -84,10 +84,12 @@ def get_teams(request, nickname):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def post_team(request):
-
-    team.members.add(request.user)
-    serializer = TeamSerializer(team, context={"user": request.user})
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
+    serializer = TeamsSerializerForPost(data=request.data, context={"user": request.user})
+    if serializer.is_valid():
+        serializer.save(representative=request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TeamViewWithTeamName(APIView):
@@ -146,27 +148,30 @@ def member_invite(request, teamName):
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_accept(request, teamName):
     team = get_object_or_404(Team, name=teamName)
-    print(request.data)
-    isAccepted = get_value_or_error(request.data, "accept")
     teamInvite = get_object_or_404(TeamInvite, team=team, invitee=request.user)
-    if teamInvite.invitee == request.user or request.user.is_staff:
-        if isAccepted:
-            team.members.add(teamInvite.invitee)
-            teamInvite.isAccepted = True
 
-        teamInvite.isFinished = True
-        teamInvite.save()
-        return Response(status=status.HTTP_200_OK)
-    else:
+    if not (teamInvite.invitee == request.user or request.user.is_staff):
         return Response(f"you are neither team {teamName}'s invitee nor staff user!",
                         status=status.HTTP_401_UNAUTHORIZED)
+
+    # 이렇게 해야 JS의 true/false 를 python 의 true/false 로 알아들을 수 있음.
+    serializer = TeamInviteSerializerForAccept(teamInvite, data=request.data, partial=True)
+    if serializer.is_valid():
+        if serializer.data.isAccepted:
+            team.members.add(teamInvite.invitee)
+
+    teamInvite.isFinished = True
+    teamInvite.save()
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_cancel(request, teamName):
     team = get_object_or_404(Team, name=teamName)
-    teamInvite = get_object_or_404(TeamInvite, inviter=team.representative, invitee=request.user)
+    memberNickname = get_value_or_error(request.data, "memberNickname")
+    member = get_object_or_404(CustomProfile, nickname=memberNickname).user
+    teamInvite = get_object_or_404(TeamInvite, team=team, invitee=member)
     if team.representative == request.user or request.user.is_staff:
         teamInvite.delete()
         return Response(status=status.HTTP_200_OK)
@@ -207,7 +212,7 @@ def change_representative(request, teamName):
         team.representative = member
         team.save()
         return Response(status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else: return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['delete'])
@@ -240,3 +245,5 @@ def delete_user_pk(request, pk):
             team.delete()
     user.delete()
     Response(status=status.HTTP_200_OK)
+
+

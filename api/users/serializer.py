@@ -7,7 +7,7 @@ from rest_framework import serializers
 from api.communications.models import ContestDebate, ContestCodeNote, Velog
 from api.communications.serializers import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
 from api.contests.models import Contest
-from api.users.models import CustomProfile, Team
+from api.users.models import CustomProfile, Team, TeamInvite
 
 
 class ContestSerializerForScrap(serializers.ModelSerializer):
@@ -117,14 +117,6 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return VelogSerializerForScrap(velogScraps, many=True, context={"user": obj.user}).data
 
 
-class CustomProfileSerializerForPost(serializers.ModelSerializer):
-    velogs = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CustomProfile
-        fields = ['nickname', 'phoneNumber', 'email']
-
-
 class CustomProfileSerializer(serializers.ModelSerializer):
     velogs = serializers.SerializerMethodField()
 
@@ -139,17 +131,11 @@ class CustomProfileSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class CustomProfileSerializerForOwner(serializers.ModelSerializer):
+class CustomProfileSerializerForChange(serializers.ModelSerializer):
+    password = serializers.CharField(source='user.password')
     class Meta:
         model = CustomProfile
-        fields = ['image', 'nickname', 'user', 'phoneNumber', 'email']
-        read_only_fields = ['user', 'email', 'phoneNumber']  # 현재 read only 핗요없긴함 혹시몰라남김
-
-
-class CustomProfileSerializerForPut(serializers.ModelSerializer):
-    class Meta:
-        model = CustomProfile
-        fields = ['nickname', 'contestRankDictionary', 'user', 'phoneNumber', 'email', 'image']
+        fields = ['nickname', 'phoneNumber', 'email', 'image', 'password']
 
 
 class MemberSerializer(serializers.ModelSerializer):
@@ -188,3 +174,21 @@ class TeamSerializer(serializers.ModelSerializer):
     def get_isRepresentative(self, obj):
         user = self.context.get("user")
         return user == obj.representative
+
+
+class TeamInviteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamInvite
+        fields = "__all__"
+
+
+class TeamInviteSerializerForAccept(serializers.ModelSerializer):
+    class Meta:
+        model = TeamInvite
+        fields = ["isAccepted"]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "password"]
