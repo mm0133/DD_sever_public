@@ -10,8 +10,7 @@ from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from api.contests.serializer import ContestsSerializer, ContestSerializer, ContestFileSerializer, \
     ContestParticipantAnswerSerializer
 from api.users.models import Team
-from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, IsWriterOrAdminUser, \
-    IsTeamRepresentativeOrOwner
+from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, IsGetRequestOrTeamRepresentativeOrOwner
 
 
 class ContestView(APIView):
@@ -170,7 +169,7 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
 
 
 class ContestParticipantAnswerViewWithPK(APIView):
-    permission_classes = [IsTeamRepresentativeOrOwner]
+    permission_classes = [IsGetRequestOrTeamRepresentativeOrOwner]
 
     def get_contestParticipantAnswer(self, pk):
         try:
