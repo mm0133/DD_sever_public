@@ -12,8 +12,8 @@ django-annoying==0.10.6
 django-appconf==1.0.4
 django-cors-headers==3.4.0
 django-imagekit==4.0.2
+django-mysql==3.8.1
 djangorestframework==3.11.1
-djangorestframework-jwt==1.11.0
 djangorestframework-simplejwt==4.4.0
 flake8==3.8.3
 idna==2.10

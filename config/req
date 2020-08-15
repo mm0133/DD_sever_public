@@ -4,3 +4,5 @@ djangorestframework==3.11.0
 social-auth-core==3.3.3
 social-auth-app-django==3.4.0
 rest-social-auth==4.2.0
+
+Django-MySQL

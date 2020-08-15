@@ -65,12 +65,15 @@ class ContestFileSerializer(serializers.ModelSerializer):
 
 
 class ContestParticipantAnswerSerializer(serializers.ModelSerializer):
-    writerNickname = serializers.CharField(source='writer.customProfile.nickname')
+
+    teamMembers=serializers.ListField()
+
 
     class Meta:
         model = ContestParticipantAnswer
-        fields = ['id', 'contest', 'writer', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank', 'writerNickname']
-        read_only_fields = ['createdAT', 'updatedAt', 'rank', 'writerNickname']
+        fields = ['id', 'isTeam', 'name', 'contest', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank','teamMembers' ]
+        read_only_fields = ['createdAT', 'updatedAt', 'rank', 'writerNickname',]
         extra_kwargs = {'contest': {'write_only': True},
-                        'writer': {'write_only': True}}
+                        'user': {'write_only': True},
+                        'team': {'write_only': True}}
 

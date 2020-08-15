@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django_mysql.models import ListTextField
 from imagekit.processors import Thumbnail
 from imagekit.models import ProcessedImageField
 
@@ -103,8 +104,10 @@ class ContestParticipantAnswer(models.Model):
     team = models.ForeignKey(
         'users.Team', null=True, on_delete=models.SET_NULL, related_name="teamAnswer"
     )
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    isTeam=models.BooleanField(default=False)
+    teamMembers=ListTextField(null=True, blank=True, base_field=models.CharField(max_length=255),)
+    name=models.CharField(max_length=255)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
@@ -114,6 +117,14 @@ class ContestParticipantAnswer(models.Model):
 
     # 종료 시점에 업데이트해서 1등 - 1, 2등 - 2, 3등 - 3, 상위30% - 4 참여완료 - 5
     rank = models.IntegerField(default=0)
+
+    def get_name(self):
+        if self.isTeam and self.team:
+            return self.team.name
+        elif (not self.isTeam) and self.user:
+            return self.user.customProfile.nickname
+        else:
+            return "삭제된 계정"
 
     def calculateAccuracy(self):
         # self.file로 계산하는 로직넣기
