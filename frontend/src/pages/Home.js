@@ -136,42 +136,50 @@ const Home = () => {
 
                     <div className="roadmap">
                         <div className="title">머신러닝 로드맵</div>
-                        <div className="subtitle">머신러닝 기초부터 대회 참가까지, 영상으로 알아보는 머신러닝 로드맵</div>
-                        <div className="video-wrap">
-                            <div className="arrow">&lt;</div>
-                            <div className="video-list">
-                                <div className="video">
-                                    <div className="video-image"><img src="" alt=""/></div>
-                                    <div className="right-side">
-                                        <div className="title">
-                                            <span>1시간</span>으로 끝내는<br/>
-                                            머신러닝 <span>기초</span>
-                                        </div>
-                                        <div className="video-button">무료 강의 보러가기 ></div>
-                                    </div>
+                        <div className="subtitle">
+                            <div className="text">머신러닝 기초부터 대회 참가까지, 영상으로 알아보는 머신러닝 로드맵</div>
+                            <div className="more">로드맵 따라가기<span>></span></div>
+                        </div>
+                        <div className="video-list">
+                            <div className="video" style={{backgroundImage: "url()"}}>
+                                <div className="title">
+                                    <span>1시간</span>으로 끝내는<br/>
+                                    머신러닝 <span>기초</span>
                                 </div>
-                                <div className="video">
-                                    <div className="video-image"><img src="" alt=""/></div>
-                                    <div className="right-side">
-                                        <div className="title">
-                                            <div className="classification"><span>대회</span> 대회 톺아보기</div>
-                                            감정 인식 대회 <span>EDA</span>
-                                        </div>
-                                        <div className="video-button">무료 강의 보러가기 ></div>
-                                    </div>
-                                </div>
-                                <div className="video">
-                                    <div className="video-image"><img src="" alt=""/></div>
-                                    <div className="right-side">
-                                        <div className="title">
-                                            <div className="classification"><span>대회</span> 대회 톺아보기</div>
-                                            감정 인식 대회 <span>전처리</span>
-                                        </div>
-                                        <div className="video-button">무료 강의 보러가기 ></div>
+                                <div className="video-button">
+                                    <div className="overlay">
+                                        무료 강의 보러가기 <span>></span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="arrow">></div>
+                            <div className="video" style={{backgroundImage: "url()"}}>
+                                <div className="title">
+                                    <div className="classification">
+                                        <div className="circle">대회</div>
+                                        대회 톺아보기
+                                    </div>
+                                    감정 인식 대회 <span>EDA</span>
+                                </div>
+                                <div className="video-button">
+                                    <div className="overlay">
+                                        무료 강의 보러가기 <span>></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="video" style={{backgroundImage: "url()"}}>
+                                <div className="title">
+                                    <div className="classification">
+                                        <div className="circle">대회</div>
+                                        대회 톺아보기
+                                    </div>
+                                    감정 인식 대회 <span>전처리</span>
+                                </div>
+                                <div className="video-button">
+                                    <div className="overlay">
+                                        무료 강의 보러가기 <span>></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

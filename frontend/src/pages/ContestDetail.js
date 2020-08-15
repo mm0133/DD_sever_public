@@ -92,8 +92,8 @@ const ContestDetail = ({match}) => {
                     </div>
 
                     <div className="detail-nav">
-                        <NavLink to={`/contest/${match.params.id}/overview`} className="link" activeStyle={activeStyle}>대회
-                            안내</NavLink>
+                        <NavLink to={`/contest/${match.params.id}/overview`} className="link"
+                                 activeStyle={activeStyle}>대회 안내</NavLink>
                         <NavLink to={`/contest/${match.params.id}/data`} className="link"
                                  activeStyle={activeStyle}>데이터</NavLink>
                         <NavLink to={`/contest/${match.params.id}/community`} className="link"

@@ -148,27 +148,116 @@ contest {
   }
 }
 
+// roadmap
+
 .roadmap {
+  width: $width-main;
   margin: $padding-top auto;
 
   .title {
     font-family: $font-title-extraBold;
     font-size: $font-size-title;
-    margin: 0 $padding-main;
   }
 
   .subtitle {
-    font-family: $font-text-regular;
-    font-size: $font-size-subtitle;
-    color: $color-text-light;
-    margin: 5px $padding-main 0;
+    @include flex-box;
+    margin-top: 5px;
+
+    .text {
+      font-family: $font-text-regular;
+      font-size: $font-size-subtitle;
+      color: $color-text-light;
+    }
+
+    .more {
+      font-family: $font-title-bold;
+      font-size: 14px;
+
+      span {
+        font-family: $font-arrow;
+        color: $color-text-light;
+        margin-left: 5px;
+      }
+    }
   }
 
-  .video-wrap {
+  .video-list {
     @include flex-box;
 
-    .arrow {
-      font-family: $font-arrow;
+    .video {
+      @include flex-box-column;
+      align-items: flex-end;
+
+      width: ($width-main - 30px*2) / 3;
+      height: 200px;
+      padding: 30px 30px 25px;
+      margin-top: 15px;
+      background-color: $color-background-light;
+
+      .title {
+        font-family: $font-title-regular;
+        font-size: 24px;
+        line-height: 35px;
+        text-align: right;
+        margin-bottom: 30px;
+
+        span {
+          font-family: $font-title-bold;
+        }
+
+        .classification {
+          @include flex-box;
+          justify-content: flex-end;
+
+          font-family: $font-title-extraBold;
+          font-size: 16px;
+          color: $color-main-dark;
+
+          .circle {
+            $height: 22px;
+            width: 40px;
+            height: $height;
+            text-align: center;
+            line-height: $height;
+
+            font-family: $font-text-bold;
+            font-size: 12px;
+
+            margin-right: 5px;
+            color: white;
+            background-color: $color-main-dark;
+            border-radius: 100px;
+          }
+        }
+      }
+
+      .video-button {
+        $height: 45px;
+        width: 180px;
+        height: $height;
+        text-align: center;
+        line-height: $height;
+
+        border: 1px solid $color-text-dark;
+        border-radius: 100px;
+
+        font-family: $font-text-bold;
+        font-size: 15px;
+        overflow: hidden;
+
+        span {
+          font-family: $font-arrow;
+        }
+
+        &:hover > .overlay {
+          @include overlay;
+          cursor: pointer;
+        }
+
+        .overlay {
+          transition-duration: 0.3s;
+        }
+      }
     }
   }
 }
