@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
 import ContestSingle from "../components/ContestSingle";
 import {NavLink} from "react-router-dom";
-import useAsync from "../UseAsync";
-import {getContests} from "../Api";
+import {getContestList} from "../Api";
 
 import "./Home.scss";
 import logo from "../image/logo.png"
@@ -13,8 +12,18 @@ import {faTrophy, faBookOpen} from "@fortawesome/free-solid-svg-icons";
 
 
 const Home = () => {
-    const [state, refetch] = useAsync(getContests, []);
-    const {data: contests} = state;
+    const [contests, setContests] = useState([]);
+
+    useEffect(() => {
+        const init = async () => {
+            const data = await getContestList();
+
+            setContests(data);
+        }
+        init();
+    }, [])
+
+    console.log(contests);
 
     const contestForTraining = contests ? contests.filter(contest => contest.isForTraining) : null;
     const contestNotForTraining = contests ? contests.filter(contest => !contest.isForTraining) : null;

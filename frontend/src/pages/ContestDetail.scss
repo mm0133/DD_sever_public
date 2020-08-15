@@ -1,0 +1,100 @@
+@import "../components/index";
+
+.detail-main-banner {
+  $margin: 30px;
+  @include flex-box-column;
+
+  width: $width-main;
+  height: $height-mainBanner - 100px;
+  margin: $margin auto;
+  padding: $margin $margin+10px $margin $margin+20px;
+  background-color: #e8e8e8;
+
+  .top-side {
+    @include flex-box;
+
+    .text {
+      @include flex-box;
+      justify-content: start;
+
+      font-family: $font-title-bold;
+      font-size: 15px;
+
+      span {
+        color: $color-text-light;
+      }
+
+      .difficulty {
+        @include flex-box;
+        margin-left: 20px;
+
+        .circle {
+          $size: 12px;
+          width: $size;
+          height: $size;
+          border-radius: 100px;
+          margin-right: 3px;
+        }
+      }
+    }
+
+    .icon {
+      font-size: 15px;
+      color: $color-main-light;
+    }
+  }
+
+  .title {
+    font-family: $font-title-extraBold;
+    font-size: 26px;
+    margin-bottom: 5px;
+  }
+
+  .subtitle {
+    font-family: $font-text-regular;
+    font-size: 16px;
+  }
+
+  .summary-wrap {
+    @include flex-box;
+    justify-content: start;
+
+    .summary {
+      @include flex-box;
+      margin-right: 20px;
+
+      font-family: $font-text-bold;
+      color: $color-main-dark;
+
+      .icon-wrap {
+        @include flex-box;
+        justify-content: center;
+
+        width: 20px;
+        height: 20px;
+
+        margin-right: 5px;
+        background-color: $color-main-dark;
+        border-radius: 100px;
+
+        .icon {
+          color: white;
+          font-size: 10px;
+        }
+      }
+    }
+  }
+}
+
+.detail-nav {
+  margin: 40px $padding-main;
+  padding-bottom: 10px;
+  font-family: $font-title-regular;
+  color: $color-text-light;
+  border-bottom: 1px solid $color-background-light;
+
+  .link {
+    padding: 10px;
+    box-sizing: border-box;
+  }
+}

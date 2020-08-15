@@ -18,17 +18,17 @@ export const getDifficulty = (difficulty) => {
         case "EASY":
             return {
                 type: "초급",
-                color: "green",
+                color: "#a7d7c5",
             }
         case "NORMAL":
             return {
                 type: "중급",
-                color: "red",
+                color: "#74b49b",
             }
         case "HARD":
             return {
                 type: "고급",
-                color: "blue",
+                color: "#5c8d89",
             }
     }
 }
@@ -39,5 +39,23 @@ export const getEvaluation = (evaluation) => {
             return "정확도 Accuracy"
         case "POPULARITY":
             return "투표 Popularity"
+    }
+}
+
+export const getIsForTraining = (type) => {
+    switch (type) {
+        case true:
+            return "연습 대회"
+        case false:
+            return "실전 대회"
+    }
+}
+
+export const getIsFinished = (type) => {
+    switch (type) {
+        case true:
+            return "완료"
+        case false:
+            return "진행중"
     }
 }

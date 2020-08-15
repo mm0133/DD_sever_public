@@ -1,0 +1,69 @@
+@import "../components/index";
+
+.list-main-banner {
+  @include flex-box-column;
+  justify-content: center;
+
+  width: 100%;
+  height: $height-mainBanner - 150px;
+  background-color: rgba(75, 101, 128, 0.1);
+  padding: 0 $padding-main;
+
+  .title {
+    font-family: $font-title-extraBold;
+    font-size: 24px;
+    margin-bottom: 7px;
+  }
+
+  .subtitle {
+    font-family: $font-text-regular;
+  }
+}
+
+.list-nav {
+  width: $width-main;
+  margin: 30px auto 0;
+
+  button {
+    border: none;
+    background-color: white;
+  }
+
+  .button-list {
+    @include flex-box;
+
+    border-bottom: 1px solid $color-background-light;
+    font-family: $font-text-light;
+    font-size: 14px;
+    color: $color-text-light;
+    padding-right: 10px;
+
+    .button {
+      font-family: $font-title-regular;
+      font-size: 16px;
+      color: $color-text-light;
+      padding: 10px;
+    }
+  }
+
+  .tag-list {
+    @include flex-box;
+    justify-content: start;
+
+    margin: 20px 10px;
+
+    .tag {
+      width: 60px;
+      height: 30px;
+      background-color: $color-background-light;
+      border-radius: 100px;
+      margin-right: 10px;
+
+      font-family: $font-title-regular;
+    }
+  }
+}
+
+.list-contest {
+  padding: 0 $padding-main;
+}

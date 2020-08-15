@@ -1,55 +1,80 @@
 import React, {useEffect, useState} from "react";
-import {NavLink, Route} from "react-router-dom";
-import {getContests} from "../Api";
+import {getContestList} from "../Api";
 import ContestSingle from "../components/ContestSingle";
-import axios from "axios";
-import useAsync from "../UseAsync";
+import "./ContestList.scss"
 
 
 const ContestList = () => {
-    const [state, refetch] = useAsync(getContests, []);
-    const {data: contests} = state;
+    const [filter, setFilter] = useState([]);
+    const [contests, setContests] = useState([]);
+    const [length, setLength] = useState("");
 
-    let filter = contests ? contests : null;
-    console.log(filter);
+    const getArrayLength = (array) => {
+        return array.length;
+    }
 
-    const getContestForTraining = () => {
-        filter = contests ? contests.filter(contest => contest.isForTraining) : null;
+    useEffect(() => {
+        const init = async () => {
+            const data = await getContestList();
+
+            setContests(data);
+            setFilter(data);
+        }
+        init();
+    }, [])
+
+    const getContestAll = async () => {
+        setFilter(contests);
+        const newLength = await getArrayLength(filter);
+        setLength(newLength);
     }
-    const getContestNotForTraining = () => {
-        filter = contests ? contests.filter(contest => !contest.isForTraining) : null;
-        console.log(filter);
+
+    const getContestForTraining = async () => {
+        setFilter(contests.filter(contest => contest.isForTraining));
+        const newLength = await getArrayLength(filter);
+        setLength(newLength);
     }
+
+    const getContestNotForTraining = async () => {
+        setFilter(contests.filter(contest => !contest.isForTraining));
+        const newLength = await getArrayLength(filter);
+        setLength(newLength);
+    }
+
 
     return (
         <div>
-            {!contests ? <div>{null}</div> :
+            {!filter ? <div>{null}</div> :
                 <div className="total-wrap">
-                    <main-banner>
+                    <div className="list-main-banner">
                         <div className="title">대회 Contest</div>
                         <div className="subtitle">머신러닝을 원하는 모두를 위한 대회입니다.</div>
-                    </main-banner>
+                    </div>
 
-                    <nav>
+                    <div className="list-nav">
                         <div className="button-list">
-                            <div className="button">전체</div>
-                            <button className="button" onClick={getContestNotForTraining}>실전 대회</button>
-                            <div className="button">연습 대회</div>
+                            <div className="buttons">
+                                <button className="button" onClick={getContestAll}>전체</button>
+                                <button className="button" onClick={getContestForTraining}>실전 대회</button>
+                                <button className="button" onClick={getContestNotForTraining}>연습 대회</button>
+                            </div>
+                            <div>총 {length}개의 대회</div>
                         </div>
 
                         <div className="tag-list">
-                            <div className="tag">초급</div>
-                            <div className="tag">중급</div>
-                            <div className="tag">고급</div>
+                            <button className="tag">#초급</button>
+                            <button className="tag">#중급</button>
+                            <button className="tag">#고급</button>
                         </div>
-                    </nav>
+                    </div>
 
-                    <contest>
+                    <div className="list-contest">
                         <div>
                             {filter.map(contest =>
                                 <ContestSingle
                                     key={contest.id}
 
+                                    id={contest.id}
                                     title={contest.title}
                                     subtitle={contest.subtitle}
                                     createdAt={contest.createdAt}
@@ -69,11 +94,11 @@ const ContestList = () => {
                                 />)
                             }
                         </div>
-                    </contest>
+                    </div>
                 </div>
             }
         </div>
     );
-};
+}
 
 export default ContestList;
