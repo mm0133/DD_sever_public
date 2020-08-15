@@ -8,6 +8,7 @@ const ContestList = () => {
     const [filter, setFilter] = useState([]);
     const [contests, setContests] = useState([]);
     const [length, setLength] = useState("");
+    const [keyword, setKeyword] = useState("");
 
     const getArrayLength = (array) => {
         return array.length;
@@ -41,6 +42,10 @@ const ContestList = () => {
         setLength(newLength);
     }
 
+    const getKeyword = (e) => {
+        setKeyword(e.target.value);
+    }
+
 
     return (
         <div>
@@ -62,9 +67,17 @@ const ContestList = () => {
                         </div>
 
                         <div className="tag-list">
-                            <button className="tag">#초급</button>
-                            <button className="tag">#중급</button>
-                            <button className="tag">#고급</button>
+                            <div className="tags">
+                                <button className="tag">#초급</button>
+                                <button className="tag">#중급</button>
+                                <button className="tag">#고급</button>
+                            </div>
+                            <input
+                                name="keyword"
+                                placeholder="대회 검색"
+                                onChange={getKeyword}
+                                value={keyword}
+                            />
                         </div>
                     </div>
 

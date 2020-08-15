@@ -1,6 +1,3 @@
-import axios from "axios";
-
-
 export const getDDay = (deadline) => {
     // 2020-08-29T00:00:00+09:00
     const dDayArray = deadline.substring(0, 10).split("-").map(day => Number(day));

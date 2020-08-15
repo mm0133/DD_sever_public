@@ -48,18 +48,22 @@
 
   .tag-list {
     @include flex-box;
-    justify-content: start;
 
-    margin: 20px 10px;
+    .tags {
+      @include flex-box;
+      justify-content: start;
 
-    .tag {
-      width: 60px;
-      height: 30px;
-      background-color: $color-background-light;
-      border-radius: 100px;
-      margin-right: 10px;
+      margin: 20px 10px;
 
-      font-family: $font-title-regular;
+      .tag {
+        width: 60px;
+        height: 30px;
+        background-color: $color-background-light;
+        border-radius: 100px;
+        margin-right: 10px;
+
+        font-family: $font-title-regular;
+      }
     }
   }
 }
