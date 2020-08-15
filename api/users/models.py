@@ -1,6 +1,6 @@
 from django.db import models
 from api.communications.models import ContestCodeNote, ContestDebate, Velog
-from api.contests.models import Contest, ContestUserAnswer
+from api.contests.models import Contest, ContestParticipantAnswer
 from django.contrib.auth.models import User
 from api.educations.models import LecturePackage
 from imagekit.models import ProcessedImageField
@@ -49,10 +49,10 @@ class CustomProfile(models.Model):
         return f"{self.user.username} Profile"
 
     def myContests(self):
-        return ContestUserAnswer.objects.filter(writer=self.user).order_by("-createdAt")
+        return ContestParticipantAnswer.objects.filter(writer=self.user).order_by("-createdAt")
 
     def myContestsNow(self):
-        myContestAnswers = ContestUserAnswer.objects.filter(writer=self.user).order_by(
+        myContestAnswers = ContestParticipantAnswer.objects.filter(writer=self.user).order_by(
             "-createdAt"
         )
         returnList = []
@@ -62,7 +62,7 @@ class CustomProfile(models.Model):
         return returnList
 
     def myContestsFinished(self):
-        myContestAnswers = ContestUserAnswer.objects.filter(writer=self.user).order_by(
+        myContestAnswers = ContestParticipantAnswer.objects.filter(writer=self.user).order_by(
             "-createdAt"
         )
         returnList = []

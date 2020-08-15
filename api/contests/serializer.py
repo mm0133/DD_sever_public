@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from api.contests.models import Contest, ContestFile, ContestUserAnswer
+from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 
 
 class ContestsSerializer(serializers.ModelSerializer):
@@ -64,11 +64,11 @@ class ContestFileSerializer(serializers.ModelSerializer):
         extra_kwargs = {'contest': {'write_only': True}}
 
 
-class ContestUserAnswerSerializer(serializers.ModelSerializer):
+class ContestParticipantAnswerSerializer(serializers.ModelSerializer):
     writerNickname = serializers.CharField(source='writer.customProfile.nickname')
 
     class Meta:
-        model = ContestUserAnswer
+        model = ContestParticipantAnswer
         fields = ['id', 'contest', 'writer', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank', 'writerNickname']
         read_only_fields = ['createdAT', 'updatedAt', 'rank', 'writerNickname']
         extra_kwargs = {'contest': {'write_only': True},

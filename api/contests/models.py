@@ -10,7 +10,7 @@ from imagekit.models import ProcessedImageField
 
 
 from api.contests.validators import validate_file_size
-from config.FilePath import customProfileImagePath
+from config.FilePath import contestFileFilePath, contestContestAnswerPath
 
 
 class Contest(models.Model):
@@ -22,7 +22,7 @@ class Contest(models.Model):
 
     # 채점을 위한 data를 contestAnswer에 저장함.
     contestAnswer = models.FileField(
-        null=True, blank=True, upload_to=customProfileImagePath
+        null=True, blank=True, upload_to=contestContestAnswerPath
     )
     deadline = models.DateTimeField()
     timeline = models.TextField()  # 여러 날짜들을 text로 저장했다가 json으로 변환해서 프론트로 넘김
@@ -93,10 +93,10 @@ class Contest(models.Model):
 
 class ContestFile(models.Model):
     contest = models.ForeignKey(Contest, null=True, on_delete=models.SET_NULL)
-    file = models.FileField(null=True, blank=True)  # data file을 위함
+    file = models.FileField(upload_to=contestFileFilePath, null=True, blank=True)  # data file을 위함
 
 
-class ContestUserAnswer(models.Model):
+class ContestParticipantAnswer(models.Model):
     contest = models.ForeignKey(
         Contest, null=True, on_delete=models.SET_NULL, related_name="userAnswer"
     )
@@ -108,7 +108,7 @@ class ContestUserAnswer(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
-    file = models.FileField(upload_to='', null=True, blank=True, validators=[validate_file_size])
+    file = models.FileField(upload_to='contestParticipantAnswerFilePath', null=True, blank=True, validators=[validate_file_size])
 
     accuracy = models.FloatField(default=0)
 

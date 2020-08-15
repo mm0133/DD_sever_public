@@ -6,9 +6,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.contests.models import Contest, ContestFile, ContestUserAnswer
+from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from api.contests.serializer import ContestsSerializer, ContestSerializer, ContestFileSerializer, \
-    ContestUserAnswerSerializer
+    ContestParticipantAnswerSerializer
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, IsWriterOrAdminUser
 
 
@@ -121,66 +121,66 @@ def DeleteContestFileWithPK(request, pk):
     return Response(status=status.HTTP_200_OK)
 
 
-class ContestUserAnswerViewWithContestPK(APIView):
+class ContestParticipantAnswerViewWithContestPK(APIView):
     permission_classes = [IsGetRequestOrAuthenticated]
 
     # 내림차순정렬
     def get(self, request, pk):
-        contestUserAnswer = ContestUserAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
-        print(contestUserAnswer)
-        serializer = ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user}, many=True)
+        contestParticipantAnswer = ContestParticipantAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
+        print(contestParticipantAnswer)
+        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}, many=True)
         return Response(serializer.data)
 
     def post(self, request, pk):
-        contestUserAnswer = ContestUserAnswer.objects.create(
+        contestParticipantAnswer = ContestParticipantAnswer.objects.create(
             writer=request.user,
             contest_id=pk,
             file=request.data['file']
         )
         # 정확도 계산 로직 넣어야함
-        contestUserAnswer.accuracy = contestUserAnswer.calculateAccuracy()
-        contestUserAnswer.save()
-        serializer = ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user})
+        contestParticipantAnswer.accuracy = contestParticipantAnswer.calculateAccuracy()
+        contestParticipantAnswer.save()
+        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user})
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-class ContestUserAnswerViewWithPK(APIView):
+class ContestParticipantAnswerViewWithPK(APIView):
     permission_classes = [IsWriterOrAdminUser]
 
-    def get_contestUserAnswer(self, pk):
+    def get_contestParticipantAnswer(self, pk):
         try:
-            contestUserAnswer = ContestUserAnswer.objects.get(pk=pk)
-            self.check_object_permissions(self.request, contestUserAnswer)
-            return contestUserAnswer
-        except contestUserAnswer.DoesNotExist:
+            contestParticipantAnswer = ContestParticipantAnswer.objects.get(pk=pk)
+            self.check_object_permissions(self.request, contestParticipantAnswer)
+            return contestParticipantAnswer
+        except contestParticipantAnswer.DoesNotExist:
             return None
 
     def get(self, request, pk):
-        contestUserAnswer = self.get_contestUserAnswer(pk)
-        if contestUserAnswer is None:
+        contestParticipantAnswer = self.get_contestParticipantAnswer(pk)
+        if contestParticipantAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user})
+            serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user})
             return Response(serializer.data)
 
     def put(self, request, pk):
-        contestUserAnswer = self.get_contestUserAnswer(pk)
-        if contestUserAnswer is None:
+        contestParticipantAnswer = self.get_contestParticipantAnswer(pk)
+        if contestParticipantAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user}, data=request.data, partial=True)
+        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}, data=request.data, partial=True)
         if serializer.is_valid():  # validate 로직 추가
-            contestUserAnswer = serializer.save()
-            return Response(ContestUserAnswerSerializer(contestUserAnswer, context={'user': request.user}).data)
+            contestParticipantAnswer = serializer.save()
+            return Response(ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}).data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        contestUserAnswer = self.get_contestUserAnswer(pk)
-        if contestUserAnswer is None:
+        contestParticipantAnswer = self.get_contestParticipantAnswer(pk)
+        if contestParticipantAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        contestUserAnswer.delete()
+        contestParticipantAnswer.delete()
         return Response(status=status.HTTP_200_OK)
 
 

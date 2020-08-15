@@ -1,44 +1,34 @@
 import os
-from datetime import date
 from uuid import uuid4
-
-from api.contests.models import *
-
-
-# def join_user():
-#     return len(Answer.objects.all())
 
 
 def customProfileImagePath(instance, filename):
-    return f'users/customProfile/image/{instance.user.id}/{uuid4().hex}/image{instance.user.id}_{uuid4().hex}'
+    return f'users/CustomProfile/image/user{instance.user.id}/{uuid4().hex}/{instance.id}_{uuid4().hex}'
+
 
 def customProfileSmallImage(instance, filename):
-    return f'users/customProfile/smallImage/{instance.user.id}/{uuid4().hex}/smallImage{instance.user.id}_{uuid4().hex}'
+    return f'users/CustomProfile/smallImage/user{instance.user.id}/{uuid4().hex}/{instance.id}_{uuid4().hex}'
 
 
 def teamImagePath(instance, filename):
-    return f'users/team/image/{instance.user.id}/{uuid4().hex}/image{instance.user.id}_{uuid4().hex}'
+    return f'users/Team/image/team{instance.id}/{uuid4().hex}/{instance.id}_{uuid4().hex}'
 
 
 def teamSmallImagePath(instance, filename):
-    # 유저가 올린 답안은은 MEDIA/user_<id>/<파일명> 에 저장될거야. 유저가 올린 파일명을 랜덤으로 바꿔서!
-    uuid_name = uuid4().hex
-    extension = os.path.splitext(filename)[-1].lower()  # 확장자 추출하고, 소문자로 변환
-    return f'users/customProfile/smallImage/{instance.user.id}/{uuid4().hex}/smallImage{instance.user.id}_{uuid4().hex}'
+    return f'users/CustomProfile/smallImage/team{instance.id}/{uuid4().hex}/{instance.id}_{uuid4().hex}'
 
 
-def comp_answer_upload_to(instance, filename):
-    # 대회의 정답은 MEDIA/comp_<대회명>/<파일명> 에 저장될거야. 유저가 올린 파일명을 랜덤으로 바꿔서!
+def contestFileFilePath(instance, filename):
     extension = os.path.splitext(filename)[-1].lower()
-    return 'comp_{}/{}'.format(instance.id, str(instance.id) + '_answer_sheet' + extension)
+    return f'contests/ContestFile/file/contest{instance.contest}/{filename}'
 
 
-def date_percent(comp):
-    total = (comp.deadline - comp.created_at).days
-    interval = (date.today() - comp.created_at).days
-    if interval < 0 or total <= 0:
-        percent = 100
-    else:
-        percent = round(interval / total, 2) * 100
-    return percent
+def contestContestAnswerPath(instance, filename):
+    extension = os.path.splitext(filename)[-1].lower()
+    return f'contests/Contest/contestAnswer/contest{instance.id}/{uuid4().hex}/{instance.id}_{uuid4().hex}{extension}'
+
+
+def contestParticipantAnswerFilePath(instance, filename):
+    return f'contests/ContestParticipantAnswer/file/user{instance.writer.id}-contest{instance.contest}/{uuid4().hex}/{instance.id}_{uuid4().hex}/{filename}'
+
 

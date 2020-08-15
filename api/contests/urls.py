@@ -9,8 +9,8 @@ urlpatterns = [
     path("contest/<int:pk>/scrap/", views.ContestScrap),
     path("contestfile_with_contest_pk/<int:pk>/", views.ContestFileViewWithContestPK.as_view()),
     path("contestfile_delete/<int:pk>/", views.DeleteContestFileWithPK),
-    path("contestuseranswer_with_contest_pk/<int:pk>/", views.ContestUserAnswerViewWithContestPK.as_view()),
-    path("contestuseranswer/<int:pk>/", views.ContestUserAnswerViewWithPK.as_view()),
+    path("contestuseranswer_with_contest_pk/<int:pk>/", views.ContestParticipantAnswerViewWithContestPK.as_view()),
+    path("contestuseranswer/<int:pk>/", views.ContestParticipantAnswerViewWithPK.as_view()),
 ]
 
 
