@@ -117,6 +117,14 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return VelogSerializerForScrap(velogScraps, many=True, context={"user": obj.user}).data
 
 
+class CustomProfileSerializerForPost(serializers.ModelSerializer):
+    velogs = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CustomProfile
+        fields = ['nickname', 'phoneNumber', 'email']
+
+
 class CustomProfileSerializer(serializers.ModelSerializer):
     velogs = serializers.SerializerMethodField()
 
@@ -157,6 +165,12 @@ class TeamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = ['id', 'name', 'representative', 'smallImage']
+
+
+class TeamsSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ['name', 'image']
 
 
 class TeamSerializer(serializers.ModelSerializer):

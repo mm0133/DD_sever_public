@@ -7,7 +7,8 @@ from rest_framework.views import APIView
 
 from api.users.models import CustomProfile, Team, TeamInvite
 from api.users.serializer import CustomProfileSerializer, CustomProfileSerializerForOwner, \
-    CustomProfileSerializerForPut, MyCustomProfileSerializer, TeamsSerializer, TeamSerializer
+    CustomProfileSerializerForPut, MyCustomProfileSerializer, TeamsSerializer, TeamSerializer, \
+    CustomProfileSerializerForPost
 from config.customExceptions import DDCustomException, get_value_or_error
 from annoying.functions import get_object_or_None
 
@@ -47,16 +48,14 @@ class CustomProfileView(APIView):
     def post(self, request):
 
         if get_object_or_None(CustomProfile, user=request.user):
-            raise DDCustomException(f"{request.user.username}'s profile already exits.")
+            return Response(f"{request.user.username}'s profile already exits.", status=status.HTTP_403_FORBIDDEN)
 
-        profile = CustomProfile.objects.create(
-            user=request.user,
-            nickname=get_value_or_error(request.data, "nickname"),
-            phoneNumber=get_value_or_error(request.data, "phoneNumber"),
-            email=get_value_or_error(request.data, "email")
-        )
-        serializer = CustomProfileSerializerForOwner(profile).data
-        return Response(data=serializer, status=status.HTTP_200_OK)
+        serializer = CustomProfileSerializerForPost(data=request.data, context={"user": request.user})
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
         customProfile = self.get_customProfile(request)
@@ -85,10 +84,7 @@ def get_teams(request, nickname):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def post_team(request):
-    team = Team.objects.create(
-        name=request.data["teamName"],
-        representative=request.user,
-    )
+
     team.members.add(request.user)
     serializer = TeamSerializer(team, context={"user": request.user})
     return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -115,27 +111,43 @@ def member_invite(request, teamName):
     team = get_object_or_404(Team, name=teamName)
     memberNickname = get_value_or_error(request.data, "memberNickname")
     invitingMessage = get_object_or_None(request.data, "invitingMessage")
+    member = get_object_or_404(CustomProfile, nickname=memberNickname).user
+
+    if not (team.representative == request.user or request.user.is_staff):
+        return Response(f"you are neither team {teamName}'s representative nor staff user!",
+                        status=status.HTTP_401_UNAUTHORIZED)
+
     if memberNickname == request.user.customProfile.nickname:
         return Response("you can't invite yourself!", status=status.HTTP_403_FORBIDDEN)
-    elif get_object_or_None(TeamInvite, team=team, invitee=request.user):
-        return Response(f"you already invited {memberNickname} to team {teamName} ", status=status.HTTP_403_FORBIDDEN)
-    if team.representative == request.user or request.user.is_staff:
-        member = get_object_or_404(CustomProfile, nickname=memberNickname).user
-        TeamInvite.objects.create(
-            team=team,
-            invitee=member,
-            invitingMessage=invitingMessage
-        )
-        return Response(status=status.HTTP_200_OK)
-    return Response(f"you are neither team {teamName}'s representative nor staff user!",
-                    status=status.HTTP_401_UNAUTHORIZED)
+    elif member in team.members.all():
+        return Response(f"{memberNickname} is already team {teamName}'s member.", status=status.HTTP_403_FORBIDDEN)
+    elif get_object_or_None(TeamInvite, team=team, invitee=member):
+        teamInvite = get_object_or_None(TeamInvite, team=team, invitee=member)
+        # 아직 수락/거절 안 했을 때
+        if not teamInvite.isFnished:
+            return Response(f"you already invited {memberNickname} to team {teamName} ",
+                            status=status.HTTP_403_FORBIDDEN)
+        # 이미 거절했는데 다시 초대했을 때
+        else:
+            teamInvite.isFinished = False
+            teamInvite.invitingMessage = invitingMessage
+            teamInvite.save()
+            return Response(status=status.HTTP_200_OK)
+
+    TeamInvite.objects.create(
+        team=team,
+        invitee=member,
+        invitingMessage=invitingMessage
+    )
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_accept(request, teamName):
     team = get_object_or_404(Team, name=teamName)
-    isAccepted = get_value_or_error(request.data, "isAccepted")
+    print(request.data)
+    isAccepted = get_value_or_error(request.data, "accept")
     teamInvite = get_object_or_404(TeamInvite, team=team, invitee=request.user)
     if teamInvite.invitee == request.user or request.user.is_staff:
         if isAccepted:

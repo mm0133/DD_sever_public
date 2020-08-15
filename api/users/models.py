@@ -76,7 +76,7 @@ class Team(models.Model):
     name = models.CharField(max_length=255)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
-    Image = ProcessedImageField(null=True, blank=True,
+    image = ProcessedImageField(null=True, blank=True,
                                 upload_to=teamImagePath,
                                 processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
                                 format='JPEG',  # 최종 저장 포맷

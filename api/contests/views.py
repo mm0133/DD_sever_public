@@ -48,7 +48,7 @@ class ContestViewWithPk(APIView):
         if contest is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = ContestSerializer(contest)
+            serializer = ContestSerializer(contest, context={'user': request.user})
             return Response(serializer.data)
 
     def put(self, request, pk):
@@ -69,7 +69,6 @@ class ContestViewWithPk(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         contest.delete()
         return Response(status=status.HTTP_200_OK)
-
 
 
 class ContestFileViewWithContestPK(APIView):
@@ -128,7 +127,8 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
     def get(self, request, pk):
         contestParticipantAnswer = ContestParticipantAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
         print(contestParticipantAnswer)
-        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}, many=True)
+        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user},
+                                                        many=True)
         return Response(serializer.data)
 
     def post(self, request, pk):
@@ -169,10 +169,12 @@ class ContestParticipantAnswerViewWithPK(APIView):
         if contestParticipantAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}, data=request.data, partial=True)
+        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user},
+                                                        data=request.data, partial=True)
         if serializer.is_valid():  # validate 로직 추가
             contestParticipantAnswer = serializer.save()
-            return Response(ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}).data)
+            return Response(
+                ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}).data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -7,7 +7,13 @@ class WriterNicknameImageSerializer(serializers.ModelSerializer):
     writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
 
 
-class LecturePackageSerializer(WriterNicknameImageSerializer):
+class LecturePackageSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = LecturePackage
+        fields = "__all__"
+
+
+class LecturePackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = LecturePackage
         fields = "__all__"
@@ -20,7 +26,6 @@ class EduVideoLecturesSerializer(WriterNicknameImageSerializer):
 
 
 class EduVideoLectureSerializer(WriterNicknameImageSerializer):
-
     class Meta:
         model = EduVideoLecture
         fields = "__all__"

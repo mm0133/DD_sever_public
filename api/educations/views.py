@@ -5,7 +5,8 @@ from rest_framework.views import APIView
 from config.customPermissions import IsGetRequestOrAdminUser
 from config.utils import HitCountRespose
 from .models import EduVideoLecture, LecturePackage
-from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer
+from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer, \
+    LecturePackageSerializerForPost
 
 
 class LecturePackageView(APIView):
@@ -17,10 +18,12 @@ class LecturePackageView(APIView):
         return Response(serializer)
 
     def post(self, request):
-        serializer = LecturePackageSerializer(data=request.data)
+        serializer = LecturePackageSerializerForPost(data=request.data)
         if serializer.is_valid():
             serializer.save(writer=request.user)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LecturePackageViewWithPk(APIView):
