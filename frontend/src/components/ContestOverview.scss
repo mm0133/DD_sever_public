@@ -2,7 +2,9 @@
 
 .overview {
   width: $width-main;
-  margin: 30px auto;
+  margin: 30px auto 0;
+  border: 1px solid $color-background-light;
+  padding: 30px 40px 30px 30px;
 }
 
 .main-content {
@@ -18,10 +20,11 @@
 
     .title {
       font-family: $font-title-extraBold;
-      padding: 0 0 14px 10px;
+      padding: 0 0 16px 10px;
       margin-bottom: 15px;
       border-bottom: 1px solid $color-text-dark;
     }
+
     button {
       font-family: $font-title-regular;
       font-size: 16px;
@@ -37,16 +40,18 @@
       }
     }
   }
+
   contents {
-    width: $width-main - $menu-width - $margin;
+    width: $width-main - $menu-width - $margin - 90px;
 
     .title {
       font-family: $font-title-extraBold;
-      font-size: 20px;
-      padding: 0 0 10px 15px;
+      font-size: 24px;
+      padding: 0 0 6px 15px;
       margin-bottom: 15px;
       border-bottom: 1px solid $color-text-dark;
     }
+
     .contents {
       font-family: $font-text-regular;
       font-size: 15px;

@@ -9,6 +9,7 @@
   margin: $margin auto;
   padding: $margin $margin+10px $margin $margin+20px;
   background-color: #e8e8e8;
+  background-size: cover;
 
   .top-side {
     @include flex-box;
@@ -87,14 +88,19 @@
 }
 
 .detail-nav {
-  margin: 40px $padding-main;
+  margin: 40px $padding-main 0;
   padding-bottom: 10px;
   font-family: $font-title-regular;
   color: $color-text-light;
   border-bottom: 1px solid $color-background-light;
 
   .link {
-    padding: 10px;
+    padding: 10px 5px;
+    margin: 0 15px;
     box-sizing: border-box;
+
+    &:first-child {
+      margin-left: 30px;
+    }
   }
 }

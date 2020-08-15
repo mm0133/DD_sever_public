@@ -11,7 +11,7 @@ class App extends Component {
                 <Header/>
                 <Route exact path="/" component={Home}/>
                 <Route exact path="/contest" component={ContestList}/>
-                <Route path="/contest/:id/overview" component={ContestDetail}/>
+                <Route path="/contest/:id/:type" component={ContestDetail}/>
             </div>
         );
     }

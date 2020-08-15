@@ -11,6 +11,9 @@ import ContestData from "../components/ContestData";
 import {getDDay, getDifficulty, getIsFinished, getIsForTraining} from "../Utils";
 
 import "./ContestDetail.scss";
+import ContestCommunity from "../components/ContestCommunity";
+import ContestCodenote from "../components/ContestCodenote";
+import ContestRanking from "../components/ContestRanking";
 
 
 const ContestDetail = ({match}) => {
@@ -42,7 +45,7 @@ const ContestDetail = ({match}) => {
     const activeStyle = {
         fontFamily: "NanumSquareExtraBold",
         color: "#333333",
-        padding: "10px 10px 4px 10px",
+        padding: "10px 5px 4px 5px",
         borderBottom: "6px solid #4b6580",
         boxSizing: "border-box"
     }
@@ -50,7 +53,7 @@ const ContestDetail = ({match}) => {
     return (
         <div>
             {!contest ? <div>Error</div> :
-                <div className="total-wrap">
+                <div className="total-wrap contest-detail">
                     <div className="detail-main-banner" style={{backgroundImage: `url(${contest.backThumb})`}}>
                         <div className="top-side">
                             <div className="text">
@@ -115,12 +118,20 @@ const ContestDetail = ({match}) => {
                         <Route
                             path={`/contest/${match.params.id}/data`}
                             component={() => <ContestData
-                                deadline={contest.deadline}
-                                timeline={contest.timeline}
-                                contestExplanation={contest.contestExplanation}
-                                evaluationExplanation={contest.evaluationExplanation}
-                                prizeExplanation={contest.prizeExplanation}
+                                dataExplanation={contest.dataExplanation}
                             />}
+                        />
+                        <Route
+                            path={`/contest/${match.params.id}/community`}
+                            component={ContestCommunity}
+                        />
+                        <Route
+                            path={`/contest/${match.params.id}/overview`}
+                            component={ContestCodenote}
+                        />
+                        <Route
+                            path={`/contest/${match.params.id}/ranking`}
+                            component={ContestRanking}
                         />
                     </contents>
                 </div>
