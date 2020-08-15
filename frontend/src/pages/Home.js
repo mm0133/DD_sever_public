@@ -134,12 +134,11 @@ const Home = () => {
                         </div>
                     </contest>
 
-                    <roadmap>
+                    <div className="roadmap">
                         <div className="title">머신러닝 로드맵</div>
                         <div className="subtitle">머신러닝 기초부터 대회 참가까지, 영상으로 알아보는 머신러닝 로드맵</div>
                         <div className="video-wrap">
                             <div className="arrow">&lt;</div>
-                            {/* < */}
                             <div className="video-list">
                                 <div className="video">
                                     <div className="video-image"><img src="" alt=""/></div>
@@ -174,12 +173,12 @@ const Home = () => {
                             </div>
                             <div className="arrow">></div>
                         </div>
-                    </roadmap>
+                    </div>
 
-                    <mannual>
+                    <div className="manual">
                         <div className="subtitle">당신을 위한 <span>완벽한</span> 데이타덕 가이드</div>
                         <div className="title">데이타덕 <span>사용설명서</span></div>
-                    </mannual>
+                    </div>
 
                     <footer>
                     </footer>

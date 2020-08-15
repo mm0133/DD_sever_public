@@ -56,3 +56,11 @@ export const getIsFinished = (type) => {
             return "진행중"
     }
 }
+
+export const handleScrap = (post, id) => {
+
+}
+
+export const getScrap = () => {
+
+}

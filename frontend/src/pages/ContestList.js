@@ -7,12 +7,7 @@ import "./ContestList.scss"
 const ContestList = () => {
     const [filter, setFilter] = useState([]);
     const [contests, setContests] = useState([]);
-    const [length, setLength] = useState("");
     const [keyword, setKeyword] = useState("");
-
-    const getArrayLength = (array) => {
-        return array.length;
-    }
 
     useEffect(() => {
         const init = async () => {
@@ -24,27 +19,26 @@ const ContestList = () => {
         init();
     }, [])
 
-    const getContestAll = async () => {
+    const getContestAll = () => {
         setFilter(contests);
-        const newLength = await getArrayLength(filter);
-        setLength(newLength);
     }
 
     const getContestForTraining = async () => {
         setFilter(contests.filter(contest => contest.isForTraining));
-        const newLength = await getArrayLength(filter);
-        setLength(newLength);
     }
 
     const getContestNotForTraining = async () => {
         setFilter(contests.filter(contest => !contest.isForTraining));
-        const newLength = await getArrayLength(filter);
-        setLength(newLength);
     }
 
     const getKeyword = (e) => {
         setKeyword(e.target.value);
+        console.log(keyword);
+        setFilter(filter.filter(search => search.title.indexOf(keyword) > -1));
+        console.log(filter);
     }
+
+    const length = contests ? filter.length : null;
 
 
     return (
@@ -73,7 +67,7 @@ const ContestList = () => {
                                 <button className="tag">#고급</button>
                             </div>
                             <input
-                                name="keyword"
+                                type="text"
                                 placeholder="대회 검색"
                                 onChange={getKeyword}
                                 value={keyword}

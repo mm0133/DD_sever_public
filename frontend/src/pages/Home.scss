@@ -147,3 +147,35 @@ contest {
     padding: 0 $padding-main;
   }
 }
+
+.roadmap {
+  margin: $padding-top auto;
+
+  .title {
+    font-family: $font-title-extraBold;
+    font-size: $font-size-title;
+    margin: 0 $padding-main;
+  }
+
+  .subtitle {
+    font-family: $font-text-regular;
+    font-size: $font-size-subtitle;
+    color: $color-text-light;
+    margin: 5px $padding-main 0;
+  }
+
+  .video-wrap {
+    @include flex-box;
+
+    .arrow {
+      font-family: $font-arrow;
+    }
+  }
+}
+
+.manual {
+  width: $width-main;
+  height: 120px;
+  margin: $padding-top auto;
+  background-color: $color-background-light;
+}
