@@ -186,6 +186,7 @@ class TeamInviteSerializerForAccept(serializers.ModelSerializer):
     class Meta:
         model = TeamInvite
         fields = ["isAccepted"]
+        extra_kwargs = {'isAccepted': {'required': True}}
 
 
 class ChangePasswordSerializer(serializers.Serializer):

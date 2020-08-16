@@ -1,3 +1,4 @@
+from annoying.functions import get_object_or_None
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
@@ -11,7 +12,8 @@ from api.contests.serializer import ContestsSerializer, ContestSerializer, Conte
     ContestParticipantAnswerSerializer, ContestParticipantAnswersSerializer
 from api.users.models import Team
 from config.customExceptions import get_value_or_error
-from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, IsGetRequestOrTeamRepresentativeOrOwner
+from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, \
+    IsGetRequestOrTeamRepresentativeOrOwner
 
 
 class ContestView(APIView):
@@ -130,18 +132,18 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
         contestParticipantAnswer = ContestParticipantAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
         print(contestParticipantAnswer)
         serializer = ContestParticipantAnswersSerializer(contestParticipantAnswer, context={'user': request.user},
-                                                        many=True)
+                                                         many=True)
         return Response(serializer.data)
 
     def post(self, request, pk):
+        teamName = get_object_or_None(request.data, "teamName")
+        file = get_value_or_error(request.data, "file")
+        if teamName:
+            team = get_object_or_404(Team, name=teamName)
+            if not (team.representative == request.user or not request.user.is_staff):
+                return Response("팀의 대표만 답 제출을 할 수 있습니다.", status=status.HTTP_401_UNAUTHORIZED, )
 
-
-        if request.data['teamName']:
-            teamName= request.data['teamName']
-            team=Team.objects.filter(name=teamName)
-            if team.representative!= request.user or (not request.user.is_staff):
-                return Response(status=status.HTTP_401_UNAUTHORIZED, data="팀의 대표만 답 제출을 할 수 있습니다.")
-            teamMembers=[]
+            teamMembers = []
             for member in team.members.all():
                 teamMembers.append(member.customProfile.nickname)
 
@@ -151,16 +153,19 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
                 name=teamName,
                 teamMembers=teamMembers,
                 contest_id=pk,
-                file=request.data['file']
+                file=file
             )
 
         else:
+            if get_object_or_None(ContestParticipantAnswer, user=request.user) or \
+                    False:
+                return Response("이미 답안을 제출했습니다.", status=status.HTTP_403_FORBIDDEN)
             contestParticipantAnswer = ContestParticipantAnswer.objects.create(
                 isTeam=False,
                 user=request.user,
                 name=request.user.customProfile.nickname,
                 contest_id=pk,
-                file=request.data['file']
+                file=file
             )
         # 정확도 계산 로직 넣어야함
         contestParticipantAnswer.accuracy = contestParticipantAnswer.calculateAccuracy()
@@ -200,7 +205,6 @@ class ContestParticipantAnswerViewWithPK(APIView):
 
             return Response(
                 ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}).data)
-
 
     def delete(self, request, pk):
         contestParticipantAnswer = self.get_contestParticipantAnswer(pk)

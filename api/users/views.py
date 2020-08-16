@@ -128,7 +128,7 @@ def member_invite(request, teamName):
     elif get_object_or_None(TeamInvite, team=team, invitee=member):
         teamInvite = get_object_or_None(TeamInvite, team=team, invitee=member)
         # 아직 수락/거절 안 했을 때
-        if not teamInvite.isFnished:
+        if not teamInvite.isFinished:
             return Response(f"you already invited {memberNickname} to team {teamName} ",
                             status=status.HTTP_403_FORBIDDEN)
         # 이미 거절했는데 다시 초대했을 때
@@ -149,6 +149,7 @@ def member_invite(request, teamName):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_accept(request, teamName):
+    print(request.data)
     team = get_object_or_404(Team, name=teamName)
     teamInvite = get_object_or_404(TeamInvite, team=team, invitee=request.user)
 
@@ -157,14 +158,17 @@ def member_invite_accept(request, teamName):
                         status=status.HTTP_401_UNAUTHORIZED)
 
     # 이렇게 해야 JS의 true/false 를 python 의 true/false 로 알아들을 수 있음.
-    serializer = TeamInviteSerializerForAccept(teamInvite, data=request.data, partial=True)
+    serializer = TeamInviteSerializerForAccept(teamInvite, data=request.data)
     if serializer.is_valid():
-        if serializer.data.isAccepted:
+        serializer.save()
+        if serializer.data["isAccepted"]:
             team.members.add(teamInvite.invitee)
 
-    teamInvite.isFinished = True
-    teamInvite.save()
-    return Response(status=status.HTTP_200_OK)
+        teamInvite.isFinished = True
+        teamInvite.save()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
