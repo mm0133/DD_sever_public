@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from "react";
-import ContestSingle from "../components/ContestSingle";
+import ContestSingle from "../Contest/ContestSingle";
 import {NavLink} from "react-router-dom";
-import useAsync from "../UseAsync";
-import {getContests} from "../Api";
+import {getContestList} from "../../Api";
 
 import "./Home.scss";
-import logo from "../image/logo.png"
+import logo from "../../image/logo.png";
 
 // fontAwesome
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -13,8 +12,18 @@ import {faTrophy, faBookOpen} from "@fortawesome/free-solid-svg-icons";
 
 
 const Home = () => {
-    const [state, refetch] = useAsync(getContests, []);
-    const {data: contests} = state;
+    const [contests, setContests] = useState([]);
+
+    useEffect(() => {
+        const init = async () => {
+            const data = await getContestList();
+
+            setContests(data);
+        }
+        init();
+    }, [])
+
+    console.log(contests);
 
     const contestForTraining = contests ? contests.filter(contest => contest.isForTraining) : null;
     const contestNotForTraining = contests ? contests.filter(contest => !contest.isForTraining) : null;
@@ -125,55 +134,59 @@ const Home = () => {
                         </div>
                     </contest>
 
-                    <roadmap>
+                    <div className="roadmap">
                         <div className="title">머신러닝 로드맵</div>
-                        <div className="subtitle">머신러닝 기초부터 대회 참가까지, 영상으로 알아보는 머신러닝 로드맵</div>
-                        <div className="video-wrap">
-                            <div className="arrow">&lt;</div>
-                            {/* < */}
-                            <div className="video-list">
-                                <div className="video">
-                                    <div className="video-image"><img src="" alt=""/></div>
-                                    <div className="right-side">
-                                        <div className="title">
-                                            <span>1시간</span>으로 끝내는<br/>
-                                            머신러닝 <span>기초</span>
-                                        </div>
-                                        <div className="video-button">무료 강의 보러가기 ></div>
-                                    </div>
+                        <div className="subtitle">
+                            <div className="text">머신러닝 기초부터 대회 참가까지, 영상으로 알아보는 머신러닝 로드맵</div>
+                            <div className="more">로드맵 따라가기<span>></span></div>
+                        </div>
+                        <div className="video-list">
+                            <div className="video" style={{backgroundImage: "url()"}}>
+                                <div className="title">
+                                    <span>1시간</span>으로 끝내는<br/>
+                                    머신러닝 <span>기초</span>
                                 </div>
-                                <div className="video">
-                                    <div className="video-image"><img src="" alt=""/></div>
-                                    <div className="right-side">
-                                        <div className="title">
-                                            <div className="classification"><span>대회</span> 대회 톺아보기</div>
-                                            감정 인식 대회 <span>EDA</span>
-                                        </div>
-                                        <div className="video-button">무료 강의 보러가기 ></div>
-                                    </div>
-                                </div>
-                                <div className="video">
-                                    <div className="video-image"><img src="" alt=""/></div>
-                                    <div className="right-side">
-                                        <div className="title">
-                                            <div className="classification"><span>대회</span> 대회 톺아보기</div>
-                                            감정 인식 대회 <span>전처리</span>
-                                        </div>
-                                        <div className="video-button">무료 강의 보러가기 ></div>
+                                <div className="video-button">
+                                    <div className="overlay">
+                                        무료 강의 보러가기 <span>></span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="arrow">></div>
+                            <div className="video" style={{backgroundImage: "url()"}}>
+                                <div className="title">
+                                    <div className="classification">
+                                        <div className="circle">대회</div>
+                                        대회 톺아보기
+                                    </div>
+                                    감정 인식 대회 <span>EDA</span>
+                                </div>
+                                <div className="video-button">
+                                    <div className="overlay">
+                                        무료 강의 보러가기 <span>></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="video" style={{backgroundImage: "url()"}}>
+                                <div className="title">
+                                    <div className="classification">
+                                        <div className="circle">대회</div>
+                                        대회 톺아보기
+                                    </div>
+                                    감정 인식 대회 <span>전처리</span>
+                                </div>
+                                <div className="video-button">
+                                    <div className="overlay">
+                                        무료 강의 보러가기 <span>></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </roadmap>
+                    </div>
 
-                    <mannual>
-                        <div className="subtitle">당신을 위한 <span>완벽한</span> 데이타덕 가이드</div>
+                    <div className="manual">
+                        <div className="subtitle">당신을 위한<span>완벽한</span>데이타덕 가이드</div>
                         <div className="title">데이타덕 <span>사용설명서</span></div>
-                    </mannual>
-
-                    <footer>
-                    </footer>
+                    </div>
                 </div>
             }
         </div>

@@ -1,0 +1,48 @@
+@import "src/components/index";
+
+footer {
+  @include flex-box;
+  align-items: flex-start;
+
+  width: $width-main;
+  height: 150px;
+  margin: $padding-top auto 0;
+  border-top: 1px solid $color-background-light;
+
+  .left-side {
+    @include flex-box-column;
+    justify-content: center;
+    height: 100%;
+
+    .title {
+      font-family: $font-title-bold;
+      font-size: 20px;
+
+      span {
+        font-family: $font-title-regular;
+      }
+    }
+    .copyright {
+      font-family: $font-text-regular;
+      font-size: 13px;
+      color: $color-text-light;
+      margin-top: 5px;
+    }
+  }
+
+  .right-side {
+    @include flex-box;
+    margin-top: 10px;
+
+    div {
+      margin-left: 3px;
+      font-family: $font-text-bold;
+      font-size: 13px;
+    }
+
+    .bar {
+      font-family: $font-text-regular;
+      color: $color-text-light;
+    }
+  }
+}
