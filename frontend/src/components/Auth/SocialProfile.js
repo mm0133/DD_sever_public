@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 
 const SocialProfile = () => {
     return (
@@ -9,7 +10,7 @@ const SocialProfile = () => {
             <input type="text"/>
             <div>핸드폰</div>
             <input type="text"/>
-            <button>제출</button>
+            <button onClick = {() => axios.post({}) }>제출</button>
         </div>
     )
 }
