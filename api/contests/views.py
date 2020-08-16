@@ -8,8 +8,9 @@ from rest_framework.views import APIView
 
 from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from api.contests.serializer import ContestsSerializer, ContestSerializer, ContestFileSerializer, \
-    ContestParticipantAnswerSerializer
+    ContestParticipantAnswerSerializer, ContestParticipantAnswersSerializer
 from api.users.models import Team
+from config.customExceptions import get_value_or_error
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, IsGetRequestOrTeamRepresentativeOrOwner
 
 
@@ -128,7 +129,7 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
     def get(self, request, pk):
         contestParticipantAnswer = ContestParticipantAnswer.objects.filter(contest_id=pk).order_by('-accuracy')
         print(contestParticipantAnswer)
-        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user},
+        serializer = ContestParticipantAnswersSerializer(contestParticipantAnswer, context={'user': request.user},
                                                         many=True)
         return Response(serializer.data)
 
@@ -138,7 +139,7 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
             teamName= request.data['teamName']
             team=Team.objects.filter(name=teamName)
             if team.representative!= request.user or (not request.user.is_staff):
-                return Response(data="팀의 대표만 답 제출을 할 수 있습니다.")
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data="팀의 대표만 답 제출을 할 수 있습니다.")
             teamMembers=[]
             for member in team.members.all():
                 teamMembers.append(member.customProfile.nickname)
@@ -180,9 +181,10 @@ class ContestParticipantAnswerViewWithPK(APIView):
             return None
 
     def get(self, request, pk):
-        contestParticipantAnswer = self.get_contestParticipantAnswer(pk)
-        if contestParticipantAnswer is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        contestParticipantAnswer = get_object_or_404(ContestParticipantAnswer, pk)
+        if not (request.user.is_authenticated or request.user in contestParticipantAnswer.teamMembers.all()):
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         else:
             serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user})
             return Response(serializer.data)
@@ -191,15 +193,13 @@ class ContestParticipantAnswerViewWithPK(APIView):
         contestParticipantAnswer = self.get_contestParticipantAnswer(pk)
         if contestParticipantAnswer is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        if request.data['file']:
+            contestParticipantAnswer.file = request.data['file']
+            contestParticipantAnswer.save()
 
-        serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user},
-                                                        data=request.data, partial=True)
-        if serializer.is_valid():  # validate 로직 추가
-            contestParticipantAnswer = serializer.save()
             return Response(
                 ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user}).data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def delete(self, request, pk):
         contestParticipantAnswer = self.get_contestParticipantAnswer(pk)

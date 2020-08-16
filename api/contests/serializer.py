@@ -64,6 +64,17 @@ class ContestFileSerializer(serializers.ModelSerializer):
         extra_kwargs = {'contest': {'write_only': True}}
 
 
+class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
+
+    teamMembers=serializers.ListField()
+
+
+    class Meta:
+        model = ContestParticipantAnswer
+        fields = ['id', 'isTeam', 'name', 'createdAt', 'updatedAt', 'accuracy', 'rank', 'teamMembers']
+
+
+
 class ContestParticipantAnswerSerializer(serializers.ModelSerializer):
 
     teamMembers=serializers.ListField()
