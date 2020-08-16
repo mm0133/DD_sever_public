@@ -14,7 +14,7 @@ const Auth = () => {
                 <div className="content">
                     <Route exact path="/auth" component={Login}/>
                     <Route path="/auth/signup" component={Signup}/>
-                    <Route path="/auth/socialprofile" component={SocialProfile}/>
+                    <Route path="/auth/social_profile" component={SocialProfile}/>
                 </div>
             </div>
         </div>
