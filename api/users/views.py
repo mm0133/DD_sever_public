@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from api.users.models import CustomProfile, Team, TeamInvite
 from api.users.serializer import CustomProfileSerializer, MyCustomProfileSerializer, \
     CustomProfileSerializerForChange, TeamsSerializer, TeamSerializer, TeamsSerializerForPost, \
-    TeamInviteSerializerForAccept, ChangePasswordSerializer
+    TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer
 from config.customExceptions import DDCustomException, get_value_or_error
 from annoying.functions import get_object_or_None
 
@@ -294,6 +294,14 @@ class ChangePasswordView(UpdateAPIView):
 
 
 class UserCreateView(CreateAPIView):
-    serializer_class = ChangePasswordSerializer
+    serializer_class = UserCreateSerializer
     model = User
-    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
