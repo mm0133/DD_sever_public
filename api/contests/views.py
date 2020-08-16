@@ -138,10 +138,24 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
     def post(self, request, pk):
         teamName = get_object_or_None(request.data, "teamName")
         file = get_value_or_error(request.data, "file")
+        #팀제출
         if teamName:
             team = get_object_or_404(Team, name=teamName)
             if not (team.representative == request.user or not request.user.is_staff):
                 return Response("팀의 대표만 답 제출을 할 수 있습니다.", status=status.HTTP_401_UNAUTHORIZED, )
+
+            members = team.members.all()
+            for member in members:
+                nickname = member.customProfile.nickname
+                if ContestParticipantAnswer.objects.filter(user=member, contest_id=pk):
+                    return Response(f'팀원 {member.customProfile.nickname}님이 이미 답안을 제출 했습니다.',status=status.HTTP_400_BAD_REQUEST)
+
+                answers = ContestParticipantAnswer.objects.filter(contest_id=pk)
+                for answer in answers:
+                    if answer.team:
+                        if nickname in answer.teamMembers:
+                            return Response(f'팀원 {nickname}님이 {answer.name}팀으로 이미 참가했습니다.',status=status.HTTP_400_BAD_REQUEST)
+
 
             teamMembers = []
             for member in team.members.all():
@@ -155,11 +169,17 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
                 contest_id=pk,
                 file=file
             )
-
+        #개인제출
         else:
-            if get_object_or_None(ContestParticipantAnswer, user=request.user) or \
-                    False:
-                return Response("이미 답안을 제출했습니다.", status=status.HTTP_403_FORBIDDEN)
+            if ContestParticipantAnswer.objects.filter(user=request.user, contest_id=pk):
+                return Response("이미 답안 제출했습니다.", status=status.HTTP_400_BAD_REQUEST)
+
+            answers = ContestParticipantAnswer.objects.filter(contest_id=pk)
+            for answer in answers:
+                if answer.team:
+                    if request.user.customProfile.nickname in answer.teamMembers:
+                        return Response(f'이미 {answer.name}팀으로 참가했습니다.', status=status.HTTP_400_BAD_REQUEST)
+
             contestParticipantAnswer = ContestParticipantAnswer.objects.create(
                 isTeam=False,
                 user=request.user,
