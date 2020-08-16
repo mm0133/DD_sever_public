@@ -1,0 +1,120 @@
+@import "../index";
+
+.signup {
+  @include flex-box;
+
+  margin: 20px 0;
+  font-size: 14px;
+
+  .button {
+    $height: 40px;
+    width: 160px;
+    height: $height;
+    text-align: center;
+    line-height: $height;
+
+    background-color: $color-main-light;
+    border-radius: 100px;
+
+    font-family: $font-title-extraBold;
+    font-size: 15px;
+    color: white;
+
+    &:hover > .overlay {
+      @include overlay;
+    }
+
+    .overlay {
+      transition-duration: 0.3s;
+    }
+  }
+}
+
+.login {
+  padding-top: 25px;
+  border-top: 1px solid $color-background-light;
+
+  .input {
+    @include flex-box;
+    margin-bottom: 10px;
+  }
+
+  .name {
+    font-family: $font-text-bold;
+    font-size: 16px;
+  }
+
+  input {
+    width: 260px;
+    height: 30px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 100px;
+    background-color: rgba(232, 232, 232, 0.5);
+
+    font-family: $font-text-regular;
+    color: $color-text-dark;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .button {
+    @include flex-box;
+    justify-content: flex-end;
+
+    button {
+      $height: 40px;
+      width: 120px;
+      height: $height;
+      text-align: center;
+      line-height: $height;
+      align-self: end;
+      margin-top: 5px;
+
+      background-color: $color-main-dark;
+      border: none;
+      border-radius: 100px;
+
+      font-family: $font-title-extraBold;
+      font-size: 15px;
+      color: white;
+
+      &:hover > .overlay {
+        @include overlay;
+      }
+
+      .overlay {
+        transition-duration: 0.3s;
+      }
+    }
+  }
+}
+
+.division {
+  @include flex-box;
+  width: 100%;
+  margin-top: 20px;
+
+  .line {
+    width: 350px / 2 - 20px;
+    height: 4px;
+    border-bottom: 1px solid $color-background-light;
+  }
+
+  .or {
+    font-family: $font-text-light;
+    font-size: 15px;
+    color: $color-text-light;
+  }
+}
+
+.social-wrap {
+  margin-top: 10px;
+
+  .social {
+
+  }
+}

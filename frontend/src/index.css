@@ -33,6 +33,11 @@
   font-family: "Handon";
   src: url("fonts/한돈 삼겹살체 600g.ttf") format("truetype");
 }
+/* 잉크립퀴드 */
+@font-face {
+  font-family: "InkLipquid";
+  src: url("fonts/THEFACESHOP INKLIPQUID.ttf") format("truetype");
+}
 
 body {
   margin: 0;
