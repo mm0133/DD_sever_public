@@ -26,9 +26,9 @@ class CustomProfile(models.Model):
                                      default="user_1/profile",
                                      )
 
-    email = models.EmailField()
-    phoneNumber = models.CharField(max_length=11)
-    nickname = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    phoneNumber = models.CharField(max_length=11, unique=True)
+    nickname = models.CharField(max_length=255, unique=True)
 
     # json으로 어떤 대회에서(id값이 key가 된다) 어떤 rank(1~5)를 들고 있는지 기록해둔다.
     contestRankDictionary = models.TextField(default="{}")
@@ -73,7 +73,7 @@ class CustomProfile(models.Model):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     image = ProcessedImageField(null=True, blank=True,

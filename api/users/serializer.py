@@ -11,6 +11,7 @@ from api.communications.models import ContestDebate, ContestCodeNote, Velog
 from api.communications.serializers import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
 from api.contests.models import Contest
 from api.users.models import CustomProfile, Team, TeamInvite
+from api.users.utils import validate_phoneNumber
 
 
 class ContestSerializerForScrap(serializers.ModelSerializer):
@@ -148,15 +149,16 @@ class CustomProfileSerializerForChange(serializers.ModelSerializer):
     def validate_phoneNumber(self, value):
         if get_object_or_None(CustomProfile, phoneNumber=value):
             raise serializers.ValidationError("This phoneNumber already exists.")
+        elif not validate_phoneNumber(value):
+            raise serializers.ValidationError("phoneNumber must be 11 digit and start with 01")
         else:
             return value
 
     def validate_email(self, value):
-        if get_object_or_None(CustomProfile, phoneNumber=value):
+        if get_object_or_None(CustomProfile, email=value):
             raise serializers.ValidationError("This email already exists.")
         else:
             return value
-
 
 
 class MemberSerializer(serializers.ModelSerializer):
@@ -220,3 +222,9 @@ class ChangePasswordSerializer(serializers.Serializer):
     def validate_newPassword(self, value):
         validate_password(value)
         return value
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "password"]

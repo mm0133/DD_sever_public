@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import UpdateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -58,6 +58,8 @@ class CustomProfileView(APIView):
             image = get_object_or_None(request.data, "image")
             if image:
                 serializer.save(smallImage=image)
+            else:
+                serializer.save()
             return Response(data=serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -70,6 +72,8 @@ class CustomProfileView(APIView):
             image = get_object_or_None(request.data, "image")
             if image:
                 serializer.save(smallImage=image)
+            else:
+                serializer.save()
             return Response(data=serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -287,3 +291,9 @@ class ChangePasswordView(UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserCreateView(CreateAPIView):
+    serializer_class = ChangePasswordSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
