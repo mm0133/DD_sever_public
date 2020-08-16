@@ -268,7 +268,7 @@ contest {
 
   width: $width-main;
   height: 120px;
-  margin: $padding-top auto;
+  margin: $padding-top auto 0;
   padding: 0 30px;
   background-color: $color-background-light;
 
@@ -291,6 +291,7 @@ contest {
 
     span {
       font-family: $font-title-bold;
+      background: linear-gradient(to top, rgba(75, 101, 128, 0.3) 50%, transparent 50%);
     }
   }
 }
