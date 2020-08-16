@@ -1,0 +1,78 @@
+@import "../index";
+
+.signup-title {
+  @include flex-box;
+  justify-content: flex-start;
+
+  margin: 20px 0;
+  font-family: $font-title-extraBold;
+  color: $color-main-light;
+
+  .icon-wrap {
+    @include flex-box;
+    justify-content: center;
+
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border-radius: 100px;
+    background-color: $color-main-light;
+
+    .icon {
+      color: white;
+      font-size: 10px;
+    }
+  }
+}
+
+.input-wrap {
+  .top-side {
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid $color-background-light;
+  }
+
+  .input {
+    @include flex-box;
+    margin-bottom: 10px;
+
+    .text {
+      font-family: $font-text-bold;
+      font-size: 15px;
+    }
+
+    input {
+      width: 240px;
+      height: 30px;
+      padding: 0 20px;
+
+      border: none;
+      border-radius: 100px;
+      background-color: rgba(232, 232, 232, 0.5);
+
+      font-family: $font-text-regular;
+      color: $color-text-dark;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .notice {
+      font-size: 13px;
+      color: $color-text-light;
+      margin: 3px 5px 0;
+    }
+  }
+  .with-notice {
+    .text {
+      margin-bottom: 21px;
+    }
+  }
+}
+
+.button {
+  @include flex-box;
+  justify-content: flex-end;
+  margin-top: 20px;
+}

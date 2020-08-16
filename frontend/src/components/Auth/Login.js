@@ -11,7 +11,7 @@ const Login = () => {
                 <div>계정이 없으신가요?</div>
                 <NavLink to="/auth/signup" className="link">
                     <div className="button">
-                        <div className="overlay">회원가입 바로가기</div>
+                        <div className="overlay">회원가입 바로가기 <span>></span></div>
                     </div>
                 </NavLink>
             </div>
@@ -25,27 +25,27 @@ const Login = () => {
                     <div className="name">비밀번호</div>
                     <input type="password"/>
                 </div>
-                <div className="button">
-                    <button>로그인</button>
-                </div>
+                <button>로그인</button>
             </div>
+
             <div className="division">
                 <div className="line"></div>
                 <div className="or">OR</div>
                 <div className="line"></div>
             </div>
+
             <div className="social-wrap">
                 <button className="social google">
-                    <FontAwesomeIcon icon={faGoogle}/>
-                    <div>Google로 시작하기</div>
+                    <FontAwesomeIcon icon={faGoogle} className="icon"/>
+                    <div className="text">Google로 시작하기</div>
                 </button>
                 <button className="social naver">
-                    <div>N</div>
-                    <div>네이버로 시작하기</div>
+                    <div className="icon">N</div>
+                    <div className="text">네이버로 시작하기</div>
                 </button>
                 <button className="social github">
-                    <FontAwesomeIcon icon={faGithub}/>
-                    <div>GitHub로 시작하기</div>
+                    <FontAwesomeIcon icon={faGithub} className="icon"/>
+                    <div className="text">GitHub로 시작하기</div>
                 </button>
             </div>
         </div>

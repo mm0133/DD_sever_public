@@ -11,14 +11,19 @@
 }
 
 .image > img {
+  width: 650px;
   height: auto;
   opacity: 0.2;
+
+  position: relative;
+  left: 1000px;
+  top: 200px
 }
 
 .auth-wrap {
-  width: 450px;
-  height: 540px;
-  margin-right: 230px;
+  width: 440px;
+  height: 550px;
+  margin-right: 250px;
   padding: 50px;
 
   background-color: white;
@@ -27,7 +32,7 @@
   .title {
     font-family: $font-title-extraBold;
     font-size: 24px;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
     border-bottom: 1px solid $color-background-light;
   }
 }
