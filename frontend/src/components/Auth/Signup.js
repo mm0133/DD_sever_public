@@ -2,7 +2,14 @@ import React from "react";
 
 const Signup = () => {
     return (
-        <div>사인업</div>
+        <div>
+            <div>닉네임</div>
+            <input type="text"/>
+            <div>이메일</div>
+            <input type="text"/>
+            <div>핸드폰</div>
+            <input type="text"/>
+        </div>
     )
 }
 
