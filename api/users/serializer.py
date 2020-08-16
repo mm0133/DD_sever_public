@@ -2,6 +2,7 @@ from encodings.utf_8 import encode
 from encodings.utf_8_sig import decode
 
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from api.communications.models import ContestDebate, ContestCodeNote, Velog
@@ -187,7 +188,13 @@ class TeamInviteSerializerForAccept(serializers.ModelSerializer):
         fields = ["isAccepted"]
 
 
-class UserSerializerForPassword(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["username", "password"]
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password change endpoint.
+    """
+    oldPassword = serializers.CharField(required=True)
+    newPassword = serializers.CharField(required=True)
+
+    def validate_newPassword(self, value):
+        validate_password(value)
+        return value
