@@ -1,16 +1,25 @@
 import React from "react";
 import axios from "axios";
+import {social_login_start, social_profile_submit} from "../../apis/api";
 
 const SocialProfile = () => {
     return (
         <div>
             <div>닉네임</div>
-            <input type="text"/>
+            <input id="nickname" type="text"/>
             <div>이메일</div>
-            <input type="text"/>
+            <input id="email" type="text"/>
             <div>핸드폰</div>
-            <input type="text"/>
-            <button onClick = {() => axios.post({}) }>제출</button>
+            <input id="phoneNumber" type="text"/>
+            <button onClick = {
+                () => social_profile_submit(
+                document.querySelector('#nickname').value,
+                document.querySelector('#email').value,
+                document.querySelector('#phoneNumber').value
+            ) }>제출</button>
+            <button onClick = {
+                () => social_login_start()
+            }>소셜</button>
         </div>
     )
 }
