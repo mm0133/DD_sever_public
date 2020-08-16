@@ -2,7 +2,7 @@ import React from "react";
 import logo from "../image/logo.png";
 import "./Auth.scss";
 import {Route} from "react-router-dom";
-import {Login, Signup} from "../components/Auth";
+import {Login, Signup, SocialProfile} from "../components/Auth";
 
 const Auth = () => {
     return (
@@ -14,6 +14,7 @@ const Auth = () => {
                 <div className="content">
                     <Route exact path="/auth" component={Login}/>
                     <Route path="/auth/signup" component={Signup}/>
+                    <Route path="/auth/socialprofile" component={SocialProfile}/>
                 </div>
             </div>
         </div>
