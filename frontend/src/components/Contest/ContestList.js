@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {getContestList} from "../Api";
-import ContestSingle from "../components/ContestSingle";
+import {getContestList} from "../../Api";
+import ContestSingle from "./ContestSingle";
 import "./ContestList.scss"
 
 

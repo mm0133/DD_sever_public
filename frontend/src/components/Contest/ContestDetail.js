@@ -3,17 +3,17 @@ import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCalendar, faStar, faTrophy, faUser} from "@fortawesome/free-solid-svg-icons";
 
-import {getContestDetail} from "../Api";
+import {getContestDetail} from "../../Api";
 import {NavLink, Route} from "react-router-dom";
-import ContestOverview from "../components/ContestOverview";
-import ContestData from "../components/ContestData";
+import ContestOverview from "./ContestOverview";
+import ContestData from "./ContestData";
 
-import {getDDay, getDifficulty, getIsFinished, getIsForTraining} from "../Utils";
+import {getDDay, getDifficulty, getIsFinished, getIsForTraining} from "../../Utils";
 
 import "./ContestDetail.scss";
-import ContestCommunity from "../components/ContestCommunity";
-import ContestCodenote from "../components/ContestCodenote";
-import ContestRanking from "../components/ContestRanking";
+import ContestCommunity from "./ContestCommunity";
+import ContestCodenote from "./ContestCodenote";
+import ContestRanking from "./ContestRanking";
 
 
 const ContestDetail = ({match}) => {
@@ -126,7 +126,7 @@ const ContestDetail = ({match}) => {
                             component={ContestCommunity}
                         />
                         <Route
-                            path={`/contest/${match.params.id}/overview`}
+                            path={`/contest/${match.params.id}/codenote`}
                             component={ContestCodenote}
                         />
                         <Route

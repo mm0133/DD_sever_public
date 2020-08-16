@@ -8,7 +8,7 @@ const ContestData = (props) => {
         <div className="total-wrap data">
             <div className="data-text">
                 <div className="title">데이터 설명</div>
-                <div className="content">{props.dataExplanation}여기가 설명이다.</div>
+                <div className="content">{props.dataExplanation}</div>
             </div>
             <div className="data-download">
                 <div className="title">데이터 다운로드<span>(24.18 GB)</span></div>

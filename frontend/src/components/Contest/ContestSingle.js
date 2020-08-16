@@ -1,5 +1,5 @@
 import React from "react";
-import {getDDay, getDifficulty, getEvaluation} from "../Utils"
+import {getDDay, getDifficulty, getEvaluation} from "../../Utils"
 import {NavLink} from "react-router-dom";
 import "./ContestSingle.scss";
 

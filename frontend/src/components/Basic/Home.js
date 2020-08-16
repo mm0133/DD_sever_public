@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
-import ContestSingle from "../components/ContestSingle";
+import ContestSingle from "../Contest/ContestSingle";
 import {NavLink} from "react-router-dom";
-import {getContestList} from "../Api";
+import {getContestList} from "../../Api";
 
 import "./Home.scss";
-import logo from "../image/logo.png"
+import logo from "../../image/logo.png";
 
 // fontAwesome
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
