@@ -64,6 +64,7 @@
       margin: 3px 5px 0;
     }
   }
+
   .with-notice {
     .text {
       margin-bottom: 21px;
@@ -75,4 +76,29 @@
   @include flex-box;
   justify-content: flex-end;
   margin-top: 20px;
+
+  button {
+    width: 140px;
+    height: 45px;
+    line-height: 45px;
+
+    background-color: $color-main-light;
+    border: none;
+    border-radius: 100px;
+
+    font-family: $font-title-extraBold;
+    font-size: 18px;
+    color: white;
+
+    z-index: 999;
+
+    &:hover > .overlay {
+      @include overlay;
+      cursor: pointer;
+    }
+
+    .overlay {
+      transition-duration: 0.3s;
+    }
+  }
 }

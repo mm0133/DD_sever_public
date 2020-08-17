@@ -56,7 +56,9 @@ const Signup = () => {
             </div>
 
             <div className="button">
-                <button>회원가입</button>
+                <button>
+                    <div className="overlay">회원가입</div>
+                </button>
             </div>
         </div>
     )
