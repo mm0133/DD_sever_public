@@ -1,5 +1,6 @@
 @import "../index";
 
+
 .signup {
   @include flex-box;
 
@@ -8,7 +9,7 @@
 
   .button {
     $height: 40px;
-    width: 160px;
+    width: 170px;
     height: $height;
     text-align: center;
     line-height: $height;
@@ -19,6 +20,10 @@
     font-family: $font-title-extraBold;
     font-size: 15px;
     color: white;
+
+    span {
+      font-family: $font-arrow;
+    }
 
     &:hover > .overlay {
       @include overlay;
@@ -31,65 +36,56 @@
 }
 
 .login {
+  @include flex-box-column;
+  align-items: flex-end;
+
   padding-top: 25px;
   border-top: 1px solid $color-background-light;
 
   .input {
     @include flex-box;
+    width: 100%;
     margin-bottom: 10px;
-  }
 
-  .name {
-    font-family: $font-text-bold;
-    font-size: 16px;
-  }
-
-  input {
-    width: 260px;
-    height: 30px;
-    padding: 0 20px;
-
-    border: none;
-    border-radius: 100px;
-    background-color: rgba(232, 232, 232, 0.5);
-
-    font-family: $font-text-regular;
-    color: $color-text-dark;
-
-    &:focus {
-      outline: none;
+    .name {
+      font-family: $font-text-bold;
+      font-size: 15px;
     }
-  }
 
-  .button {
-    @include flex-box;
-    justify-content: flex-end;
+    input {
+      width: 260px;
+      height: 30px;
+      padding: 0 20px;
 
-    button {
-      $height: 40px;
-      width: 120px;
-      height: $height;
-      text-align: center;
-      line-height: $height;
-      align-self: end;
-      margin-top: 5px;
-
-      background-color: $color-main-dark;
       border: none;
       border-radius: 100px;
+      background-color: rgba(232, 232, 232, 0.5);
 
-      font-family: $font-title-extraBold;
-      font-size: 15px;
-      color: white;
+      font-family: $font-text-regular;
+      color: $color-text-dark;
 
-      &:hover > .overlay {
-        @include overlay;
-      }
-
-      .overlay {
-        transition-duration: 0.3s;
+      &:focus {
+        outline: none;
       }
     }
+  }
+
+  button {
+    $height: 40px;
+
+    width: 120px;
+    height: $height;
+    text-align: center;
+    line-height: $height;
+    margin-top: 5px;
+
+    background-color: $color-main-dark;
+    border: none;
+    border-radius: 100px;
+
+    font-family: $font-title-extraBold;
+    font-size: 15px;
+    color: white;
   }
 }
 
@@ -115,6 +111,59 @@
   margin-top: 10px;
 
   .social {
+    @include flex-box;
+    justify-content: flex-start;
 
+    width: 100%;
+    height: 38px;
+    margin-bottom: 10px;
+    padding: 2px 0 2px 100px;
+
+    border: none;
+    border-radius: 2px;
+    color: white;
+    opacity: 0.8;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    .icon {
+      font-size: 18px;
+    }
+
+    .text {
+      font-family: $font-text-bold;
+      padding-left: 15px;
+      margin-left: 15px;
+      border-left: 1px solid white;
+    }
+
+    &:last-child {
+      margin: 0;
+    }
+
+  }
+
+  .google {
+    background-color: #db4437;
+  }
+
+  .naver {
+    background-color: #2db400;
+
+    .icon {
+      font-family: $font-black;
+      font-size: 19px;
+      margin: 0 3px 0 2px;
+    }
+  }
+
+  .github {
+    background-color: #333333;
+
+    .icon {
+      font-size: 19px;
+    }
   }
 }

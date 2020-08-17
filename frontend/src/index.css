@@ -38,6 +38,11 @@
   font-family: "InkLipquid";
   src: url("fonts/THEFACESHOP INKLIPQUID.ttf") format("truetype");
 }
+/* 잉크립퀴드 */
+@font-face {
+  font-family: "BlackHanSans";
+  src: url("fonts/BlackHanSans.ttf") format("truetype");
+}
 
 body {
   margin: 0;
