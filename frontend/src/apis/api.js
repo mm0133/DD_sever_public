@@ -25,6 +25,25 @@ export const social_login_start = async () => {
     }
 }
 
+export const test = async (nickname) => {
+    const header = get_header();
+    const url = ''
+    const result = api.post(
+        url,
+        {nickname },
+        {headers:header}
+    )
+}
+
+export const test2 = async (nickname) => {
+    const headers = get_header();
+    const url = ''
+
+    const result = api.get(
+        url,
+        {headers}
+    )
+}
 
 export const social_profile_submit = async (email, nickname, phoneNumber) => {
     try {

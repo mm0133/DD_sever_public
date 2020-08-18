@@ -11,7 +11,7 @@ import ContestData from "./ContestData";
 import {getDDay, getDifficulty, getIsFinished, getIsForTraining} from "../../Utils";
 
 import "./ContestDetail.scss";
-import ContestCommunity from "./ContestCommunity";
+import ContestDebate from "./ContestDebate";
 import ContestCodenote from "./ContestCodenote";
 import ContestRanking from "./ContestRanking";
 
@@ -123,7 +123,7 @@ const ContestDetail = ({match}) => {
                         />
                         <Route
                             path={`/contest/${match.params.id}/community`}
-                            component={ContestCommunity}
+                            component={ContestDebate}
                         />
                         <Route
                             path={`/contest/${match.params.id}/codenote`}

@@ -10,6 +10,10 @@ export const getContestList = async () => {
 
 export const getContestDetail = async (num) => {
     const response = await axios.get(`${baseURL}/contests/contest/${num}/`);
-    console.log(response);
+    return response.data;
+}
+
+export const getContestDebate = async () => {
+    const response = await axios.get(`${baseURL}/communications/contestdebate/`);
     return response.data;
 }

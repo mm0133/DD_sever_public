@@ -1,9 +1,28 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import {getContestDebate} from "../../Api";
 
-const ContestCommunity = () => {
+const ContestDebate = () => {
+    const [debates, setDebates] = useState([]);
+
+    useEffect(() => {
+        const init = async () => {
+            const data = await getContestDebate();
+
+            setDebates(data);
+        }
+        init();
+    }, [])
+
     return (
-        <div>커뮤니티다 이자식</div>
+        <div>
+            {!debates ? <div>없다 이자식</div> :
+                <div className="total-wrap">
+
+
+                </div>
+            }
+        </div>
     )
 }
 
-export default ContestCommunity;
+export default ContestDebate;
