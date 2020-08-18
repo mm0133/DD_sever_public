@@ -21,4 +21,5 @@ urlpatterns = [
     path("user_delete/", views.delete_user),  # delete 본인회원탈퇴, 프론트에서 토큰 지워주세요
     path("user_delete_admin/<int:pk>/", views.delete_user_pk),  # 관리자용
     path("password_change/", views.ChangePasswordView.as_view()),
+    path("has_profile/", views.HasCustomProfile)
 ]

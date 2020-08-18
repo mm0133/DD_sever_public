@@ -2,8 +2,8 @@ import axios from 'axios'
 
 
 export const get_header = async () => {
-    let header = await {}
-    const token = await localStorage.getItem('token')
+    let header = await {};
+    const token = await localStorage.getItem('token');
     if (token) {
         header = await {Authorization: `Bearer ${token}`}
     }
