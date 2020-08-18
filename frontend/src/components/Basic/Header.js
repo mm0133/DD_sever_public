@@ -23,7 +23,8 @@ function Header() {
                     <NavLink to="/notice" className="link nav-item" activeStyle={activeStyle}>공지</NavLink>
                     <NavLink to="/mypage" className="link nav-item" activeStyle={activeStyle}>마이페이지</NavLink>
                 </div>
-                <div className="logout">로그아웃</div>
+                <NavLink to="/auth/login" className="header-button header-login">로그인 ㅣ 회원가입</NavLink>
+                {/*<NavLink className="header-button header-logout">로그아웃</NavLink>*/}
             </header>
         </div>
 
