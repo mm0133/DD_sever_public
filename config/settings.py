@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-
+from .my_settings import GOOGLE_OAUTH2_SECRET
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -160,17 +160,20 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
 )
 
-REST_SOCIAL_OAUTH_REDIRECT_URI = '/'
+# REST_SOCIAL_OAUTH_REDIRECT_URI = '/'
+REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI = 'http://127.0.0.1:3000/auth/social/callback/'
 REST_SOCIAL_DOMAIN_FROM_ORIGIN = False
 
 # SOCIAL_AUTH_GITHUB_KEY = 'a1b2c3d4'
 # SOCIAL_AUTH_GITHUB_SECRET = 'e5f6g7h8i9'
 # SOCIAL_AUTH_GITHUB_SCOPE = [...]
 
+
+
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
-    '976099811367-ihbmg1pfnniln9qgfacleiu41bhl3fqn.apps.googleusercontent.com'
+    '468545293049-p195m8hbli0ss99614cb2siqf4rgt04k.apps.googleusercontent.com'
 )
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '468545293049-p195m8hbli0ss99614cb2siqf4rgt04k.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_OAUTH2_SECRET
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', ]
 
 # SOCIAL_AUTH_NAVER_KEY = ''

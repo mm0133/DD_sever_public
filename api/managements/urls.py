@@ -19,4 +19,5 @@ urlpatterns = [
          views.CommentToQuestionViewWithCommentPK.as_view()),
     path("feedback_to_manager/", views.FeedbackToManagerView.as_view()),
     path("feedback_to_manager/<int:pk>/", views.FeedbackToManagerViewWithPk.as_view()),
+
 ]
