@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCalendar, faStar, faTrophy, faUser} from "@fortawesome/free-solid-svg-icons";
 
-import {getContestDetail} from "../../Api";
+import {getContestDetail} from "../../apis/api";
 import {NavLink, Route} from "react-router-dom";
 import ContestOverview from "./ContestOverview";
 import ContestData from "./ContestData";

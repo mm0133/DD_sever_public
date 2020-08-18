@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
 import qs from "qs";
 import {api, get_header} from '../../apis/config'
-import axios from "axios";
-import {social_profile_submit_custom} from "../../apis/api";
+import {socialProfileSubmitCustom} from "../../apis/api";
 
 
 const Callback = ({location}) => {
-    const [token, setToken] = useState('');
+    const [token, setToken] = useState("");
     const [showRender, setShowRender] = useState(false);
+
     useEffect(() => {
         console.log('hello');
 
@@ -53,17 +53,11 @@ const Callback = ({location}) => {
                 else {
                     setShowRender(true)
                 }
-
             };
             await getToken();
-
-
         }
-
         wow();
-
     }, []);
-
 
     return (
         <div>
@@ -77,7 +71,7 @@ const Callback = ({location}) => {
                     <div>핸드폰</div>
                     <input id="phoneNumber" type="text"/>
                     <button onClick={
-                        () => social_profile_submit_custom(
+                        () => socialProfileSubmitCustom(
                             document.querySelector('#nickname').value,
                             document.querySelector('#email').value,
                             document.querySelector('#phoneNumber').value,
@@ -86,12 +80,8 @@ const Callback = ({location}) => {
                     </button>
                 </div>
             }
-
-
         </div>
     );
-
-
 };
 
 

@@ -2,10 +2,10 @@ import {api, get_header} from './config'
 import axios from 'axios'
 
 
-export const social_login_start = async () => {
+export const socialLoginStart = async () => {
 };
 
-export const social_profile_submit = async (email, nickname, phoneNumber) => {
+export const socialProfileSubmit = async (email, nickname, phoneNumber) => {
     try {
         const response = await api.post(
             'api/v1/users/my_profile/',
@@ -19,7 +19,7 @@ export const social_profile_submit = async (email, nickname, phoneNumber) => {
     }
 }
 
-export const social_profile_submit_custom = async (nickname, email, phoneNumber, token) => {
+export const socialProfileSubmitCustom = async (nickname, email, phoneNumber, token) => {
     try {
         const response = await api.post(
             'api/v1/users/my_profile/',
@@ -33,4 +33,43 @@ export const social_profile_submit_custom = async (nickname, email, phoneNumber,
         console.log(err);
         throw err
     }
-};
+}
+
+export const getContestList = async () => {
+    try {
+        const response = await axios.get(
+            "api/v1/contests/contest/",
+            {headers: {Authorization: `Bearer ${token}`}}
+        );
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        throw err
+    }
+}
+
+export const getContestDetail = async (num) => {
+    try {
+        const response = await axios.get(
+            `api/v1/contests/contest/${num}/`,
+            {headers: {Authorization: `Bearer ${token}`}}
+        );
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        throw err
+    }
+}
+
+export const getContestDebate = async () => {
+    try {
+        const response = await axios.get(
+            "api/v1/communications/contestdebate/",
+            {headers: {Authorization: `Bearer ${token}`}}
+        );
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        throw err
+    }
+}
