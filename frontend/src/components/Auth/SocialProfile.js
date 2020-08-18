@@ -17,9 +17,6 @@ const SocialProfile = () => {
                 document.querySelector('#email').value,
                 document.querySelector('#phoneNumber').value
             ) }>제출</button>
-            <button onClick = {
-                () => social_login_start()
-            }>소셜</button>
         </div>
     )
 }

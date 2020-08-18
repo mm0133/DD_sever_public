@@ -4,6 +4,8 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faGithub, faGoogle} from "@fortawesome/free-brands-svg-icons";
 import "./Login.scss";
 
+const googleaddress='https://accounts.google.com/o/oauth2/auth?client_id=468545293049-p195m8hbli0ss99614cb2siqf4rgt04k.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:3000/auth/social/callback/&response_type=code&scope=email'
+
 const Login = () => {
     return (
         <div className="total-wrap">
@@ -35,7 +37,8 @@ const Login = () => {
             </div>
 
             <div className="social-wrap">
-                <button className="social google">
+                <button className="social google" onClick={() => {localStorage.setItem('DD_provider', 'google-oauth2')
+        window.location.href = googleaddress;}}>
                     <FontAwesomeIcon icon={faGoogle} className="icon"/>
                     <div className="text">Google로 시작하기</div>
                 </button>

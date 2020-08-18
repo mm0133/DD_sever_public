@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import UpdateAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -48,11 +47,13 @@ class CustomProfileView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-
+        print(request)
+        print(request.data)
         if get_object_or_None(CustomProfile, user=request.user):
             return Response(f"{request.user.username}'s profile already exits.", status=status.HTTP_403_FORBIDDEN)
 
         serializer = CustomProfileSerializerForChange(data=request.data, context={"user": request.user})
+        print(serializer)
         if serializer.is_valid():
             serializer.save(user=request.user)
             image = get_object_or_None(request.data, "image")
@@ -62,6 +63,7 @@ class CustomProfileView(APIView):
                 serializer.save()
             return Response(data=serializer.data)
         else:
+            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
@@ -226,7 +228,7 @@ def change_representative(request, teamName):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-@api_view(['delete'])
+@api_view(['DELETE'])
 @permission_classes([permissions.IsAuthenticated])
 def delete_user(request):
     teams = Team.objects.filter(representative=request.user)
@@ -264,7 +266,7 @@ class ChangePasswordView(UpdateAPIView):
     """
     serializer_class = ChangePasswordSerializer
     model = User
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, queryset=None):
         obj = self.request.user
@@ -305,3 +307,14 @@ class UserCreateView(CreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def HasCustomProfile(request):
+    if get_object_or_None(CustomProfile, user=request.user):
+        return Response('true', status=status.HTTP_200_OK)
+    else:
+        return Response('false', status=status.HTTP_200_OK)
+
+
