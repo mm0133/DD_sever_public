@@ -156,6 +156,6 @@ user_1/
 test/
 
 frontend/node_modules/
-
+node_modules/
 Pipfile.lock
 

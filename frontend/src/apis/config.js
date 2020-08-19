@@ -2,12 +2,18 @@ import axios from 'axios'
 
 
 export const get_header = async () => {
-    let header = await {};
-    const token = await localStorage.getItem('token');
+    let header = {};
+    const token = await localStorage.getItem('ddToken');
     if (token) {
-        header = await {Authorization: `Bearer ${token}`}
+        header = {Authorization: `Bearer ${token}`}
     }
     return header
+}
+
+export const getTokenAndExpire = async () => {
+    const token =  await localStorage.getItem('ddToken') || null;
+    const expireDateTime = await localStorage.getItem('ddExpireDateTime') || null;
+    return {token, expireDateTime}
 }
 
 export const api = axios.create({
