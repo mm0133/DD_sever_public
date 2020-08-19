@@ -39,21 +39,21 @@ const Login = () => {
 
             <div className="social-wrap">
                 <button className="social google" onClick={() => {
-                    localStorage.setItem('DD_provider', 'google-oauth2');
+                    sessionStorage.setItem('DD_provider', 'google-oauth2');
                     window.location.href = googleaddress;
                 }}>
                     <FontAwesomeIcon icon={faGoogle} className="icon"/>
                     <div className="text">Google로 시작하기</div>
                 </button>
                 <button className="social naver" onClick={() => {
-                    localStorage.setItem('DD_provider', 'naver')
+                    sessionStorage.setItem('DD_provider', 'naver')
                     window.location.href = naveraddress;
                 }}>
                     <div className="icon">N</div>
                     <div className="text">네이버로 시작하기</div>
                 </button>
                 <button className="social github" onClick={() => {
-                    localStorage.setItem('DD_provider', 'github');
+                    sessionStorage.setItem('DD_provider', 'github');
                     window.location.href = githubaddress;
                 }}>
                     <FontAwesomeIcon icon={faGithub} className="icon"/>
