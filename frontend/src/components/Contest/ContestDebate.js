@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {getContestDebate} from "../../Api";
+import {getContestDebate} from "../../apis/api";
 
 const ContestDebate = () => {
     const [debates, setDebates] = useState([]);

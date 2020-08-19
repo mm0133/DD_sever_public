@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import ContestSingle from "../Contest/ContestSingle";
 import {NavLink} from "react-router-dom";
-import {getContestList} from "../../Api";
+import {getContestList} from "../../apis/api";
 
 import "./Home.scss";
 import logo from "../../image/logo.png";

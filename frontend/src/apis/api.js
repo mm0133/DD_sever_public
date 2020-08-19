@@ -37,9 +37,10 @@ export const socialProfileSubmitCustom = async (nickname, email, phoneNumber, to
 
 export const getContestList = async () => {
     try {
+        const headers = get_header()
         const response = await axios.get(
             "api/v1/contests/contest/",
-            {headers: {Authorization: `Bearer ${token}`}}
+            {headers}
         );
         return response.data;
     } catch (err) {
@@ -50,9 +51,10 @@ export const getContestList = async () => {
 
 export const getContestDetail = async (num) => {
     try {
+        const headers = get_header()
         const response = await axios.get(
             `api/v1/contests/contest/${num}/`,
-            {headers: {Authorization: `Bearer ${token}`}}
+            {headers}
         );
         return response.data;
     } catch (err) {
@@ -63,9 +65,10 @@ export const getContestDetail = async (num) => {
 
 export const getContestDebate = async () => {
     try {
+        const headers = get_header()
         const response = await axios.get(
             "api/v1/communications/contestdebate/",
-            {headers: {Authorization: `Bearer ${token}`}}
+            {headers}
         );
         return response.data;
     } catch (err) {

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import qs from "qs";
 import {api, get_header} from '../../apis/config'
-import {socialProfileSubmitCustom} from "../../apis/api";
+import {socialProfileSubmit} from "../../apis/api";
 
 
 const Callback = ({location}) => {
@@ -75,7 +75,7 @@ const Callback = ({location}) => {
                     <input id="phoneNumber" type="text"/>
                     <button onClick={
                         async () => {
-                            await social_profile_submit_custom(
+                            await socialProfileSubmit(
                                 document.querySelector('#nickname').value,
                                 document.querySelector('#email').value,
                                 document.querySelector('#phoneNumber').value,
