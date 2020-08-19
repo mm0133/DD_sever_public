@@ -16,6 +16,11 @@ export const getTokenAndExpire = async () => {
     return {token, expireDateTime}
 }
 
+export const getIsAuthenticated = async () => {
+    const {token, expireDateTime} = await getTokenAndExpire();
+    return token && Date.now() < expireDateTime
+}
+
 export const api = axios.create({
     baseURL: 'http://127.0.0.1:8000/',
     timeout: 5000,
