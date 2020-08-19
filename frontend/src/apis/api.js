@@ -39,7 +39,7 @@ export const getContestList = async () => {
     try {
         const headers = get_header()
         const response = await axios.get(
-            "api/v1/contests/contest/",
+            "/api/v1/contests/contest/",
             {headers}
         );
         return response.data;
@@ -53,7 +53,7 @@ export const getContestDetail = async (num) => {
     try {
         const headers = get_header()
         const response = await axios.get(
-            `api/v1/contests/contest/${num}/`,
+            `/api/v1/contests/contest/${num}/`,
             {headers}
         );
         return response.data;
@@ -67,7 +67,7 @@ export const getContestDebate = async () => {
     try {
         const headers = get_header()
         const response = await axios.get(
-            "api/v1/communications/contestdebate/",
+            "/api/v1/communications/contestdebate/",
             {headers}
         );
         return response.data;

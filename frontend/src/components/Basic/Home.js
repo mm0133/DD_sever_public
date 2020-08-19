@@ -32,29 +32,31 @@ const Home = () => {
         <div>
             {!contests ? <div>{null}</div> :
                 <div className="total-wrap">
-                    <main-banner>
-                        <div style={{zIndex: 1}}>
-                            {/* logo 위에 catchphrase + button */}
-                            <div className="catchphrase">
-                                데이타덕은<br/>
-                                <span>머신러닝을 원하는 모두</span>에게<br/>
-                                열린 공간입니다.
-                            </div>
-                            <NavLink to="/contest" className="link">
-                                <div className="button">
-                                    <div className="overlay">단계별 대회 둘러보기</div>
+                    <div className="main-banner">
+                        <div className="background">
+                            <div style={{zIndex: 1}}>
+                                {/* logo 위에 catchphrase + button */}
+                                <div className="catchphrase">
+                                    데이타덕은<br/>
+                                    <span>머신러닝을 원하는 모두</span>에게<br/>
+                                    열린 공간입니다.
                                 </div>
-                            </NavLink>
-                        </div>
-                        <div className="logo-image"><img src={logo} alt=""/></div>
-                        <div className="contest-scrap">
-                            <div>
-                                <div className="title">스크랩한 대회</div>
-                                <div className="content">스크랩한 대회가 없습니다.</div>
+                                <NavLink to="/contest" className="link">
+                                    <div className="button">
+                                        <div className="overlay">단계별 대회 둘러보기</div>
+                                    </div>
+                                </NavLink>
                             </div>
-                            <NavLink to="/contest" className="link more-contest">+ 대회 둘러보기</NavLink>
+                            <div className="logo-image"><img src={logo} alt=""/></div>
+                            <div className="contest-scrap">
+                                <div>
+                                    <div className="title">스크랩한 대회</div>
+                                    <div className="content">스크랩한 대회가 없습니다.</div>
+                                </div>
+                                <NavLink to="/contest" className="link more-contest">+ 대회 둘러보기</NavLink>
+                            </div>
                         </div>
-                    </main-banner>
+                    </div>
 
                     {/* 실전 대회 */}
                     <contest>

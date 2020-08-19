@@ -44,10 +44,12 @@ const ContestList = () => {
     return (
         <div>
             {!filter ? <div>{null}</div> :
-                <div className="total-wrap">
+                <div className="total-wrap contest-list">
                     <div className="list-main-banner">
-                        <div className="title">대회 Contest</div>
-                        <div className="subtitle">머신러닝을 원하는 모두를 위한 대회입니다.</div>
+                        <div className="background">
+                            <div className="title">대회 Contest</div>
+                            <div className="subtitle">머신러닝을 원하는 모두를 위한 대회입니다.</div>
+                        </div>
                     </div>
 
                     <div className="list-nav">

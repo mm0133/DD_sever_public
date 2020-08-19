@@ -3,12 +3,18 @@
 
 // main-banner
 
-main-banner {
-  @include flex-box;
+.main-banner {
+  width: 100%;
   height: $height-mainBanner;
-  padding: 0 $padding-main;
   background: $color-background-light;
   overflow: hidden;
+
+  .background {
+    @include flex-box;
+    width: $width-main;
+    height: $height-mainBanner;
+    margin: 0 auto;
+  }
 
   .catchphrase {
     font-family: $font-title-regular;
@@ -90,7 +96,8 @@ main-banner {
 contest {
   .header {
     @include flex-box;
-    padding: $padding-top $padding-main 0;
+    width: $width-main;
+    margin: $padding-top auto 0;
 
     .title {
       @include flex-box;
