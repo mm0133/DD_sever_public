@@ -5,6 +5,7 @@
   $padding: 20px;
 
   @include flex-box;
+  width: $width-main;
   height: $height;
   padding: $padding;
   margin-top: 10px;

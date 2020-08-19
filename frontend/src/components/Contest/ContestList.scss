@@ -1,5 +1,6 @@
 @import "src/components/index";
 
+
 .list-main-banner {
   @include flex-box-column;
   justify-content: center;
@@ -7,7 +8,11 @@
   width: 100%;
   height: $height-mainBanner - 150px;
   background-color: rgba(75, 101, 128, 0.1);
-  padding: 0 $padding-main;
+
+  .background {
+    width: $width-main;
+    margin: 0 auto;
+  }
 
   .title {
     font-family: $font-title-extraBold;
@@ -69,5 +74,6 @@
 }
 
 .list-contest {
-  padding: 0 $padding-main;
+  width: $width-main;
+  margin: 0 auto;
 }

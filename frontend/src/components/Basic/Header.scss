@@ -1,10 +1,15 @@
 @import "src/components/index";
 
 header {
-  @include flex-box;
-  height: $height-header;
-  padding: 0 $padding-main;
+  width: 100%;
   background: $color-gradient;
+
+  .background {
+    @include flex-box;
+    width: $width-main;
+    height: $height-header;
+    margin: 0 auto;
+  }
 
   .logo {
     font-family: $font-title-bold;
