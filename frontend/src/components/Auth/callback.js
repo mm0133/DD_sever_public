@@ -74,7 +74,6 @@ const Callback = ({location}) => {
                     <div>핸드폰</div>
                     <input id="phoneNumber" type="text"/>
                     <button onClick={
-<<<<<<< HEAD
                         async () => {
                             await social_profile_submit_custom(
                                 document.querySelector('#nickname').value,
@@ -85,14 +84,6 @@ const Callback = ({location}) => {
                             await localStorage.setItem('DD_refresh', refresh);
                             window.location.href = 'http://127.0.0.1:3000/'
                         }}>제출
-=======
-                        () => socialProfileSubmitCustom(
-                            document.querySelector('#nickname').value,
-                            document.querySelector('#email').value,
-                            document.querySelector('#phoneNumber').value,
-                            token
-                        )}>제출
->>>>>>> c17baeeeadc7208be0a554bc56308ff22b361bad
                     </button>
                 </div>
             }
