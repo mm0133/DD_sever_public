@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from .my_settings import GOOGLE_OAUTH2_SECRET
+from .my_settings import GOOGLE_OAUTH2_SECRET, NAVER_OAUTH2_SECRET, GITHUB_OAUTH2_SECRET
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -165,7 +165,7 @@ REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI = 'http://127.0.0.1:3000/auth/social/cal
 REST_SOCIAL_DOMAIN_FROM_ORIGIN = False
 
 SOCIAL_AUTH_GITHUB_KEY = '679f9b8e9e9cfbf16221'
-SOCIAL_AUTH_GITHUB_SECRET = '190c1a4ca6c200d913a16eb7ad08ec76a7f8b386'
+SOCIAL_AUTH_GITHUB_SECRET = GITHUB_OAUTH2_SECRET
 # SOCIAL_AUTH_GITHUB_SCOPE = ['email',]
 
 
@@ -177,7 +177,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_OAUTH2_SECRET
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', ]
 
 SOCIAL_AUTH_NAVER_KEY = 'mM_KbZbhn4GWvhh6vSiz'
-SOCIAL_AUTH_NAVER_SECRET = 'hFxkOt6roN'
+SOCIAL_AUTH_NAVER_SECRET = NAVER_OAUTH2_SECRET
 # SOCIAL_AUTH_NAVER_EXTRA_DATA = ['nickname', 'gender', 'age',
 #                                 'birthday', 'profile_image']
 

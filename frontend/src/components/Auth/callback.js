@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from "react";
 import qs from "qs";
 import {api, get_header} from '../../apis/config'
-import axios from "axios";
-import {social_profile_submit_custom} from "../../apis/api";
+import {socialProfileSubmitCustom} from "../../apis/api";
 
 
 const Callback = ({location}) => {
+
     const [token, setToken] = useState('');
     const [refresh, setRefresh] = useState('');
     const [showRender, setShowRender] = useState(false);
+
     useEffect(() => {
         console.log('hello');
 
@@ -55,17 +56,11 @@ const Callback = ({location}) => {
                 } else {
                     setShowRender(true)
                 }
-
             };
             await getToken();
-
-
         }
-
         wow();
-
     }, []);
-
 
     return (
         <div>
@@ -79,6 +74,7 @@ const Callback = ({location}) => {
                     <div>핸드폰</div>
                     <input id="phoneNumber" type="text"/>
                     <button onClick={
+<<<<<<< HEAD
                         async () => {
                             await social_profile_submit_custom(
                                 document.querySelector('#nickname').value,
@@ -89,15 +85,19 @@ const Callback = ({location}) => {
                             await localStorage.setItem('DD_refresh', refresh);
                             window.location.href = 'http://127.0.0.1:3000/'
                         }}>제출
+=======
+                        () => socialProfileSubmitCustom(
+                            document.querySelector('#nickname').value,
+                            document.querySelector('#email').value,
+                            document.querySelector('#phoneNumber').value,
+                            token
+                        )}>제출
+>>>>>>> c17baeeeadc7208be0a554bc56308ff22b361bad
                     </button>
                 </div>
             }
-
-
         </div>
     );
-
-
 };
 
 
