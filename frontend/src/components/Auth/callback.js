@@ -20,7 +20,7 @@ const Callback = ({location}) => {
             });
             const code = query.code;
 
-            const provider = sessiongStorage.getItem('DD_provider')
+            const provider = sessionStorage.getItem('DD_provider')
 
             const getToken = async () => {
                 const result = await api.post(
