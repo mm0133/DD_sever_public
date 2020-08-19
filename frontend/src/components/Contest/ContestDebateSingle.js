@@ -2,7 +2,7 @@ import React from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faComment, faStar, faThumbsUp} from "@fortawesome/free-regular-svg-icons";
 
-const ContestDebateSingle = ({props.}) => {
+const ContestDebateSingle = ({props}) => {
     return (
         <div className="total-wrap debate-single">
             <div className="image"><img src="" alt=""/></div>
