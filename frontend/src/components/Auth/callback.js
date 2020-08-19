@@ -7,6 +7,7 @@ import {social_profile_submit_custom} from "../../apis/api";
 
 const Callback = ({location}) => {
     const [token, setToken] = useState('');
+    const [refresh, setRefresh] = useState('');
     const [showRender, setShowRender] = useState(false);
     useEffect(() => {
         console.log('hello');
@@ -24,11 +25,13 @@ const Callback = ({location}) => {
                 const result = await api.post(
                     `api/login/social/jwt-pair-user/${provider}`, {
                         provider: provider,
-                        code: code
+                        code: code,
+                        state:'dataduck'
                     });
                 const url = 'api/v1/users/has_profile/';
                 console.log(result.data.token);
                 await setToken(result.data.token);
+                await setRefresh(result.data.refresh)
                 const token2 = result.data.token;
                 const header = {Authorization: `Bearer ${token2}`};
 
@@ -49,8 +52,7 @@ const Callback = ({location}) => {
                     localStorage.setItem('DD_access', result.data.token);
                     localStorage.setItem('DD_refresh', result.data.refresh);
                     window.location.href = 'http://127.0.0.1:3000/'
-                }
-                else {
+                } else {
                     setShowRender(true)
                 }
 
@@ -77,12 +79,16 @@ const Callback = ({location}) => {
                     <div>핸드폰</div>
                     <input id="phoneNumber" type="text"/>
                     <button onClick={
-                        () => social_profile_submit_custom(
-                            document.querySelector('#nickname').value,
-                            document.querySelector('#email').value,
-                            document.querySelector('#phoneNumber').value,
-                            token
-                        )}>제출
+                        async () => {
+                            await social_profile_submit_custom(
+                                document.querySelector('#nickname').value,
+                                document.querySelector('#email').value,
+                                document.querySelector('#phoneNumber').value,
+                                token)
+                            await localStorage.setItem('DD_access', token);
+                            await localStorage.setItem('DD_refresh', refresh);
+                            window.location.href = 'http://127.0.0.1:3000/'
+                        }}>제출
                     </button>
                 </div>
             }
