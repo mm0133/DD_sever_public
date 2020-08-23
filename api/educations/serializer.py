@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from api.educations.models import EduVideoLecture, LecturePackage
+from config.serializers import IsOwnerMixin
 
 
 
-class WriterNicknameImageSerializer(serializers.ModelSerializer, OwnerMixin):
+class WriterNicknameImageSerializer(serializers.ModelSerializer):
 
     writerNickname = serializers.CharField(source='writer.customProfile.nickname')
     writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
