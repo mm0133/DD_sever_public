@@ -1,6 +1,3 @@
-from typing import TYPE_CHECKING
-
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -103,7 +100,7 @@ class ContestParticipantAnswer(models.Model):
     team = models.ForeignKey(
         'users.Team', null=True, on_delete=models.SET_NULL, related_name="teamAnswer"
     )
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     isTeam = models.BooleanField(default=False)
     teamMembers = ListTextField(null=True, blank=True, base_field=models.CharField(max_length=255), )
     name = models.CharField(max_length=255)
@@ -117,6 +114,8 @@ class ContestParticipantAnswer(models.Model):
 
     # 종료 시점에 업데이트해서 1등 - 1, 2등 - 2, 3등 - 3, 상위30% - 4 참여완료 - 5
     rank = models.IntegerField(default=0)
+
+    likes = models.ManyToManyField('users.CustomProfile', related_name='contestAnswerLikes')
 
     def get_name(self):
         if self.isTeam and self.team:

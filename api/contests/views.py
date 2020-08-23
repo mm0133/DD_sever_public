@@ -124,7 +124,7 @@ class ContestParticipantAnswerViewWithContestPK(APIView):
         # 팀제출
         if teamName:
             team = get_object_or_404(Team, name=teamName)
-            if not (team.representative == request.user or not request.user.is_staff):
+            if not (team.representative == request.user or request.user.is_staff):
                 return Response("팀의 대표만 답 제출을 할 수 있습니다.", status=status.HTTP_401_UNAUTHORIZED, )
 
             members = team.members.all()
@@ -219,9 +219,21 @@ class ContestParticipantAnswerViewWithPK(APIView):
 @api_view(['POST'])
 def ContestScrap(request, pk):
     contest = get_object_or_404(Contest, pk=pk)
-    if contest not in request.user.customProfile.contestScraps:
-        request.user.customProfile.debateScraps.add(contest)
+    if contest not in request.user.customProfile.contestScraps.all():
+        request.user.customProfile.contestScraps.add(contest)
         return Response(status=status.HTTP_200_OK)
     else:
-        request.user.customProfile.debateScraps.remove(contest)
+        request.user.customProfile.contestScraps.remove(contest)
+        return Response(status=status.HTTP_200_OK)
+
+
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def ContestParticipantAnswerLike(request, pk):
+    contestParticipantAnswer = get_object_or_404(ContestParticipantAnswer, pk=pk)
+    if contestParticipantAnswer not in request.user.customProfile.contestAnswerLikes.all():
+        request.user.customProfile.contestAnswerLikes.add(contestParticipantAnswer)
+        return Response(status=status.HTTP_200_OK)
+    else:
+        request.user.customProfile.contestAnswerLikes.remove(contestParticipantAnswer)
         return Response(status=status.HTTP_200_OK)
