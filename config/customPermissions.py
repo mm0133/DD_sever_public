@@ -61,9 +61,10 @@ class IsRepresentativeOrAdminUser(permissions.BasePermission):
             return True
         return False
 
+
 class IsGetRequestOrTeamRepresentativeOrOwner(permissions.BasePermission):
     class IsGetRequestOrWriterOrAdminUser(permissions.BasePermission):
-        # 작성자만 접근, 작성자가 아니면 Read만 가능
+        # 작성자만 접근, 작성자가 아니면 Read 만 가능
         def has_object_permission(self, request, view, obj):
             if request.method == "GET":
                 return True

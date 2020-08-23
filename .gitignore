@@ -10,7 +10,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media
+media/
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
@@ -158,4 +158,8 @@ test/
 frontend/node_modules/
 node_modules/
 Pipfile.lock
+
+.idea
+.vs
+.vscode
 

@@ -47,13 +47,10 @@ class CustomProfileView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        print(request)
-        print(request.data)
         if get_object_or_None(CustomProfile, user=request.user):
             return Response(f"{request.user.username}'s profile already exits.", status=status.HTTP_403_FORBIDDEN)
 
         serializer = CustomProfileSerializerForChange(data=request.data, context={"user": request.user})
-        print(serializer)
         if serializer.is_valid():
             serializer.save(user=request.user)
             image = get_object_or_None(request.data, "image")
@@ -63,7 +60,6 @@ class CustomProfileView(APIView):
                 serializer.save()
             return Response(data=serializer.data)
         else:
-            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
@@ -124,18 +120,18 @@ def member_invite(request, teamName):
     member = get_object_or_404(CustomProfile, nickname=memberNickname).user
 
     if not (team.representative == request.user or request.user.is_staff):
-        return Response(f"you are neither team {teamName}'s representative nor staff user!",
+        return Response(f"당신은 팀 {teamName}'의 대표도 아니고 관리자도 아닙니다. 초대 요청을 보낼 수 업습니다.",
                         status=status.HTTP_401_UNAUTHORIZED)
 
     if memberNickname == request.user.customProfile.nickname:
-        return Response("you can't invite yourself!", status=status.HTTP_403_FORBIDDEN)
+        return Response("스스로를 초대할 수 없습니다.", status=status.HTTP_403_FORBIDDEN)
     elif member in team.members.all():
-        return Response(f"{memberNickname} is already team {teamName}'s member.", status=status.HTTP_403_FORBIDDEN)
+        return Response(f"멤버 {memberNickname}는 이미 팀 {teamName}의 멤버입니다. 초대할 수 없습니다.", status=status.HTTP_403_FORBIDDEN)
     elif get_object_or_None(TeamInvite, team=team, invitee=member):
         teamInvite = get_object_or_None(TeamInvite, team=team, invitee=member)
         # 아직 수락/거절 안 했을 때
         if not teamInvite.isFinished:
-            return Response(f"you already invited {memberNickname} to team {teamName} ",
+            return Response(f"당신은 {memberNickname}을 to team {teamName}에 이미 초대했습니다. ",
                             status=status.HTTP_403_FORBIDDEN)
         # 이미 거절했는데 다시 초대했을 때
         else:
@@ -155,12 +151,11 @@ def member_invite(request, teamName):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_accept(request, teamName):
-    print(request.data)
     team = get_object_or_404(Team, name=teamName)
     teamInvite = get_object_or_404(TeamInvite, team=team, invitee=request.user)
 
     if not (teamInvite.invitee == request.user or request.user.is_staff):
-        return Response(f"you are neither team {teamName}'s invitee nor staff user!",
+        return Response(f"당신은 팀 {teamName}'의 초대를 받지 않았고 관리자도 아닙니다. 초대를 수락할 수 없습니다.",
                         status=status.HTTP_401_UNAUTHORIZED)
 
     # 이렇게 해야 JS의 true/false 를 python 의 true/false 로 알아들을 수 있음.
@@ -188,7 +183,7 @@ def member_invite_cancel(request, teamName):
         teamInvite.delete()
         return Response(status=status.HTTP_200_OK)
     else:
-        return Response(f"you are neither team {teamName}'s representative nor staff user!",
+        return Response(f"당신은 팀 {teamName}'의 대표도 관리자도 아닙니다. 멤버 초대 요청을 취소할 수 없습니다.",
                         status=status.HTTP_401_UNAUTHORIZED)
 
 

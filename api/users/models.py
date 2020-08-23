@@ -12,14 +12,14 @@ from config.FilePath import customProfileImagePath, customProfileSmallImage, tea
 class CustomProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customProfile")
     image = ProcessedImageField(null=True, blank=True,
-                                upload_to=customProfileImagePath,
+                                max_length=255, upload_to=customProfileImagePath,
                                 processors=[Thumbnail(256, 256)],
                                 format='JPEG',
                                 options={'quality': 85},
                                 default="user_1/profile",
                                 )
     smallImage = ProcessedImageField(null=True, blank=True,
-                                     upload_to=customProfileSmallImage,
+                                     max_length=255, upload_to=customProfileSmallImage,
                                      processors=[Thumbnail(64, 64)],
                                      format='JPEG',
                                      options={'quality': 60},
@@ -77,14 +77,14 @@ class Team(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     image = ProcessedImageField(null=True, blank=True,
-                                upload_to=teamImagePath,
+                                max_length=255, upload_to=teamImagePath,
                                 processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
                                 format='JPEG',  # 최종 저장 포맷
                                 options={'quality': 85},
                                 default="user_1/profile",
                                 )
     smallImage = ProcessedImageField(null=True, blank=True,
-                                     upload_to=teamSmallImagePath,
+                                     max_length=255, upload_to=teamSmallImagePath,
                                      processors=[Thumbnail(64, 64)],  # 처리할 작업 목룍
                                      format='JPEG',  # 최종 저장 포맷
                                      options={'quality': 85},
