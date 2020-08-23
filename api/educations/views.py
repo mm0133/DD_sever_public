@@ -14,11 +14,11 @@ class LecturePackageView(APIView):
 
     def get(self, request):
         lecture = LecturePackage.objects.all()
-        serializer = LecturePackageSerializer(lecture, many=True).data
+        serializer = LecturePackageSerializer(lecture, many=True, context={"user": request.user}).data
         return Response(serializer)
 
     def post(self, request):
-        serializer = LecturePackageSerializerForPost(data=request.data)
+        serializer = LecturePackageSerializerForPost(data=request.data,  context={"user": request.user})
         if serializer.is_valid():
             serializer.save(writer=request.user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -41,7 +41,7 @@ class LecturePackageViewWithPk(APIView):
         lecturePackage = self.get_lecturePackage(pk)
         if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = LecturePackageSerializer(lecturePackage)
+        serializer = LecturePackageSerializer(lecturePackage, context={"user": request.user})
         return HitCountRespose(request, lecturePackage, Response(serializer.data))
 
     def put(self, request, pk):
@@ -49,7 +49,7 @@ class LecturePackageViewWithPk(APIView):
         if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = LecturePackageSerializer(lecturePackage, data=request.data, partial=True)
+        serializer = LecturePackageSerializer(lecturePackage, data=request.data, partial=True, context={"user": request.user})
         if serializer.is_valid():
             lecturePackage = serializer.save()
             return Response(LecturePackageSerializer(lecturePackage).data)
@@ -67,11 +67,11 @@ class EduVideoLectureViewWithPackagePK(APIView):
 
     def get(self, request, pk):
         videoLectures = EduVideoLecture.objects.filter(lecturePackage_id=pk)
-        serializer = EduVideoLecturesSerializer(videoLectures, many=True)
+        serializer = EduVideoLecturesSerializer(videoLectures, many=True, context={"user": request.user})
         return Response(serializer.data)
 
     def post(self, request, pk):
-        serializer = EduVideoLectureSerializer(data=request.data)
+        serializer = EduVideoLectureSerializer(data=request.data, context={"user": request.user})
         if serializer.is_valid():
             serializer.save(writer=request.user, lecturePackage_id=pk)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -91,7 +91,7 @@ class EduVideoLectureViewWithVideoPk(APIView):
         videoLecture = self.get_videoLecture(pk)
         if videoLecture is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = EduVideoLectureSerializer(videoLecture).data
+        serializer = EduVideoLectureSerializer(videoLecture, context={"user": request.user})
         return HitCountRespose(request, videoLecture, Response(serializer.data))
 
     def put(self, request, pk):

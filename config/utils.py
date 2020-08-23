@@ -6,9 +6,9 @@ def HitCountRespose(request, object, response):
 
     # [1] 로그인 확인
     if not request.user.is_authenticated:
-        cookie_name = 'DDhit'
+        cookie_name = 'ddHit'
     else:
-        cookie_name = f'DDhit:{request.user.id}'
+        cookie_name = f'ddHit:{request.user.id}'
 
     # [2] 그 날 당일 밤 12시에 쿠키 삭제
     tomorrow = datetime.datetime.replace(datetime.datetime.now(), hour=23, minute=59, second=0)

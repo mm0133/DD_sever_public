@@ -3,6 +3,7 @@ from django.db import models
 
 
 class LecturePackage(models.Model):
+
     writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
