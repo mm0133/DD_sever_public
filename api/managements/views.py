@@ -22,11 +22,11 @@ class NoticeView(APIView):
 
     def get(self, request):
         notice = Notice.objects.all()
-        serializer = NoticesSerializer(notice, many=True)
+        serializer = NoticesSerializer(notice, many=True, context={"user": request.user})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = NoticeSerializer(data=request.data)
+        serializer = NoticeSerializer(data=request.data, context={"user": request.user})
         if serializer.is_valid():
             serializer.save(writer=request.user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -53,13 +53,13 @@ class NoticeViewWithPk(APIView):
 
     def get(self, request, pk):
         notice = get_object_or_404(Notice, pk=pk)
-        serializer = NoticeSerializer(notice)
+        serializer = NoticeSerializer(notice, context={"user": request.user})
         return HitCountRespose(request, notice, Response(serializer.data))
 
     def put(self, request, pk):
         notice = get_object_or_404(Notice, pk=pk)
 
-        serializer = NoticeSerializer(notice, data=request.data, partial=True)
+        serializer = NoticeSerializer(notice, data=request.data, partial=True, context={"user": request.user})
         if serializer.is_valid():  # validate 로직 추가
             notice = serializer.save()
             return Response(NoticeSerializer(notice).data)
@@ -81,7 +81,7 @@ class QuestionToManagerView(APIView):
         else:
             questionToManager = QuestionToManager.objects.filter(isPrivate=False)
 
-        serializer = QuestionsToManagerSerializer(questionToManager, many=True)
+        serializer = QuestionsToManagerSerializer(questionToManager, many=True, context={"user": request.user})
         return Response(serializer.data)
 
     def post(self, request):
@@ -102,14 +102,14 @@ def get_privateQuestionToManager(request):
     else:
         questionToManager = None
 
-    serializer = QuestionsToManagerSerializer(questionToManager, many=True)
+    serializer = QuestionsToManagerSerializer(questionToManager, many=True, context={"user": request.user})
     return Response(serializer.data)
 
 
 @api_view(['GET'])
 def get_publicQuestionToManager(request):
     questionToManager = QuestionToManager.objects.filter(isPrivate=False)
-    serializer = QuestionsToManagerSerializer(questionToManager, many=True)
+    serializer = QuestionsToManagerSerializer(questionToManager, many=True, context={"user": request.user})
     return Response(serializer.data)
 
 
@@ -117,7 +117,7 @@ def get_publicQuestionToManager(request):
 @api_view(['GET'])
 def get_MyQuestionToManager(request):
     questionToManager = QuestionToManager.objects.filter(writer=request.user)
-    serializer = QuestionsToManagerSerializer(questionToManager, many=True)
+    serializer = QuestionsToManagerSerializer(questionToManager, many=True, context={"user": request.user})
     return Response(serializer.data)
 
 
@@ -135,13 +135,13 @@ class QuestionToManagerViewWithPk(APIView):
 
     def get(self, request, pk):
         questionToManager = self.get_questionToManager(request, pk)
-        serializer = QuestionToManagerSerializer(questionToManager)
+        serializer = QuestionToManagerSerializer(questionToManager, context={"user": request.user})
         return HitCountRespose(request, questionToManager, Response(serializer.data))
 
     def put(self, request, pk):
         questionToManager = self.get_questionToManager(request, pk)
 
-        serializer = QuestionToManagerSerializer(questionToManager, data=request.data, partial=True)
+        serializer = QuestionToManagerSerializer(questionToManager, data=request.data, partial=True, context={"user": request.user})
         if serializer.is_valid():
             questionToManager = serializer.save()
             return Response(QuestionToManagerSerializer(questionToManager).data)
@@ -162,7 +162,7 @@ class CommentToQuestionViewWithQuestionPK(APIView):
         if (not questionToManager.isPrivate) or \
                 request.user == questionToManager.writer or \
                 request.user.is_staff:
-            serializer = CommentsToQuestionSerializer(commentToQuestion, many=True)
+            serializer = CommentsToQuestionSerializer(commentToQuestion, many=True, context={"user": request.user})
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -187,7 +187,7 @@ class CommentToQuestionViewWithQuestionPK(APIView):
             questionToManager_id=pk,
             commentToQuestion_id=commentToQuestion_id
         )
-        serializer = CommentToQuestionSerializer(commentToQuestion)
+        serializer = CommentToQuestionSerializer(commentToQuestion, context={"user": request.user})
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -205,7 +205,7 @@ class CommentToQuestionViewWithCommentPK(APIView):
 
     def get(self, request, pk):
         commentToQuestion = self.get_commentToQuestion(request, pk)
-        serializer = CommentToQuestionSerializer(commentToQuestion)
+        serializer = CommentToQuestionSerializer(commentToQuestion, context={"user": request.user})
         return Response(serializer.data)
 
     def put(self, request, pk):

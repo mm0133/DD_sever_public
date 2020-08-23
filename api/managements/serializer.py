@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from api.managements.models import Notice, QuestionToManager, CommentToQuestion, FeedbackToManager
+from config.serializers import IsOwnerMixin
 
 
 class WriterNicknameImageSerializer(serializers.ModelSerializer):
@@ -32,14 +33,14 @@ class NoticeSerializer(WriterNicknameImageSerializer):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class QuestionsToManagerSerializer(WriterNicknameImageSerializer):
+class QuestionsToManagerSerializer(WriterNicknameImageSerializer, IsOwnerMixin):
     class Meta:
         model = QuestionToManager
         exclude = ['updatedAt']
         read_only_fields = ['hitNums', 'createdAt', 'isPrivate']
 
 
-class QuestionToManagerSerializer(WriterNicknameImageSerializer):
+class QuestionToManagerSerializer(WriterNicknameImageSerializer, IsOwnerMixin):
     class Meta:
         model = QuestionToManager
         exclude = ['writer']
@@ -47,7 +48,7 @@ class QuestionToManagerSerializer(WriterNicknameImageSerializer):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class CommentToQuestionSerializer(WriterNicknameImageSerializer):
+class CommentToQuestionSerializer(WriterNicknameImageSerializer, IsOwnerMixin):
     class Meta:
         model = CommentToQuestion
         fields = '__all__'
@@ -55,7 +56,7 @@ class CommentToQuestionSerializer(WriterNicknameImageSerializer):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class CommentsToQuestionSerializer(WriterNicknameImageSerializer):
+class CommentsToQuestionSerializer(WriterNicknameImageSerializer, IsOwnerMixin):
     class Meta:
         model = CommentToQuestion
         fields = '__all__'
