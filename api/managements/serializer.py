@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from api.managements.models import Notice, QuestionToManager, CommentToQuestion, FeedbackToManager
-from config.serializers import IsOwnerMixin
+from config.serializer import IsOwnerMixin
 
 
 class WriterNicknameImageSerializer(serializers.ModelSerializer):

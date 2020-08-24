@@ -1,13 +1,11 @@
-from django.contrib.auth.models import AnonymousUser
 from rest_framework import serializers
 
 from api.communications.models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, \
     VelogComment
-from config.serializers import IsOwnerMixin
+from config.serializer import IsOwnerMixin
 
 
-
-# 댓글은 좋아요만 있고, 글은 좋아요와 스크랩 모두 있다. 그래서 둘을 분리해놓고 글과 댓글의 serializer에 상속시킨 것이다.
+# 댓글은 좋아요만 있고, 글은 좋아요와 스크랩 모두 있다. 그래서 둘을 분리해놓고 글과 댓글의 serializer 에 상속시킨 것이다.
 # 복수형은 글 목록에 띄울 것들이다.
 
 class LikeIncludedModelSerializer(serializers.ModelSerializer):
@@ -19,7 +17,7 @@ class LikeIncludedModelSerializer(serializers.ModelSerializer):
     def get_isLiked(self, obj):
         user = self.context.get("user")
         if user:
-            if True:  # user.is_authenticated:
+            if user.is_authenticated:
                 return user in obj.likes.all()
         return False
 
@@ -37,7 +35,7 @@ class LikeScrapIncludedModelSerializer(LikeIncludedModelSerializer):
 
 # 단수형과 복수형이 용도가 다름.
 
-class ContestDebatesSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
+class ContestDebatesSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestDebate
         exclude = ['updatedAt', 'likes', 'content']
@@ -45,7 +43,7 @@ class ContestDebatesSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class ContestDebateSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
+class ContestDebateSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestDebate
         exclude = ['likes']
@@ -53,7 +51,7 @@ class ContestDebateSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class ContestCodeNotesSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
+class ContestCodeNotesSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestCodeNote
         exclude = ['updatedAt', 'likes', 'content']
@@ -61,7 +59,7 @@ class ContestCodeNotesSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class ContestCodeNoteSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
+class ContestCodeNoteSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestCodeNote
         exclude = ['likes']
@@ -69,7 +67,7 @@ class ContestCodeNoteSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class VelogsSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
+class VelogsSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = Velog
         exclude = ['likes', 'createdAt', 'content']
@@ -77,7 +75,7 @@ class VelogsSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class VelogSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
+class VelogSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = Velog
         exclude = ['likes']
@@ -85,7 +83,7 @@ class VelogSerializer(LikeScrapIncludedModelSerializer,IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class DebateCommentSerializer(LikeIncludedModelSerializer,IsOwnerMixin):
+class DebateCommentSerializer(LikeIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = DebateComment
         exclude = ['likes', ]
@@ -93,7 +91,7 @@ class DebateCommentSerializer(LikeIncludedModelSerializer,IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}, 'contestDebate': {'write_only': True}}
 
 
-class CodeNoteCommentSerializer(LikeIncludedModelSerializer,IsOwnerMixin):
+class CodeNoteCommentSerializer(LikeIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = CodeNoteComment
         exclude = ['likes', ]
@@ -101,7 +99,7 @@ class CodeNoteCommentSerializer(LikeIncludedModelSerializer,IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}, 'contestCodeNote': {'write_only': True}}
 
 
-class VelogCommentSerializer(LikeIncludedModelSerializer,IsOwnerMixin):
+class VelogCommentSerializer(LikeIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = VelogComment
         exclude = ['likes', ]

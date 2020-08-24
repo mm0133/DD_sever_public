@@ -159,7 +159,8 @@ frontend/node_modules/
 node_modules/
 Pipfile.lock
 
-.idea
-.vs
-.vscode
+.idea/
+.vs/
+.vscode/
 
+backup/

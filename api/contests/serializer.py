@@ -82,18 +82,34 @@ class ContestFileSerializer(serializers.ModelSerializer):
 
 class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
     teamMembers = serializers.ListField()
+    isOwner = serializers.SerializerMethodField()
 
     class Meta:
         model = ContestParticipantAnswer
-        fields = ['id', 'isTeam', 'name', 'createdAt', 'updatedAt', 'accuracy', 'rank', 'teamMembers']
+        fields = ['id', 'isTeam', 'name', 'createdAt', 'updatedAt', 'accuracy', 'rank', 'teamMembers', 'isOwner']
+
+    def get_isOwner(self, obj):
+        user = self.context.get('user')
+        if obj.isTeam:
+            return user and user.is_authenticated and user == obj.team.representative
+        else:
+            return user and user.is_authenticated and user == obj.user
 
 
 class ContestParticipantAnswerSerializer(serializers.ModelSerializer):
     teamMembers = serializers.ListField()
+    isOwner = serializers.SerializerMethodField()
 
     class Meta:
         model = ContestParticipantAnswer
         fields = ['id', 'isTeam', 'name', 'contest', 'createdAt', 'updatedAt', 'file', 'accuracy', 'rank',
-                  'teamMembers']
-        read_only_fields = ['createdAT', 'updatedAt', 'rank', 'name', 'isTeam', 'teamMembers']
+                  'teamMembers', 'isOwner']
+        read_only_fields = ['createdAT', 'updatedAt', 'rank', 'name', 'isTeam', 'teamMembers', 'IsOwner']
         extra_kwargs = {'contest': {'write_only': True}, }
+
+    def get_isOwner(self, obj):
+        user = self.context.get('user')
+        if obj.isTeam:
+            return user and user.is_authenticated and user == obj.team.representative
+        else:
+            return user and user.is_authenticated and user == obj.user

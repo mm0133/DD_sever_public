@@ -31,3 +31,39 @@ class EduVideoLecture(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class LecturePackageComment(models.Model):
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
+    content = models.TextField()
+
+    lecturePackage = models.ForeignKey(LecturePackage, null=True, on_delete=models.SET_NULL)
+
+    likes = models.ManyToManyField(
+        User, related_name="LecturePackageCommentLikes", blank=True
+    )
+
+    # 대댓글(재귀)
+    lecturePackageComment = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+
+class EduVideoLectureComment(models.Model):
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
+    content = models.TextField()
+
+    eduVideoLecture = models.ForeignKey(EduVideoLecture, null=True, on_delete=models.SET_NULL)
+
+    likes = models.ManyToManyField(
+        User, related_name="EduVideoLectureCommentLikes", blank=True
+    )
+
+    # 대댓글(재귀)
+    eduVideoLectureComment = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True
+    )

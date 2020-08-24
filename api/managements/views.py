@@ -14,7 +14,7 @@ from api.managements.serializer import NoticesSerializer, NoticeSerializer, Feed
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
-from config.utils import HitCountRespose
+from config.utils import HitCountResponse
 
 
 class NoticeView(APIView):
@@ -54,7 +54,7 @@ class NoticeViewWithPk(APIView):
     def get(self, request, pk):
         notice = get_object_or_404(Notice, pk=pk)
         serializer = NoticeSerializer(notice, context={"user": request.user})
-        return HitCountRespose(request, notice, Response(serializer.data))
+        return HitCountResponse(request, notice, Response(serializer.data))
 
     def put(self, request, pk):
         notice = get_object_or_404(Notice, pk=pk)
@@ -136,7 +136,7 @@ class QuestionToManagerViewWithPk(APIView):
     def get(self, request, pk):
         questionToManager = self.get_questionToManager(request, pk)
         serializer = QuestionToManagerSerializer(questionToManager, context={"user": request.user})
-        return HitCountRespose(request, questionToManager, Response(serializer.data))
+        return HitCountResponse(request, questionToManager, Response(serializer.data))
 
     def put(self, request, pk):
         questionToManager = self.get_questionToManager(request, pk)

@@ -231,9 +231,9 @@ def ContestScrap(request, pk):
 @api_view(['POST'])
 def ContestParticipantAnswerLike(request, pk):
     contestParticipantAnswer = get_object_or_404(ContestParticipantAnswer, pk=pk)
-    if contestParticipantAnswer not in request.user.customProfile.contestAnswerLikes.all():
-        request.user.customProfile.contestAnswerLikes.add(contestParticipantAnswer)
+    if contestParticipantAnswer not in request.user.contestAnswerLikes.all():
+        request.user.contestAnswerLikes.add(contestParticipantAnswer)
         return Response(status=status.HTTP_200_OK)
     else:
-        request.user.customProfile.contestAnswerLikes.remove(contestParticipantAnswer)
+        request.user.contestAnswerLikes.remove(contestParticipantAnswer)
         return Response(status=status.HTTP_200_OK)

@@ -98,7 +98,7 @@ class ContestParticipantAnswer(models.Model):
         Contest, null=True, on_delete=models.SET_NULL, related_name="userAnswer"
     )
     team = models.ForeignKey(
-        'users.Team', null=True, on_delete=models.SET_NULL, related_name="teamAnswer"
+        'users.Team', null=True, blank=True, on_delete=models.SET_NULL, related_name="teamAnswer"
     )
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     isTeam = models.BooleanField(default=False)
@@ -115,7 +115,7 @@ class ContestParticipantAnswer(models.Model):
     # 종료 시점에 업데이트해서 1등 - 1, 2등 - 2, 3등 - 3, 상위30% - 4 참여완료 - 5
     rank = models.IntegerField(default=0)
 
-    likes = models.ManyToManyField('users.CustomProfile', related_name='contestAnswerLikes')
+    likes = models.ManyToManyField(User, related_name='contestAnswerLikes', blank=True)
 
     def get_name(self):
         if self.isTeam and self.team:
@@ -128,3 +128,19 @@ class ContestParticipantAnswer(models.Model):
     def calculateAccuracy(self):
         # self.file 로 계산하는 로직넣기
         return 50
+
+    @property
+    def likesCount(self):
+        return self.likes.count()
+
+    @property
+    def rating(self):
+        if self.contest.evaluationMethod == "ACCURACY":
+            return self.accuracy
+        else:
+            return self.likesCount()
+
+    def __str__(self):
+        # 3항 연산자
+        teamOrUser = 'team' if self.isTeam else 'user'
+        return f'answer by {teamOrUser} {self.name} to {self.contest.title}'

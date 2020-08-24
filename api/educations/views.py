@@ -1,12 +1,16 @@
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import status, permissions
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from config.customPermissions import IsGetRequestOrAdminUser
-from config.utils import HitCountRespose
-from .models import EduVideoLecture, LecturePackage
+from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, \
+    IsGetRequestOrWriterOrAdminUser
+from config.utils import HitCountResponse
+from .models import EduVideoLecture, LecturePackage, LecturePackageComment, EduVideoLectureComment
 from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer, \
-    LecturePackageSerializerForPost
+    LecturePackageSerializerForPost, LecturePackageCommentSerializer, EduVideoLectureCommentSerializer, \
+    LecturePackageCommentSerializerForPostPUT, EduVideoLectureCommentSerializerForPostPut
 
 
 class LecturePackageView(APIView):
@@ -18,7 +22,7 @@ class LecturePackageView(APIView):
         return Response(serializer)
 
     def post(self, request):
-        serializer = LecturePackageSerializerForPost(data=request.data,  context={"user": request.user})
+        serializer = LecturePackageSerializerForPost(data=request.data, context={"user": request.user})
         if serializer.is_valid():
             serializer.save(writer=request.user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -29,27 +33,20 @@ class LecturePackageView(APIView):
 class LecturePackageViewWithPk(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
-    def get_lecturePackage(self, pk):
-        try:
-            lecturePackage = LecturePackage.objects.get(pk=pk)
-            return lecturePackage
-        except lecturePackage.DoesNotExist:
-            return None
-
     def get(self, request, pk):
-
-        lecturePackage = self.get_lecturePackage(pk)
+        lecturePackage = get_object_or_404(LecturePackage, pk=pk)
         if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = LecturePackageSerializer(lecturePackage, context={"user": request.user})
-        return HitCountRespose(request, lecturePackage, Response(serializer.data))
+        return HitCountResponse(request, lecturePackage, Response(serializer.data))
 
     def put(self, request, pk):
-        lecturePackage = self.get_lecturePackage(pk)
+        lecturePackage = get_object_or_404(LecturePackage, pk=pk)
         if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = LecturePackageSerializer(lecturePackage, data=request.data, partial=True, context={"user": request.user})
+        serializer = LecturePackageSerializer(lecturePackage, data=request.data, partial=True,
+                                              context={"user": request.user})
         if serializer.is_valid():
             lecturePackage = serializer.save()
             return Response(LecturePackageSerializer(lecturePackage).data)
@@ -57,8 +54,8 @@ class LecturePackageViewWithPk(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        videolecture = self.get_lecturePackage(pk)
-        videolecture.delete()
+        lecturePackage = get_object_or_404(LecturePackage, pk=pk)
+        lecturePackage.delete()
         return Response(status=status.HTTP_200_OK)
 
 
@@ -80,22 +77,15 @@ class EduVideoLectureViewWithPackagePK(APIView):
 class EduVideoLectureViewWithVideoPk(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
-    def get_videoLecture(self, pk):
-        try:
-            videoLecture = EduVideoLecture.objects.get(pk=pk)
-            return videoLecture
-        except videoLecture.DoesNotExist:
-            return None
-
     def get(self, request, pk):
-        videoLecture = self.get_videoLecture(pk)
+        videoLecture = get_object_or_404(EduVideoLecture, pk=pk)
         if videoLecture is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = EduVideoLectureSerializer(videoLecture, context={"user": request.user})
-        return HitCountRespose(request, videoLecture, Response(serializer.data))
+        return HitCountResponse(request, videoLecture, Response(serializer.data))
 
     def put(self, request, pk):
-        videoLecture = self.get_videoLecture(pk)
+        videoLecture = get_object_or_404(EduVideoLecture, pk=pk)
         if videoLecture is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -107,6 +97,123 @@ class EduVideoLectureViewWithVideoPk(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        videolecture = self.get_videoLecture(pk)
-        videolecture.delete()
+        videoLecture = get_object_or_404(EduVideoLecture, pk=pk)
+        videoLecture.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class LecturePackageCommentsViewWithPackagePK(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+
+    def get(self, request, pk):
+        lecturePackageComments = LecturePackageComment.objects.filter(lecturePackage_id=pk)
+        serializer = LecturePackageCommentSerializer(lecturePackageComments, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        serializer = LecturePackageCommentSerializerForPostPUT(data=request.data, context={'user': request.user})
+        if serializer.is_valid():
+            serializer.save(writer=request.user, lecturePackage_id=pk)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LecturePackageCommentsViewWithPK(APIView):
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]
+
+    def get_lecturePackageComment(self, pk):
+        lecturePackageComment = get_object_or_404(LecturePackageComment, pk=pk)
+        self.check_object_permissions(self.request, lecturePackageComment)
+        return lecturePackageComment
+
+    def get(self, request, pk):
+        lecturePackageComment = self.get_lecturePackageComment(pk)
+        serializer = LecturePackageCommentSerializer(lecturePackageComment, context={'user': request.user})
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        lecturePackageComment = self.get_lecturePackageComment(pk)
+        serializer = LecturePackageCommentSerializerForPostPUT(lecturePackageComment, data=request.data, partial=True,
+                                                               context={'user': request.user})
+        if serializer.is_valid():
+            lecturePackageComment = serializer.save()
+            return Response(LecturePackageCommentSerializer(lecturePackageComment).data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        lecturePackageComment = self.get_lecturePackageComment(pk)
+        lecturePackageComment.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class EduVideoLectureCommentsViewWithVideoPK(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+
+    def get(self, request, pk):
+        eduVideoLectureComments = EduVideoLectureComment.objects.filter(eduVideoLecture_id=pk)
+        serializer = EduVideoLectureCommentSerializer(eduVideoLectureComments, many=True,
+                                                      context={'user': request.user})
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        serializer = EduVideoLectureCommentSerializerForPostPut(data=request.data, context={'user': request.user})
+        if serializer.is_valid():
+            serializer.save(writer=request.user, eduVideoLecture_id=pk)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EduVideoLectureCommentViewWithPK(APIView):
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]
+
+    def get_eduVideoLectureComment(self, pk):
+        eduVideoLectureComment = get_object_or_404(EduVideoLectureComment, pk=pk)
+        self.check_object_permissions(self.request, eduVideoLectureComment)
+        return eduVideoLectureComment
+
+    def get(self, request, pk):
+        eduVideoLectureComment = self.get_eduVideoLectureComment(pk)
+        serializer = EduVideoLectureCommentSerializer(eduVideoLectureComment, context={'user': request.user})
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        eduVideoLectureComment = self.get_eduVideoLectureComment(pk)
+        serializer = EduVideoLectureCommentSerializerForPostPut(eduVideoLectureComment, data=request.data, partial=True,
+                                                                context={'user': request.user})
+        if serializer.is_valid():
+            eduVideoLectureComment = serializer.save()
+            return Response(EduVideoLectureCommentSerializer(eduVideoLectureComment).data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        eduVideoLectureComment = self.get_eduVideoLectureComment(pk)
+        eduVideoLectureComment.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def LecturePackageCommentLike(request, pk):
+    lecturePackageComment = get_object_or_404(LecturePackageComment, pk=pk)
+    if lecturePackageComment.likes.filter(id=request.user.id).exists():
+        lecturePackageComment.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
+    else:
+        lecturePackageComment.likes.add(request.user)
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def EduVideoLectureCommentLike(request, pk):
+    eduVideoLectureComment = get_object_or_404(EduVideoLectureComment, pk=pk)
+    if eduVideoLectureComment.likes.filter(id=request.user.id).exists():
+        eduVideoLectureComment.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
+    else:
+        eduVideoLectureComment.likes.add(request.user)
+        return Response(status=status.HTTP_202_ACCEPTED)
