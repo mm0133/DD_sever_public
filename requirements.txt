@@ -13,6 +13,7 @@ django-annoying==0.10.6
 django-appconf==1.0.4
 django-cors-headers==3.4.0
 django-dbbackup==3.3.0
+django-filter==2.3.0
 django-imagekit==4.0.2
 django-import-export==2.3.0
 django-mysql==3.8.1

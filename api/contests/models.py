@@ -95,12 +95,12 @@ class ContestFile(models.Model):
 
 class ContestParticipantAnswer(models.Model):
     contest = models.ForeignKey(
-        Contest, null=True, on_delete=models.SET_NULL, related_name="userAnswer"
+        Contest, null=True, on_delete=models.SET_NULL, related_name="participantAnswer"
     )
     team = models.ForeignKey(
-        'users.Team', null=True, blank=True, on_delete=models.SET_NULL, related_name="teamAnswer"
+        'users.Team', null=True, blank=True, on_delete=models.SET_NULL, related_name="contestAnswer"
     )
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="contestAnswer")
     isTeam = models.BooleanField(default=False)
     teamMembers = ListTextField(null=True, blank=True, base_field=models.CharField(max_length=255), )
     name = models.CharField(max_length=255)

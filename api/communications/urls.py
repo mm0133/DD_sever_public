@@ -4,14 +4,16 @@ from . import views
 app_name = "communications"
 
 urlpatterns = [
-    path("contestdebate/", views.ContestDebateView.as_view()),
-    path("contestdebate_with_contest_pk/<int:pk>/", views.ContestDebateCreateWithContestPk),
+    path("contestdebate/", views.ContestDebateListView.as_view()),
+    path("contestdebate_with_contest_pk/<int:pk>/", views.ContestDebateListViewWithContestPK.as_view()),
+    path("contestdebate_create_with_contest_pk/<int:pk>/", views.ContestDebateCreateWithContestPk),
     path("contestdebate/<int:pk>/", views.ContestDebateViewWithPk.as_view()),
     path("contestdebate/<int:pk>/like/", views.ContestDebateLike),
     path("contestdebate/<int:pk>/scrap/", views.ContestDebateScrap),
 
-    path("contestcodenote/", views.ContestCodeNoteView.as_view()),
-    path("contestcodenote_with_contest_pk/<int:pk>/", views.ContestCodenoteCreateWithContestPk),
+    path("contestcodenote/", views.ContestCodeNoteListView.as_view()),
+    path("contestcodenote_/<int:pk>/", views.ContestCodeNoteListViewWithContestPK.as_view()),
+    path("contestcodenote_create_with_contest_pk/<int:pk>/", views.ContestCodenoteCreateWithContestPk),
     path("contestcodenote/<int:pk>/", views.ContestCodeNoteViewWithPk.as_view()),
     path("contestcodenote/<int:pk>/like/", views.ContestCodeNoteLike),
     path("contestcodenote/<int:pk>/scrap/", views.ContestCodenoteScrap),

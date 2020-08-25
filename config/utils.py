@@ -1,6 +1,7 @@
 import datetime
 import json
 
+from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -47,10 +48,13 @@ def HitCountResponse(request, obj, response):
     return response
 
 
-class PaginationTwenty(PageNumberPagination):
-    page_size = 20
+class DynamicSearchFilter(filters.SearchFilter):
+    def get_search_fields(self, view, request):
+        return request.GET.getlist('search_fields', [])
 
 
-class PaginationThirty(PageNumberPagination):
-    page_size = 30
+def pagination_with_pagesize(pagesize):
+    class ReturnClass(PageNumberPagination):
+        page_size = pagesize
 
+    return ReturnClass

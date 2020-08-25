@@ -1,6 +1,9 @@
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 
 from annoying.functions import get_object_or_None
+from rest_framework.filters import SearchFilter, OrderingFilter
+
 from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from api.contests.serializer import (ContestFileSerializer,
                                      ContestParticipantAnswerSerializer,
@@ -11,21 +14,50 @@ from config.customExceptions import get_value_or_error
 from config.customPermissions import (IsGetRequestOrAdminUser,
                                       IsGetRequestOrAuthenticated,
                                       IsGetRequestOrTeamRepresentativeOrOwner)
-# Create your views here.
-from rest_framework import permissions, status
+from rest_framework import permissions, status, generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config.utils import pagination_with_pagesize
 
-class ContestView(APIView):
+
+class ContestListView(generics.ListAPIView):
     permission_classes = [IsGetRequestOrAdminUser]
+    # queryset 은 해당 모델의 attribute 로만 filtering 이 가능하다. model function 같은 걸로 filtering 못 한다.
+    # 그래서 아래와 같이 annotate 로 queryset 에 participantNumber 를 달아주고, 그 걸로 ordering(즉 filtering) 을 하게 하면 된다.
+    queryset = Contest.objects.all().order_by('-id').annotate(participantNumber=Count('participantAnswer'))
+    serializer_class = ContestsSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'subtitle')
+    ordering_fields = ('participantNumber', 'id')
 
-    def get(self, request):
-        contest = Contest.objects.all()
-        serializer = ContestsSerializer(contest, many=True, context={'user': request.user})
-        # context ={'request':request}로 request 객체 받아서 쓸수도 있음
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ContestsSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = ContestsSerializer(queryset, many=True, context={'user': request.user})
         return Response(serializer.data)
+
+
+class ContestListNotPaginatedView(generics.ListAPIView):
+    permission_classes = [IsGetRequestOrAdminUser]
+    queryset = Contest.objects.all().order_by('-id').annotate(participantNumber=Count('participantAnswer'))
+    serializer_class = ContestsSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'subtitle')
+    ordering_fields = ('participantNumber', 'id')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = ContestsSerializer(queryset, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+
+class ContestCreateView(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
 
     def post(self, request):
         serializer = ContestSerializerForPost(data=request.data, context={'user': request.user})
@@ -106,16 +138,27 @@ def DeleteContestFileWithPK(request, pk):
     return Response(status=status.HTTP_200_OK)
 
 
-class ContestParticipantAnswerViewWithContestPK(APIView):
+class ContestParticipantAnswerListViewWithContestPK(generics.ListAPIView):
     permission_classes = [IsGetRequestOrAuthenticated]
+    queryset = ContestParticipantAnswer.objects.all().order_by('-accuracy')
+    serializer_class = ContestParticipantAnswersSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('teamMembers', 'name')
+    ordering_fields = ('accuracy', 'id')
+    pagination_class = pagination_with_pagesize(30)
 
-    # 내림차순정렬
-    def get(self, request, pk):
-        contest = get_object_or_404(Contest, pk=pk)
-        contestParticipantAnswer = ContestParticipantAnswer.objects.filter(contest=contest).order_by('-accuracy')
-        serializer = ContestParticipantAnswersSerializer(contestParticipantAnswer, context={'user': request.user},
-                                                         many=True)
+    def list(self, request, pk):
+        queryset = self.filter_queryset(self.get_queryset().filter(contest_id=pk))
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ContestParticipantAnswersSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = ContestParticipantAnswersSerializer(queryset, many=True, context={'user': request.user})
         return Response(serializer.data)
+
+
+class ContestParticipantAnswerCreateViewWithContestPK(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
 
     def post(self, request, pk):
         contest = get_object_or_404(Contest, pk=pk)

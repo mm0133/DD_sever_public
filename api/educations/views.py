@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status, permissions
+from rest_framework import status, permissions, generics
 from rest_framework.decorators import permission_classes, api_view
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,13 +14,26 @@ from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, L
     LecturePackageCommentSerializerForPostPUT, EduVideoLectureCommentSerializerForPostPut
 
 
-class LecturePackageView(APIView):
-    permission_classes = [IsGetRequestOrAdminUser]
+class LecturePackageListView(generics.ListAPIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+    queryset = LecturePackage.objects.all().order_by('-id')
+    serializer_class = LecturePackageSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('hitNums', 'id')
 
-    def get(self, request):
-        lecture = LecturePackage.objects.all()
-        serializer = LecturePackageSerializer(lecture, many=True, context={"user": request.user}).data
-        return Response(serializer)
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = LecturePackageSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = LecturePackageSerializer(queryset, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+
+class LecturePackageCreateView(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
 
     def post(self, request):
         serializer = LecturePackageSerializerForPost(data=request.data, context={"user": request.user})

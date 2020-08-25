@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status, permissions
+from rest_framework import status, permissions, generics, serializers
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,13 +13,47 @@ from .serializer import ContestDebatesSerializer, ContestDebateSerializer, Conte
     VelogCommentSerializer
 
 from ..contests.models import Contest
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 
-class ContestDebateView(APIView):
+class ContestDebateListView(generics.ListAPIView):
     permission_classes = [IsGetRequestOrAuthenticated]
-    def get(self, request):
-        contestDebate = ContestDebate.objects.all()
-        serializer = ContestDebatesSerializer(contestDebate, many=True, context={'user': request.user})
+    queryset = ContestDebate.objects.all().order_by('-id')
+    serializer_class = ContestDebatesSerializer
+    # pagination_class 안 써주면 settings.py 에 있는 default 설정 따라감.
+    # pagination_class = PageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('hitNums', 'id')
+
+    # ListAPIView 에 list 기본 함수가 있지만, serializer 에 context 를 넣어주기 위해서 overriding 을 함.
+    def list(self, request, *args, **kwargs):
+        # 반드시 여기다가 filter_queryset 함수를 달아야 함.
+        # paginate_queryset 하면 그 결과는 list object 가 돼서 filtering 하면 에러가 난다.
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ContestDebatesSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = ContestDebatesSerializer(queryset, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+
+class ContestDebateListViewWithContestPK(generics.ListAPIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+    queryset = ContestDebate.objects.all().order_by('-id')
+    serializer_class = ContestDebatesSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('hitNums', 'id')
+
+    def list(self, request, pk):
+        queryset = self.filter_queryset(self.get_queryset().filter(contest_id=pk))
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ContestDebatesSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = ContestDebatesSerializer(queryset, many=True, context={'user': request.user})
         return Response(serializer.data)
 
 
@@ -77,11 +112,39 @@ class ContestDebateViewWithPk(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class ContestCodeNoteView(APIView):
+class ContestCodeNoteListView(generics.ListAPIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+    queryset = ContestCodeNote.objects.all().order_by('-id')
+    serializer_class = ContestCodeNotesSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('hitNums', 'id')
 
-    def get(self, request):
-        contestCodeNote = ContestCodeNote.objects.all()
-        serializer = ContestCodeNotesSerializer(contestCodeNote, many=True, context={'user': request.user})
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ContestCodeNotesSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = ContestCodeNotesSerializer(queryset, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+
+class ContestCodeNoteListViewWithContestPK(generics.ListAPIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+    queryset = ContestCodeNote.objects.all().order_by('-id')
+    serializer_class = ContestCodeNotesSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('hitNums', 'id')
+
+    def list(self, request, pk):
+        queryset = self.filter_queryset(self.get_queryset().filter(contest_id=pk))
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ContestCodeNotesSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = ContestCodeNotesSerializer(queryset, many=True, context={'user': request.user})
         return Response(serializer.data)
 
 

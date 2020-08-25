@@ -7,7 +7,7 @@ class ContestsSerializer(serializers.ModelSerializer):
     # 따라서 별도로 object 의 attribute 를 불러와주는 방법이 필요한데,
     isScraped = serializers.SerializerMethodField()
     scrapNums = serializers.IntegerField(source='scrapsCount')
-    participantNumber = serializers.IntegerField(source='userAnswer.count')
+    participantNumber = serializers.IntegerField(source='participantAnswer.count')
 
     class Meta:
         model = Contest
@@ -28,7 +28,7 @@ class ContestsSerializer(serializers.ModelSerializer):
 class ContestSerializer(serializers.ModelSerializer):
     isScraped = serializers.SerializerMethodField()
     scrapNums = serializers.IntegerField(source='scrapsCount')
-    participantNumber = serializers.IntegerField(source='userAnswer.count')
+    participantNumber = serializers.IntegerField(source='participantAnswer.count')
 
     class Meta:
         model = Contest
