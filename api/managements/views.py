@@ -1,6 +1,7 @@
 from rest_framework import status, permissions, generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
@@ -9,7 +10,7 @@ from api.managements.models import Notice, QuestionToManager, FeedbackToManager,
 from api.managements.serializer import NoticesSerializer, NoticeSerializer, FeedbacksToManagerSerializer, \
     FeedbackToManagerSerializer, QuestionsToManagerSerializer, QuestionToManagerSerializer, \
     CommentToQuestionSerializer, CommentsToQuestionSerializer, NoticeSerializerForPost, \
-    QuestionToManagerSerializerForPost, CommentToQuestionSerializerForPost
+    QuestionToManagerSerializerForPost, CommentToQuestionSerializerForPost, FeedbackToManagerSerializerForPost
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated
 from config.customExceptions import get_object_or_404_custom, DDCustomException
 
@@ -195,7 +196,7 @@ class CommentToQuestionViewWithQuestionPK(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
+# 댓글 수정삭제, get 요청은 잘안쓸거같긴한데 나중에 혹시 ajax 에서 쓸수있으니 구현해놈
 class CommentToQuestionViewWithCommentPK(APIView):
 
     def get_commentToQuestion(self, request, pk):
@@ -204,7 +205,8 @@ class CommentToQuestionViewWithCommentPK(APIView):
                 commentToQuestion.isPrivileged(request):
             return commentToQuestion
         else:
-            raise PermissionDenied
+            raise DDCustomException('당신은 이 commentToQuestion에 접근할 권한이 없습니다.',
+                                    status_code=status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request, pk):
         commentToQuestion = self.get_commentToQuestion(request, pk)
@@ -216,7 +218,7 @@ class CommentToQuestionViewWithCommentPK(APIView):
         if not commentToQuestion.isPrivileged(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         # 바꿀 게 하나밖에 없어서 serializer 안 쓰고 그냥 객체에 직접 접근함.
-        commentToQuestion.content = request.data["content"]
+        commentToQuestion.content = request.data.get("content")
         commentToQuestion.save()
 
         return Response(CommentToQuestionSerializer(commentToQuestion).data)
@@ -227,23 +229,35 @@ class CommentToQuestionViewWithCommentPK(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class FeedbackToManagerView(APIView):
-    def get(self, request):
-        if not request.user.is_staff:  # 관리자가 아니라면
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        feedbackToManager = FeedbackToManager.objects.all()
-        serializer = FeedbacksToManagerSerializer(feedbackToManager, many=True)
+class FeedbackToManagerListView(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
+    queryset = FeedbackToManager.objects.all().order_by('-id')
+    serializer_class = FeedbacksToManagerSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('id',)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = FeedbacksToManagerSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = FeedbacksToManagerSerializer(queryset, many=True, context={'user': request.user})
         return Response(serializer.data)
 
+
+class FeedbackToManagerCreateView(APIView):
     def post(self, request):
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        serializer = FeedbackToManagerSerializer(data=request.data)
+        serializer = FeedbackToManagerSerializerForPost(data=request.data)
         if serializer.is_valid():
-            serializer.save(writer=request.user)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            feedbackToManager = serializer.save(writer=request.user)
+            returnSerializer = FeedbackToManagerSerializer(feedbackToManager, context={"user": request.user})
+            return Response(returnSerializer.data)
         else:
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 수정기능 불필요해서 put 구현 안 함.

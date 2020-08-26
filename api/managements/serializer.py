@@ -79,6 +79,12 @@ class FeedbacksToManagerSerializer(WriterNicknameImageSerializer):
         exclude = ['content']
 
 
+class FeedbackToManagerSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = FeedbackToManager
+        fields = ['title', 'content']
+
+
 class FeedbackToManagerSerializer(WriterNicknameImageSerializer):
     class Meta:
         model = FeedbackToManager

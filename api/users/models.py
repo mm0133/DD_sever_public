@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Q
+
 from api.communications.models import ContestCodeNote, ContestDebate, Velog
 from api.contests.models import Contest, ContestParticipantAnswer
 from django.contrib.auth.models import User
@@ -41,7 +43,7 @@ class CustomProfile(models.Model):
     updatedAT = models.DateTimeField(auto_now=True)
 
     isRealNameAuthenticated = models.BooleanField(default=False)
-    isConsentingEmail = models.BooleanField(default=False)
+    isConsentingEmail = models.BooleanField(default=False)  # 홍보성 메일 수신 동의 # 중요 메일은 무조건 수신해야 함.
     isConsentingSMS = models.BooleanField(default=False)
     lecturePackages = models.ManyToManyField(LecturePackage, blank=True)
 
@@ -49,12 +51,15 @@ class CustomProfile(models.Model):
         return f"{self.user.username} Profile"
 
     def myContests(self):
-        return ContestParticipantAnswer.objects.filter(writer=self.user).order_by("-createdAt")
+        myContestAnswers = ContestParticipantAnswer.objects \
+            .filter(Q(user=self.user) | Q(teamMembers__contains=self.user.customProfile.nickname)) \
+            .order_by("-createdAt")
+        return myContestAnswers
 
     def myContestsNow(self):
-        myContestAnswers = ContestParticipantAnswer.objects.filter(writer=self.user).order_by(
-            "-createdAt"
-        )
+        myContestAnswers = ContestParticipantAnswer.objects \
+            .filter(Q(user=self.user) | Q(teamMembers__contains=self.user.customProfile.nickname)) \
+            .order_by("-createdAt")
         returnList = []
         for contestAnswer in myContestAnswers:
             if not contestAnswer.contest.isFinished:
@@ -62,9 +67,9 @@ class CustomProfile(models.Model):
         return returnList
 
     def myContestsFinished(self):
-        myContestAnswers = ContestParticipantAnswer.objects.filter(writer=self.user).order_by(
-            "-createdAt"
-        )
+        myContestAnswers = ContestParticipantAnswer.objects \
+            .filter(Q(user=self.user) | Q(teamMembers__contains=self.user.customProfile.nickname)) \
+            .order_by("-createdAt")
         returnList = []
         for contestAnswer in myContestAnswers:
             if contestAnswer.contest.isFinished:

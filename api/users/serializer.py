@@ -117,6 +117,12 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return VelogSerializerForScrap(velogScraps, many=True, context={"user": obj.user}).data
 
 
+class VeolgSerializerForProfile(serializers.ModelSerializer):
+    class Meta:
+        model = Velog
+        fields = ['title', 'id']
+
+
 class CustomProfileSerializer(serializers.ModelSerializer):
     velogs = serializers.SerializerMethodField()
 
@@ -126,7 +132,7 @@ class CustomProfileSerializer(serializers.ModelSerializer):
 
     def get_velogs(self, obj):
         velogs = Velog.objects.filter(writer=obj.user)
-        serializer = VelogsSerializer(velogs, many=True)
+        serializer = VeolgSerializerForProfile(velogs, many=True)
 
         return serializer.data
 
@@ -134,7 +140,7 @@ class CustomProfileSerializer(serializers.ModelSerializer):
 class CustomProfileSerializerForChange(serializers.ModelSerializer):
     class Meta:
         model = CustomProfile
-        fields = ['nickname', 'phoneNumber', 'email', 'image']
+        fields = ['nickname', 'phoneNumber', 'email', 'image', 'isConsentingEmail']
 
     def validate_nickname(self, value):
         if get_object_or_None(CustomProfile, nickname=value):

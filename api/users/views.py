@@ -25,7 +25,7 @@ def get_myPage(request):
 
 
 @api_view(['GET'])
-def get_Profile(request, nickname):
+def get_profile(request, nickname):
     profile = get_object_or_404_custom(CustomProfile, nickname=nickname)
     serializer = CustomProfileSerializer(profile)
     return Response(serializer.data)
@@ -36,8 +36,6 @@ class CustomProfileView(APIView):
 
     def get_customProfile(self, request):
         customProfile = get_object_or_404_custom(CustomProfile, user=request.user)
-        if False:  # 비밀번호 한번 더 입력하는 url 로 리다이렉트시키기.
-            return None
         return customProfile
 
     # 개인정보 수정으로 갔을 때 현재 상태 띄우려면 본인이 수정할 수 있는 정보에 대한 compact 한 세트가 있으면 좋음.
@@ -93,6 +91,12 @@ def post_team(request):
     serializer = TeamsSerializerForPost(data=request.data, context={"user": request.user})
     if serializer.is_valid():
         serializer.save(representative=request.user)
+        image = get_object_or_None(request.data, "image")
+        if image:
+            serializer.save(smallImage=image)
+        else:
+            serializer.save()
+
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
