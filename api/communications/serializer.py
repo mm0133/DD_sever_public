@@ -42,15 +42,19 @@ class LikeScrapContestTitleIncludedModelSerializer(LikeScrapIncludedModelSeriali
 class ContestDebateSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = ContestDebate
-        fields = ['title', 'content', 'id']
-        read_only_fields = ['id']
+        fields = ['title', 'content']
 
 
-class ContestCodenoteSerializerForPost(serializers.ModelSerializer):
+class ContestCodeNoteSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = ContestCodeNote
-        fields = ['title', 'content', 'id']
-        read_only_fields = ['id']
+        fields = ['title', 'content']
+
+
+class VelogSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = Velog
+        fields = ['title', 'content']
 
 
 class ContestDebatesSerializer(LikeScrapContestTitleIncludedModelSerializer, IsOwnerMixin):
@@ -104,22 +108,19 @@ class VelogSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
 class DebateCommentSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = DebateComment
-        fields = ['content', 'id']
-        read_only_fields = ['id']
+        fields = ['content']
 
 
 class CodeNoteCommentSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = CodeNoteComment
-        fields = ['content', 'id']
-        read_only_fields = ['id']
+        fields = ['content']
 
 
 class VelogCommentSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = VelogComment
-        fields = ['content', 'id']
-        read_only_fields = ['id']
+        fields = ['content']
 
 
 class DebateCommentSerializer(LikeIncludedModelSerializer, IsOwnerMixin):

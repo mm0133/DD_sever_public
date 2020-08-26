@@ -18,7 +18,8 @@ urlpatterns = [
     path("contestcodenote/<int:pk>/like/", views.ContestCodeNoteLike),
     path("contestcodenote/<int:pk>/scrap/", views.ContestCodenoteScrap),
 
-    path("velog/", views.VelogView.as_view()),
+    path("velog/", views.VelogListView.as_view()),
+    path("velog_create/", views.VelogView.as_view()),
     path("velog/<int:pk>/", views.VelogViewWithPk.as_view()),
     path("velog/<int:pk>/like/", views.VelogLike),
     path("velog/<int:pk>/scrap/", views.VelogScrap),

@@ -9,8 +9,9 @@ from config.utils import HitCountResponse
 from .models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
 from .serializer import ContestDebatesSerializer, ContestDebateSerializer, ContestCodeNotesSerializer, \
     ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer, DebateCommentSerializer, CodeNoteCommentSerializer, \
-    VelogCommentSerializer, ContestDebateSerializerForPost, ContestCodenoteSerializerForPost, \
-    DebateCommentSerializerForPost, CodeNoteCommentSerializerForPost, VelogCommentSerializerForPost
+    VelogCommentSerializer, ContestDebateSerializerForPost, \
+    DebateCommentSerializerForPost, CodeNoteCommentSerializerForPost, VelogCommentSerializerForPost, \
+    VelogSerializerForPost
 
 from ..contests.models import Contest
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -64,8 +65,7 @@ def ContestDebateCreateWithContestPk(request, pk):
 
     serializer = ContestDebateSerializerForPost(data=request.data)
     if serializer.is_valid():
-        serializer.save(writer=request.user, contest=contest)
-        contestDebate = ContestDebate.objects.get(pk=serializer.data['id'])
+        contestDebate = serializer.save(writer=request.user, contest=contest)
         returnSerializer = ContestDebateSerializer(contestDebate, context={'user': request.user})
         return Response(returnSerializer.data)
     else:
@@ -142,11 +142,10 @@ class ContestCodeNoteListViewWithContestPK(generics.ListAPIView):
 @api_view(['POST'])
 def ContestCodeNoteCreateWithContestPk(request, pk):
     contest = get_object_or_404_custom(Contest, pk=pk)
-    serializer = ContestCodenoteSerializerForPost(data=request.data)
+    serializer = ContestCodeNoteSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(writer=request.user, contest=contest)
-        contestCodenote = ContestCodeNote.objects.get(pk=serializer.data['id'])
-        returnSerializer = ContestCodeNoteSerializer(contestCodenote, context={'user': request.user})
+        contestCodeNote = serializer.save(writer=request.user, contest=contest)
+        returnSerializer = ContestCodeNoteSerializer(contestCodeNote, context={'user': request.user})
         return Response(returnSerializer.data)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -182,19 +181,38 @@ class ContestCodeNoteViewWithPk(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class VelogListView(generics.ListAPIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+    queryset = Velog.objects.all().order_by('-id')
+    serializer_class = VelogsSerializer
+    # pagination_class 안 써주면 settings.py 에 있는 default 설정 따라감.
+    # pagination_class = PageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('hitNums', 'id')
+
+    # ListAPIView 에 list 기본 함수가 있지만, serializer 에 context 를 넣어주기 위해서 overriding 을 함.
+    def list(self, request, *args, **kwargs):
+        # 반드시 여기다가 filter_queryset 함수를 달아야 함.
+        # paginate_queryset 하면 그 결과는 list object 가 돼서 filtering 하면 에러가 난다.
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = VelogsSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = VelogsSerializer(queryset, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+
 class VelogView(APIView):
     permission_classes = [IsGetRequestOrAuthenticated]
 
-    def get(self, request):
-        velog = Velog.objects.all()
-        serializer = VelogsSerializer(velog, many=True, context={'user': request.user})
-        return Response(serializer.data)
-
     def post(self, request):
-        serializer = VelogSerializer(data=request.data, context={"user": request.user})
+        serializer = VelogSerializerForPost(data=request.data, context={"user": request.user})
         if serializer.is_valid():
-            serializer.save(writer=request.user)
-            return Response(serializer.data)
+            velog = serializer.save(writer=request.user)
+            returnSerializer = VelogSerializer(velog, context={"user": request.user})
+            return Response(returnSerializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -245,8 +263,8 @@ class DebateCommentViewWithDebatePK(APIView):
         contestDebate = get_object_or_404_custom(ContestDebate, pk=pk)
         serializer = DebateCommentSerializerForPost(data=request.data)
         if serializer.is_valid():
-            serializer.save(writer=request.user, contestDebate=contestDebate, debateComment=parent_debateComment)
-            debateComment = DebateComment.objects.get(pk=serializer.data['id'])
+            debateComment = serializer.save(writer=request.user, contestDebate=contestDebate,
+                                            debateComment=parent_debateComment)
             returnSerializer = DebateCommentSerializer(debateComment, context={"user": request.user})
             return Response(returnSerializer.data)
         else:
@@ -300,9 +318,8 @@ class CodeNoteCommentViewWithCodeNotePK(APIView):
         contestCodeNote = get_object_or_404_custom(ContestCodeNote, pk=pk)
         serializer = CodeNoteCommentSerializerForPost(data=request.data)
         if serializer.is_valid():
-            serializer.save(writer=request.user, contestCodeNote=contestCodeNote,
-                            codeNoteComment=parent_codeNoteComment)
-            codeNoteComment = CodeNoteComment.objects.get(pk=serializer.data['id'])
+            codeNoteComment = serializer.save(writer=request.user, contestCodeNote=contestCodeNote,
+                                              codeNoteComment=parent_codeNoteComment)
             returnSerializer = CodeNoteCommentSerializer(codeNoteComment, context={"user": request.user})
             return Response(returnSerializer.data)
         else:
@@ -356,8 +373,7 @@ class VelogCommentViewWithVelogPK(APIView):
         velog = get_object_or_404_custom(Velog, pk=pk)
         serializer = VelogCommentSerializerForPost(data=request.data)
         if serializer.is_valid():
-            serializer.save(writer=request.user, velog=velog, velogComment=parent_velogComment)
-            velogComment = VelogComment.objects.get(pk=serializer.data['id'])
+            velogComment = serializer.save(writer=request.user, velog=velog, velogComment=parent_velogComment)
             returnSerializer = VelogCommentSerializer(velogComment, context={"user": request.user})
             return Response(returnSerializer.data)
         else:
