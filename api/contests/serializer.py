@@ -51,18 +51,11 @@ class ContestSerializer(serializers.ModelSerializer):
 class ContestSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = Contest
-        fields = ['id', 'writer', 'title', 'subtitle', 'createdAt', 'updatedAt', 'contestAnswer', 'deadline',
+        fields = ['title', 'subtitle', 'contestAnswer', 'deadline',
                   'timeline', 'prize', 'isForTraining', 'winnerInterview', 'difficulty', 'evaluationMethod',
                   'learningModel', 'evaluationExplanation', 'contestExplanation', 'prizeExplanation', 'dataExplanation',
-                  'profileThumb', 'backThumb', 'contestOverview', 'isFinished']
-        extra_kwargs = {'writer': {'write_only': True},
-                        'contestAnswer': {'write_only': True}}
+                  'profileThumb', 'backThumb', 'contestOverview', ]
 
-    def get_isScraped(self, obj):
-        user = self.context.get("user")
-        if user.is_authenticated:
-            return obj.isScraped(user)
-        return False
 
 
 class ContestScrapSerializer(serializers.ModelSerializer):

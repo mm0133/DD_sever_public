@@ -1,5 +1,6 @@
-from rest_framework import status, permissions
+from rest_framework import status, permissions, generics
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
@@ -7,43 +8,51 @@ from rest_framework.exceptions import PermissionDenied
 from api.managements.models import Notice, QuestionToManager, FeedbackToManager, CommentToQuestion
 from api.managements.serializer import NoticesSerializer, NoticeSerializer, FeedbacksToManagerSerializer, \
     FeedbackToManagerSerializer, QuestionsToManagerSerializer, QuestionToManagerSerializer, \
-    CommentToQuestionSerializer, NoticesSerializerExcludeIsPinned, CommentsToQuestionSerializer
+    CommentToQuestionSerializer, CommentsToQuestionSerializer, NoticeSerializerForPost, \
+    QuestionToManagerSerializerForPost, CommentToQuestionSerializerForPost
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated
-from config.customExceptions import get_object_or_404_custom
-
+from config.customExceptions import get_object_or_404_custom, DDCustomException
 
 from config.utils import HitCountResponse
 
 
-class NoticeView(APIView):
+class NoticeListView(generics.ListAPIView):
     permission_classes = [IsGetRequestOrAdminUser]
+    queryset = Notice.objects.all().order_by('-id')
+    serializer_class = NoticesSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('hitNums', 'id')
 
-    def get(self, request):
-        notice = Notice.objects.all()
-        serializer = NoticesSerializer(notice, many=True, context={"user": request.user})
+    def list(self, request, *args, **kwargs):
+        isPinned = request.GET.get('ispinned')
+        if isPinned == 'true':
+            rawQueryset = self.get_queryset().filter(isPinned=True)
+        elif isPinned == 'false':
+            rawQueryset = self.get_queryset().filter(isPinned=False)
+        else:
+            rawQueryset = self.get_queryset()
+
+        queryset = self.filter_queryset(rawQueryset)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = NoticesSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = NoticesSerializer(queryset, many=True, context={'user': request.user})
         return Response(serializer.data)
 
+
+class NoticeCreateView(APIView):
+    permission_classes = [IsGetRequestOrAdminUser]
+
     def post(self, request):
-        serializer = NoticeSerializer(data=request.data, context={"user": request.user})
+        serializer = NoticeSerializerForPost(data=request.data, context={"user": request.user})
         if serializer.is_valid():
-            serializer.save(writer=request.user)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            notice = serializer.save(writer=request.user)
+            returnSerializer = NoticesSerializer(notice, context={"user": request.user})
+            return Response(returnSerializer.data)
         else:
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def pinnedNotice(request):
-    notice = Notice.objects.filter(isPinned=True)
-    serializer = NoticesSerializerExcludeIsPinned(notice, many=True)
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def notpinnedNotie(request):
-    notice = Notice.objects.filter(isPinned=False)
-    serializer = NoticesSerializerExcludeIsPinned(notice, many=True)
-    return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class NoticeViewWithPk(APIView):
@@ -59,8 +68,8 @@ class NoticeViewWithPk(APIView):
 
         serializer = NoticeSerializer(notice, data=request.data, partial=True, context={"user": request.user})
         if serializer.is_valid():  # validate 로직 추가
-            notice = serializer.save()
-            return Response(NoticeSerializer(notice).data)
+            serializer.save()
+            return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -70,53 +79,51 @@ class NoticeViewWithPk(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class QuestionToManagerView(APIView):
-    permission_classes = [IsGetRequestOrAuthenticated]
+class QuestionToManagerListView(generics.ListAPIView):
+    permission_classes = [IsGetRequestOrAdminUser]
+    queryset = QuestionToManager.objects.all().order_by('-id')
+    serializer_class = QuestionsToManagerSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'writer__customProfile__nickname')
+    ordering_fields = ('hitNums', 'id')
 
-    def get(self, request):
+    def list(self, request, *args, **kwargs):
+        isPrivate = request.GET.get('isprivate')
+        isMine = request.GET.get('ismine')
+
         if request.user.is_staff:
-            questionToManager = QuestionToManager.objects.all()
+            if isPrivate == 'true':
+                rawQueryset = self.get_queryset().filter(isPrivate=True)
+            elif isPrivate == 'false':
+                rawQueryset = self.get_queryset().filter(isPrivate=False)
+            else:
+                rawQueryset = self.get_queryset()
         else:
-            questionToManager = QuestionToManager.objects.filter(isPrivate=False)
+            rawQueryset = self.get_queryset().filter(isPrivate=False)
 
-        serializer = QuestionsToManagerSerializer(questionToManager, many=True, context={"user": request.user})
+        if isMine == 'true':
+            rawQueryset = rawQueryset.filter(writer=request.user)
+
+        queryset = self.filter_queryset(rawQueryset)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = QuestionsToManagerSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = QuestionsToManagerSerializer(queryset, many=True, context={'user': request.user})
         return Response(serializer.data)
 
+
+class QuestionToManagerCreateView(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+
     def post(self, request):
-        serializer = QuestionToManagerSerializer(data=request.data)
+        serializer = QuestionToManagerSerializerForPost(data=request.data)
         if serializer.is_valid():
-            serializer.save(writer=request.user)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            question = serializer.save(writer=request.user)
+            returnSerializer = QuestionToManagerSerializer(question, context={"user": request.user})
+            return Response(returnSerializer.data)
         else:
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def get_privateQuestionToManager(request):
-    if request.user.is_staff:
-        questionToManager = QuestionToManager.objects.filter(isPrivate=True)
-    elif request.user.is_authenticated:
-        questionToManager = QuestionToManager.objects.filter(isPrivate=True, writer=request.user)
-    else:
-        questionToManager = None
-
-    serializer = QuestionsToManagerSerializer(questionToManager, many=True, context={"user": request.user})
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def get_publicQuestionToManager(request):
-    questionToManager = QuestionToManager.objects.filter(isPrivate=False)
-    serializer = QuestionsToManagerSerializer(questionToManager, many=True, context={"user": request.user})
-    return Response(serializer.data)
-
-
-@permission_classes([permissions.IsAuthenticated])
-@api_view(['GET'])
-def get_MyQuestionToManager(request):
-    questionToManager = QuestionToManager.objects.filter(writer=request.user)
-    serializer = QuestionsToManagerSerializer(questionToManager, many=True, context={"user": request.user})
-    return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 이친구는 get_QuestionToManager 에서 접근 권한을 제한했음
@@ -129,7 +136,8 @@ class QuestionToManagerViewWithPk(APIView):
                 or request.user.is_staff:
             return questionToManager
         else:
-            raise PermissionDenied
+            raise DDCustomException('당신은 이 questionToManager에 접근할 권한이 없습니다.',
+                                    status_code=status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request, pk):
         questionToManager = self.get_questionToManager(request, pk)
@@ -155,8 +163,8 @@ class QuestionToManagerViewWithPk(APIView):
 
 class CommentToQuestionViewWithQuestionPK(APIView):
     def get(self, request, pk):
-        questionToManager = QuestionToManager.objects.get(pk=pk)
-        commentToQuestion = CommentToQuestion.objects.filter(questionToManager_id=pk)
+        questionToManager = get_object_or_404_custom(QuestionToManager, pk=pk)
+        commentToQuestion = CommentToQuestion.objects.filter(questionToManager=questionToManager)
 
         if (not questionToManager.isPrivate) or \
                 request.user == questionToManager.writer or \
@@ -167,28 +175,24 @@ class CommentToQuestionViewWithQuestionPK(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     def post(self, request, pk):
-        if QuestionToManager.objects.get(pk=pk).writer != request.user and \
+        questionToManager = get_object_or_404_custom(QuestionToManager, pk=pk)
+        if questionToManager.writer != request.user and \
                 not request.user.is_staff:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        if 'commentToQuestion' in request.data:
-            commentToQuestion_id = request.data['commentToQuestion']
-            # 다른 questionToManager 에 달려 있는 commentToQuestion 대댓을 달지 못하게 하는 코드
-            parent_debateComment = get_object_or_404_custom(CommentToQuestion, pk=commentToQuestion_id)
-            if parent_debateComment.questionToManager.id is not pk:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+        commentToQuestion_id = request.data.get('commentToQuestion_id')
+        if commentToQuestion_id:
+            parent_commentToQuestion = get_object_or_404_custom(CommentToQuestion, pk=commentToQuestion_id)
         else:
-            commentToQuestion_id = None
-
-        commentToQuestion = CommentToQuestion.objects.create(
-            writer=request.user,
-            content=request.data["content"],
-            questionToManager_id=pk,
-            commentToQuestion_id=commentToQuestion_id
-        )
-        serializer = CommentToQuestionSerializer(commentToQuestion, context={"user": request.user})
-
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+            parent_commentToQuestion = None
+        serializer = CommentToQuestionSerializerForPost(data=request.data)
+        if serializer.is_valid():
+            commentToQuestion = serializer.save(writer=request.user, questionToManager=questionToManager,
+                                                commentToQuestion=parent_commentToQuestion)
+            returnSerializer = CommentToQuestionSerializer(commentToQuestion, context={"user": request.user})
+            return Response(returnSerializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈

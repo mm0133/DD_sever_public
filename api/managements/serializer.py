@@ -17,12 +17,10 @@ class NoticesSerializer(WriterNicknameImageSerializer):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class NoticesSerializerExcludeIsPinned(WriterNicknameImageSerializer):
+class NoticeSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = Notice
-        exclude = ['updatedAt', 'content', 'isPinned']
-        read_only_fields = ['createdAt', 'hitNums']
-        extra_kwargs = {'writer': {'write_only': True}}
+        fields = ['title', 'content', 'isPinned']
 
 
 class NoticeSerializer(WriterNicknameImageSerializer):
@@ -40,6 +38,12 @@ class QuestionsToManagerSerializer(WriterNicknameImageSerializer, IsOwnerMixin):
         read_only_fields = ['hitNums', 'createdAt', 'isPrivate']
 
 
+class QuestionToManagerSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionToManager
+        fields = ['title', 'content', 'isPrivate']
+
+
 class QuestionToManagerSerializer(WriterNicknameImageSerializer, IsOwnerMixin):
     class Meta:
         model = QuestionToManager
@@ -54,6 +58,12 @@ class CommentToQuestionSerializer(WriterNicknameImageSerializer, IsOwnerMixin):
         fields = '__all__'
         read_only_fields = ['hitNums', 'createdAt', 'updatedAt']
         extra_kwargs = {'writer': {'write_only': True}}
+
+
+class CommentToQuestionSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = CommentToQuestion
+        fields = ['content']
 
 
 class CommentsToQuestionSerializer(WriterNicknameImageSerializer, IsOwnerMixin):

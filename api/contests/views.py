@@ -60,11 +60,10 @@ class ContestCreateView(APIView):
 
     def post(self, request):
         serializer = ContestSerializerForPost(data=request.data, context={'user': request.user})
-        if serializer.is_valid():  # validation 로직 손보기
-            # writer 가 null=True 이기 때문에 프론트에서 넣어주지 않아도 .is_valid 에서 에러가 나지 않는다.
-            # 그래서 밑에서 writer 로 넣어주는 것이다.
-            serializer.save(writer=request.user)  # 일단 임시로 안 넣어줌. # 로그인 안하면 지금 오류남
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        if serializer.is_valid():
+            contest = serializer.save(writer=request.user)
+            returnSerializer = ContestSerializer(contest, context={'user': request.user})
+            return Response(returnSerializer.data)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
