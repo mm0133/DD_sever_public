@@ -13,7 +13,7 @@ urlpatterns = [
 
     path("contestcodenote/", views.ContestCodeNoteListView.as_view()),
     path("contestcodenote_/<int:pk>/", views.ContestCodeNoteListViewWithContestPK.as_view()),
-    path("contestcodenote_create_with_contest_pk/<int:pk>/", views.ContestCodenoteCreateWithContestPk),
+    path("contestcodenote_create_with_contest_pk/<int:pk>/", views.ContestCodeNoteCreateWithContestPk),
     path("contestcodenote/<int:pk>/", views.ContestCodeNoteViewWithPk.as_view()),
     path("contestcodenote/<int:pk>/like/", views.ContestCodeNoteLike),
     path("contestcodenote/<int:pk>/scrap/", views.ContestCodenoteScrap),

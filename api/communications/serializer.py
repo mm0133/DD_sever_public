@@ -35,6 +35,20 @@ class LikeScrapIncludedModelSerializer(LikeIncludedModelSerializer):
 
 # 단수형과 복수형이 용도가 다름.
 
+class ContestDebateSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = ContestDebate
+        fields = ['title', 'content', 'id']
+        read_only_fields = ['id']
+
+
+class ContestCodenoteSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = ContestCodeNote
+        fields = ['title', 'content', 'id']
+        read_only_fields = ['id']
+
+
 class ContestDebatesSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestDebate
@@ -81,6 +95,29 @@ class VelogSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
         exclude = ['likes']
         read_only_fields = ['createdAt', 'hitNums', 'updatedAt']
         extra_kwargs = {'writer': {'write_only': True}}
+
+
+class DebateCommentSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = DebateComment
+        fields = ['content', 'id']
+        read_only_fields = ['id']
+
+
+class CodeNoteCommentSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = CodeNoteComment
+        fields = ['content', 'id']
+        read_only_fields = ['id']
+
+
+class VelogCommentSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = VelogComment
+        fields = ['content', 'id']
+        read_only_fields = ['id']
+
+
 
 
 class DebateCommentSerializer(LikeIncludedModelSerializer, IsOwnerMixin):
