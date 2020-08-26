@@ -1,10 +1,6 @@
-from encodings.utf_8 import encode
-from encodings.utf_8_sig import decode
-
 from annoying.functions import get_object_or_None
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.communications.models import ContestDebate, ContestCodeNote, Velog

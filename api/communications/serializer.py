@@ -33,6 +33,10 @@ class LikeScrapIncludedModelSerializer(LikeIncludedModelSerializer):
         return False
 
 
+class LikeScrapContestTitleIncludedModelSerializer(LikeScrapIncludedModelSerializer):
+    contestTitle = serializers.CharField(source='contest.title')
+
+
 # 단수형과 복수형이 용도가 다름.
 
 class ContestDebateSerializerForPost(serializers.ModelSerializer):
@@ -49,7 +53,7 @@ class ContestCodenoteSerializerForPost(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
-class ContestDebatesSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
+class ContestDebatesSerializer(LikeScrapContestTitleIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestDebate
         exclude = ['updatedAt', 'likes', 'content']
@@ -57,7 +61,7 @@ class ContestDebatesSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class ContestDebateSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
+class ContestDebateSerializer(LikeScrapContestTitleIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestDebate
         exclude = ['likes']
@@ -65,7 +69,7 @@ class ContestDebateSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class ContestCodeNotesSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
+class ContestCodeNotesSerializer(LikeScrapContestTitleIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestCodeNote
         exclude = ['updatedAt', 'likes', 'content']
@@ -73,7 +77,7 @@ class ContestCodeNotesSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin)
         extra_kwargs = {'writer': {'write_only': True}}
 
 
-class ContestCodeNoteSerializer(LikeScrapIncludedModelSerializer, IsOwnerMixin):
+class ContestCodeNoteSerializer(LikeScrapContestTitleIncludedModelSerializer, IsOwnerMixin):
     class Meta:
         model = ContestCodeNote
         exclude = ['likes']
@@ -116,8 +120,6 @@ class VelogCommentSerializerForPost(serializers.ModelSerializer):
         model = VelogComment
         fields = ['content', 'id']
         read_only_fields = ['id']
-
-
 
 
 class DebateCommentSerializer(LikeIncludedModelSerializer, IsOwnerMixin):

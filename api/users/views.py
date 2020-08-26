@@ -1,17 +1,19 @@
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
+
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import UpdateAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from annoying.functions import get_object_or_None
+
 from api.users.models import CustomProfile, Team, TeamInvite
 from api.users.serializer import CustomProfileSerializer, MyCustomProfileSerializer, \
     CustomProfileSerializerForChange, TeamsSerializer, TeamSerializer, TeamsSerializerForPost, \
     TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer
-from config.customExceptions import DDCustomException, get_value_or_error
-from annoying.functions import get_object_or_None
+from config.customExceptions import get_value_or_error
+from config.customExceptions import get_object_or_404_custom
 
 
 @api_view(['GET'])
@@ -24,7 +26,7 @@ def get_myPage(request):
 
 @api_view(['GET'])
 def get_Profile(request, nickname):
-    profile = get_object_or_404(CustomProfile, nickname=nickname)
+    profile = get_object_or_404_custom(CustomProfile, nickname=nickname)
     serializer = CustomProfileSerializer(profile)
     return Response(serializer.data)
 
@@ -33,7 +35,7 @@ class CustomProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_customProfile(self, request):
-        customProfile = get_object_or_404(CustomProfile, user=request.user)
+        customProfile = get_object_or_404_custom(CustomProfile, user=request.user)
         if False:  # 비밀번호 한번 더 입력하는 url 로 리다이렉트시키기.
             return None
         return customProfile
@@ -79,7 +81,7 @@ class CustomProfileView(APIView):
 
 @api_view(['GET'])
 def get_teams(request, nickname):
-    user = get_object_or_404(CustomProfile, nickname=nickname).user
+    user = get_object_or_404_custom(CustomProfile, nickname=nickname).user
     teams = user.teams
     serializer = TeamsSerializer(teams, many=True)
     return Response(serializer.data)
@@ -98,12 +100,12 @@ def post_team(request):
 
 class TeamViewWithTeamName(APIView):
     def get(self, request, teamName):
-        team = get_object_or_404(Team, name=teamName)
+        team = get_object_or_404_custom(Team, name=teamName)
         serializer = TeamSerializer(team, context={"user": request.user})
         return Response(data=serializer.data)
 
     def delete(self, request, teamName):
-        team = get_object_or_404(Team, name=teamName)
+        team = get_object_or_404_custom(Team, name=teamName)
 
         if team.representative == request.user or request.user.is_staff:
             team.delete()
@@ -114,10 +116,10 @@ class TeamViewWithTeamName(APIView):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_invite(request, teamName):
-    team = get_object_or_404(Team, name=teamName)
+    team = get_object_or_404_custom(Team, name=teamName)
     memberNickname = get_value_or_error(request.data, "memberNickname")
     invitingMessage = get_object_or_None(request.data, "invitingMessage")
-    member = get_object_or_404(CustomProfile, nickname=memberNickname).user
+    member = get_object_or_404_custom(CustomProfile, nickname=memberNickname).user
 
     if not (team.representative == request.user or request.user.is_staff):
         return Response(f"당신은 팀 {teamName}'의 대표도 아니고 관리자도 아닙니다. 초대 요청을 보낼 수 업습니다.",
@@ -151,8 +153,8 @@ def member_invite(request, teamName):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_accept(request, teamName):
-    team = get_object_or_404(Team, name=teamName)
-    teamInvite = get_object_or_404(TeamInvite, team=team, invitee=request.user)
+    team = get_object_or_404_custom(Team, name=teamName)
+    teamInvite = get_object_or_404_custom(TeamInvite, team=team, invitee=request.user)
 
     if not (teamInvite.invitee == request.user or request.user.is_staff):
         return Response(f"당신은 팀 {teamName}'의 초대를 받지 않았고 관리자도 아닙니다. 초대를 수락할 수 없습니다.",
@@ -175,10 +177,10 @@ def member_invite_accept(request, teamName):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_cancel(request, teamName):
-    team = get_object_or_404(Team, name=teamName)
+    team = get_object_or_404_custom(Team, name=teamName)
     memberNickname = get_value_or_error(request.data, "memberNickname")
-    member = get_object_or_404(CustomProfile, nickname=memberNickname).user
-    teamInvite = get_object_or_404(TeamInvite, team=team, invitee=member)
+    member = get_object_or_404_custom(CustomProfile, nickname=memberNickname).user
+    teamInvite = get_object_or_404_custom(TeamInvite, team=team, invitee=member)
     if team.representative == request.user or request.user.is_staff:
         teamInvite.delete()
         return Response(status=status.HTTP_200_OK)
@@ -190,11 +192,11 @@ def member_invite_cancel(request, teamName):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_delete(request, teamName):
-    team = get_object_or_404(Team, name=teamName)
+    team = get_object_or_404_custom(Team, name=teamName)
     memberNickname = get_value_or_error(request.data, "memberNickname")
     if team.representative == request.user or request.user.is_staff or \
             memberNickname == request.user.customProfile.nickname:
-        member = get_object_or_404(CustomProfile, nickname=memberNickname).user
+        member = get_object_or_404_custom(CustomProfile, nickname=memberNickname).user
         if member == team.representative:
             if team.members.exclude(id=request.user.id):
                 team.representative = team.members.exclude(id=request.user.id)[0]
@@ -212,10 +214,10 @@ def member_delete(request, teamName):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def change_representative(request, teamName):
-    team = get_object_or_404(Team, name=teamName)
+    team = get_object_or_404_custom(Team, name=teamName)
     memberNickname = get_value_or_error(request.data, "memberNickname")
     if team.representative == request.user or request.user.is_staff:
-        member = get_object_or_404(CustomProfile, nickname=memberNickname).user
+        member = get_object_or_404_custom(CustomProfile, nickname=memberNickname).user
         team.representative = member
         team.save()
         return Response(status=status.HTTP_200_OK)

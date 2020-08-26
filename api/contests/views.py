@@ -1,8 +1,12 @@
 from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect, render
 
 from annoying.functions import get_object_or_None
+
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework import permissions, status, generics
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from api.contests.serializer import (ContestFileSerializer,
@@ -10,15 +14,10 @@ from api.contests.serializer import (ContestFileSerializer,
                                      ContestParticipantAnswersSerializer,
                                      ContestSerializer, ContestsSerializer, ContestSerializerForPost)
 from api.users.models import Team
-from config.customExceptions import get_value_or_error
+from config.customExceptions import get_value_or_error, get_object_or_404_custom
 from config.customPermissions import (IsGetRequestOrAdminUser,
                                       IsGetRequestOrAuthenticated,
                                       IsGetRequestOrTeamRepresentativeOrOwner)
-from rest_framework import permissions, status, generics
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from config.utils import pagination_with_pagesize
 
 
@@ -74,12 +73,12 @@ class ContestViewWithPk(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
     def get(self, request, pk):
-        contest = get_object_or_404(Contest, pk=pk)
+        contest = get_object_or_404_custom(Contest, pk=pk)
         serializer = ContestSerializer(contest, context={'user': request.user})
         return Response(serializer.data)
 
     def put(self, request, pk):
-        contest = get_object_or_404(Contest, pk=pk)
+        contest = get_object_or_404_custom(Contest, pk=pk)
 
         serializer = ContestSerializer(contest, data=request.data, partial=True, context={'user': request.user})
         if serializer.is_valid():
@@ -89,7 +88,7 @@ class ContestViewWithPk(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        contest = get_object_or_404(Contest, pk=pk)
+        contest = get_object_or_404_custom(Contest, pk=pk)
         contest.delete()
         return Response(status=status.HTTP_200_OK)
 
@@ -98,7 +97,7 @@ class ContestFileViewWithContestPK(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
     def get(self, request, pk):
-        contest = get_object_or_404(Contest, pk=pk)
+        contest = get_object_or_404_custom(Contest, pk=pk)
         contestFiles = ContestFile.objects.filter(contest=contest)
 
         serializer = ContestFileSerializer(contestFiles, context={'user': request.user}, many=True)
@@ -106,7 +105,7 @@ class ContestFileViewWithContestPK(APIView):
 
     # 다중업로드 가능!
     def post(self, request, pk):
-        contest = get_object_or_404(Contest, pk=pk)
+        contest = get_object_or_404_custom(Contest, pk=pk)
 
         files = dict(request.data.lists())['file']
 
@@ -122,7 +121,7 @@ class ContestFileViewWithContestPK(APIView):
         return Response(serializer.data)
 
     def delete(self, request, pk):
-        contest = get_object_or_404(Contest, pk=pk)
+        contest = get_object_or_404_custom(Contest, pk=pk)
         contestFiles = ContestFile.objects.filter(contest=contest)
         contestFiles.delete()
         return Response(status=status.HTTP_200_OK)
@@ -133,7 +132,7 @@ def DeleteContestFileWithPK(request, pk):
     if not request.user.is_staff:
         Response(status=status.HTTP_403_FORBIDDEN)
 
-    contestFile = get_object_or_404(ContestFile, pk=pk)
+    contestFile = get_object_or_404_custom(ContestFile, pk=pk)
     contestFile.delete()
     return Response(status=status.HTTP_200_OK)
 
@@ -161,12 +160,12 @@ class ContestParticipantAnswerCreateViewWithContestPK(APIView):
     permission_classes = [IsGetRequestOrAuthenticated]
 
     def post(self, request, pk):
-        contest = get_object_or_404(Contest, pk=pk)
+        contest = get_object_or_404_custom(Contest, pk=pk)
         teamName = get_object_or_None(request.data, "teamName")
         file = get_value_or_error(request.data, "file")
         # 팀제출
         if teamName:
-            team = get_object_or_404(Team, name=teamName)
+            team = get_object_or_404_custom(Team, name=teamName)
             if not (team.representative == request.user or request.user.is_staff):
                 return Response("팀의 대표만 답 제출을 할 수 있습니다.", status=status.HTTP_401_UNAUTHORIZED, )
 
@@ -214,6 +213,7 @@ class ContestParticipantAnswerCreateViewWithContestPK(APIView):
                 contest=contest,
                 file=file
             )
+
         contestParticipantAnswer.accuracy = contestParticipantAnswer.calculateAccuracy()
         contestParticipantAnswer.save()
         serializer = ContestParticipantAnswerSerializer(contestParticipantAnswer, context={'user': request.user})
@@ -227,12 +227,12 @@ class ContestParticipantAnswerViewWithPK(APIView):
     permission_classes = [IsGetRequestOrTeamRepresentativeOrOwner]
 
     def get_contestParticipantAnswer(self, pk):
-        contestParticipantAnswer = get_object_or_404(ContestParticipantAnswer, pk=pk)
+        contestParticipantAnswer = get_object_or_404_custom(ContestParticipantAnswer, pk=pk)
         self.check_object_permissions(self.request, contestParticipantAnswer)
         return contestParticipantAnswer
 
     def get(self, request, pk):
-        contestParticipantAnswer = get_object_or_404(ContestParticipantAnswer, pk=pk)
+        contestParticipantAnswer = get_object_or_404_custom(ContestParticipantAnswer, pk=pk)
         if contestParticipantAnswer.team:
             if request.user.customProfile.nickname not in contestParticipantAnswer.teamMembers:
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -261,7 +261,7 @@ class ContestParticipantAnswerViewWithPK(APIView):
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestScrap(request, pk):
-    contest = get_object_or_404(Contest, pk=pk)
+    contest = get_object_or_404_custom(Contest, pk=pk)
     if contest not in request.user.customProfile.contestScraps.all():
         request.user.customProfile.contestScraps.add(contest)
         return Response(status=status.HTTP_200_OK)
@@ -273,7 +273,7 @@ def ContestScrap(request, pk):
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def ContestParticipantAnswerLike(request, pk):
-    contestParticipantAnswer = get_object_or_404(ContestParticipantAnswer, pk=pk)
+    contestParticipantAnswer = get_object_or_404_custom(ContestParticipantAnswer, pk=pk)
     if contestParticipantAnswer not in request.user.contestAnswerLikes.all():
         request.user.contestAnswerLikes.add(contestParticipantAnswer)
         return Response(status=status.HTTP_200_OK)

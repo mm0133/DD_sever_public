@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions, generics
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -7,6 +6,7 @@ from rest_framework.views import APIView
 
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, \
     IsGetRequestOrWriterOrAdminUser
+from config.customExceptions import get_object_or_404_custom
 from config.utils import HitCountResponse
 from .models import EduVideoLecture, LecturePackage, LecturePackageComment, EduVideoLectureComment
 from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer, \
@@ -48,14 +48,14 @@ class LecturePackageViewWithPk(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
     def get(self, request, pk):
-        lecturePackage = get_object_or_404(LecturePackage, pk=pk)
+        lecturePackage = get_object_or_404_custom(LecturePackage, pk=pk)
         if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = LecturePackageSerializer(lecturePackage, context={"user": request.user})
         return HitCountResponse(request, lecturePackage, Response(serializer.data))
 
     def put(self, request, pk):
-        lecturePackage = get_object_or_404(LecturePackage, pk=pk)
+        lecturePackage = get_object_or_404_custom(LecturePackage, pk=pk)
         if lecturePackage is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -68,7 +68,7 @@ class LecturePackageViewWithPk(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        lecturePackage = get_object_or_404(LecturePackage, pk=pk)
+        lecturePackage = get_object_or_404_custom(LecturePackage, pk=pk)
         lecturePackage.delete()
         return Response(status=status.HTTP_200_OK)
 
@@ -92,14 +92,14 @@ class EduVideoLectureViewWithVideoPk(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
     def get(self, request, pk):
-        videoLecture = get_object_or_404(EduVideoLecture, pk=pk)
+        videoLecture = get_object_or_404_custom(EduVideoLecture, pk=pk)
         if videoLecture is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = EduVideoLectureSerializer(videoLecture, context={"user": request.user})
         return HitCountResponse(request, videoLecture, Response(serializer.data))
 
     def put(self, request, pk):
-        videoLecture = get_object_or_404(EduVideoLecture, pk=pk)
+        videoLecture = get_object_or_404_custom(EduVideoLecture, pk=pk)
         if videoLecture is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -111,7 +111,7 @@ class EduVideoLectureViewWithVideoPk(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        videoLecture = get_object_or_404(EduVideoLecture, pk=pk)
+        videoLecture = get_object_or_404_custom(EduVideoLecture, pk=pk)
         videoLecture.delete()
         return Response(status=status.HTTP_200_OK)
 
@@ -137,7 +137,7 @@ class LecturePackageCommentsViewWithPK(APIView):
     permission_classes = [IsGetRequestOrWriterOrAdminUser]
 
     def get_lecturePackageComment(self, pk):
-        lecturePackageComment = get_object_or_404(LecturePackageComment, pk=pk)
+        lecturePackageComment = get_object_or_404_custom(LecturePackageComment, pk=pk)
         self.check_object_permissions(self.request, lecturePackageComment)
         return lecturePackageComment
 
@@ -184,7 +184,7 @@ class EduVideoLectureCommentViewWithPK(APIView):
     permission_classes = [IsGetRequestOrWriterOrAdminUser]
 
     def get_eduVideoLectureComment(self, pk):
-        eduVideoLectureComment = get_object_or_404(EduVideoLectureComment, pk=pk)
+        eduVideoLectureComment = get_object_or_404_custom(EduVideoLectureComment, pk=pk)
         self.check_object_permissions(self.request, eduVideoLectureComment)
         return eduVideoLectureComment
 
@@ -212,7 +212,7 @@ class EduVideoLectureCommentViewWithPK(APIView):
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def LecturePackageCommentLike(request, pk):
-    lecturePackageComment = get_object_or_404(LecturePackageComment, pk=pk)
+    lecturePackageComment = get_object_or_404_custom(LecturePackageComment, pk=pk)
     if lecturePackageComment.likes.filter(id=request.user.id).exists():
         lecturePackageComment.likes.remove(request.user)
         return Response(status=status.HTTP_200_OK)
@@ -224,7 +224,7 @@ def LecturePackageCommentLike(request, pk):
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['POST'])
 def EduVideoLectureCommentLike(request, pk):
-    eduVideoLectureComment = get_object_or_404(EduVideoLectureComment, pk=pk)
+    eduVideoLectureComment = get_object_or_404_custom(EduVideoLectureComment, pk=pk)
     if eduVideoLectureComment.likes.filter(id=request.user.id).exists():
         eduVideoLectureComment.likes.remove(request.user)
         return Response(status=status.HTTP_200_OK)

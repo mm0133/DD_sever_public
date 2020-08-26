@@ -1,18 +1,16 @@
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
-
-# Create your views here.
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
+
 from api.managements.models import Notice, QuestionToManager, FeedbackToManager, CommentToQuestion
 from api.managements.serializer import NoticesSerializer, NoticeSerializer, FeedbacksToManagerSerializer, \
     FeedbackToManagerSerializer, QuestionsToManagerSerializer, QuestionToManagerSerializer, \
     CommentToQuestionSerializer, NoticesSerializerExcludeIsPinned, CommentsToQuestionSerializer
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated
-from rest_framework.exceptions import PermissionDenied
+from config.customExceptions import get_object_or_404_custom
+
 
 from config.utils import HitCountResponse
 
@@ -52,12 +50,12 @@ class NoticeViewWithPk(APIView):
     permission_classes = [IsGetRequestOrAdminUser]
 
     def get(self, request, pk):
-        notice = get_object_or_404(Notice, pk=pk)
+        notice = get_object_or_404_custom(Notice, pk=pk)
         serializer = NoticeSerializer(notice, context={"user": request.user})
         return HitCountResponse(request, notice, Response(serializer.data))
 
     def put(self, request, pk):
-        notice = get_object_or_404(Notice, pk=pk)
+        notice = get_object_or_404_custom(Notice, pk=pk)
 
         serializer = NoticeSerializer(notice, data=request.data, partial=True, context={"user": request.user})
         if serializer.is_valid():  # validate 로직 추가
@@ -67,7 +65,7 @@ class NoticeViewWithPk(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        notice = get_object_or_404(Notice, pk=pk)
+        notice = get_object_or_404_custom(Notice, pk=pk)
         notice.delete()
         return Response(status=status.HTTP_200_OK)
 
@@ -125,7 +123,7 @@ def get_MyQuestionToManager(request):
 class QuestionToManagerViewWithPk(APIView):
 
     def get_questionToManager(self, request, pk):
-        questionToManager = get_object_or_404(QuestionToManager, pk=pk)
+        questionToManager = get_object_or_404_custom(QuestionToManager, pk=pk)
         if (not questionToManager.isPrivate) \
                 or (request.user == questionToManager.writer) \
                 or request.user.is_staff:
@@ -141,7 +139,8 @@ class QuestionToManagerViewWithPk(APIView):
     def put(self, request, pk):
         questionToManager = self.get_questionToManager(request, pk)
 
-        serializer = QuestionToManagerSerializer(questionToManager, data=request.data, partial=True, context={"user": request.user})
+        serializer = QuestionToManagerSerializer(questionToManager, data=request.data, partial=True,
+                                                 context={"user": request.user})
         if serializer.is_valid():
             questionToManager = serializer.save()
             return Response(QuestionToManagerSerializer(questionToManager).data)
@@ -175,7 +174,7 @@ class CommentToQuestionViewWithQuestionPK(APIView):
         if 'commentToQuestion' in request.data:
             commentToQuestion_id = request.data['commentToQuestion']
             # 다른 questionToManager 에 달려 있는 commentToQuestion 대댓을 달지 못하게 하는 코드
-            parent_debateComment = get_object_or_404(CommentToQuestion, pk=commentToQuestion_id)
+            parent_debateComment = get_object_or_404_custom(CommentToQuestion, pk=commentToQuestion_id)
             if parent_debateComment.questionToManager.id is not pk:
                 return Response(status=status.HTTP_403_FORBIDDEN)
         else:
@@ -196,7 +195,7 @@ class CommentToQuestionViewWithQuestionPK(APIView):
 class CommentToQuestionViewWithCommentPK(APIView):
 
     def get_commentToQuestion(self, request, pk):
-        commentToQuestion = get_object_or_404(CommentToQuestion, pk=pk)
+        commentToQuestion = get_object_or_404_custom(CommentToQuestion, pk=pk)
         if (not commentToQuestion.questionToManager.isPrivate) or \
                 commentToQuestion.isPrivileged(request):
             return commentToQuestion
@@ -224,7 +223,6 @@ class CommentToQuestionViewWithCommentPK(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-
 class FeedbackToManagerView(APIView):
     def get(self, request):
         if not request.user.is_staff:  # 관리자가 아니라면
@@ -249,12 +247,11 @@ class FeedbackToManagerViewWithPk(APIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request, pk):
-        feedbackToManager = get_object_or_404(FeedbackToManager, pk=pk)
+        feedbackToManager = get_object_or_404_custom(FeedbackToManager, pk=pk)
         serializer = FeedbackToManagerSerializer(feedbackToManager)
         return Response(serializer.data)
 
     def delete(self, request, pk):
-        feedbackToManager = get_object_or_404(FeedbackToManager, pk=pk)
+        feedbackToManager = get_object_or_404_custom(FeedbackToManager, pk=pk)
         feedbackToManager.delete()
         return Response(status=status.HTTP_200_OK)
-
