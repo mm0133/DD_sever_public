@@ -1,8 +1,16 @@
-from django.contrib.auth.models import User
+import json
 
-from rest_framework import status, permissions
+from django.contrib.auth.models import User
+from django.db.models import Q
+from django.http import JsonResponse, HttpResponse
+
+from django.core import serializers
+
+from rest_framework import status, permissions, generics
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import UpdateAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,7 +19,7 @@ from annoying.functions import get_object_or_None
 from api.users.models import CustomProfile, Team, TeamInvite
 from api.users.serializer import CustomProfileSerializer, MyCustomProfileSerializer, \
     CustomProfileSerializerForChange, TeamsSerializer, TeamSerializer, TeamsSerializerForPost, \
-    TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer
+    TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer, TeamInviteSerializer
 from config.customExceptions import get_value_or_error
 from config.customExceptions import get_object_or_404_custom
 
@@ -117,9 +125,32 @@ class TeamViewWithTeamName(APIView):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
+class TeamInviteListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = TeamInvite.objects.all().order_by('-id')
+    serializer_class = TeamInviteSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('name', 'representative__customProfile__nickname')
+    ordering_fields = ('name', 'id')
+
+    def list(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            rawQueryset = self.get_queryset()
+        else:
+            rawQueryset = self.get_queryset().filter(Q(team__representative=request.user) | Q(invitee=request.user))
+
+        queryset = self.filter_queryset(rawQueryset)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = TeamInviteSerializer(page, many=True, context={'user': request.user})
+            return self.get_paginated_response(serializer.data)
+        serializer = TeamInviteSerializer(queryset, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
-def member_invite(request, teamName):
+def member_invite_send(request, teamName):
     team = get_object_or_404_custom(Team, name=teamName)
     memberNickname = get_value_or_error(request.data, "memberNickname")
     invitingMessage = get_object_or_None(request.data, "invitingMessage")
@@ -132,7 +163,8 @@ def member_invite(request, teamName):
     if memberNickname == request.user.customProfile.nickname:
         return Response("스스로를 초대할 수 없습니다.", status=status.HTTP_403_FORBIDDEN)
     elif member in team.members.all():
-        return Response(f"멤버 {memberNickname}는 이미 팀 {teamName}의 멤버입니다. 초대할 수 없습니다.", status=status.HTTP_403_FORBIDDEN)
+        return Response(f"멤버 {memberNickname}는 이미 팀 {teamName}의 멤버입니다. 초대할 수 없습니다.",
+                        status=status.HTTP_403_FORBIDDEN)
     elif get_object_or_None(TeamInvite, team=team, invitee=member):
         teamInvite = get_object_or_None(TeamInvite, team=team, invitee=member)
         # 아직 수락/거절 안 했을 때
@@ -168,6 +200,7 @@ def member_invite_accept(request, teamName):
     serializer = TeamInviteSerializerForAccept(teamInvite, data=request.data)
     if serializer.is_valid():
         serializer.save()
+
         if serializer.data["isAccepted"]:
             team.members.add(teamInvite.invitee)
 
@@ -198,12 +231,12 @@ def member_invite_cancel(request, teamName):
 def member_delete(request, teamName):
     team = get_object_or_404_custom(Team, name=teamName)
     memberNickname = get_value_or_error(request.data, "memberNickname")
-    if team.representative == request.user or request.user.is_staff or \
-            memberNickname == request.user.customProfile.nickname:
-        member = get_object_or_404_custom(CustomProfile, nickname=memberNickname).user
+    member = get_object_or_404_custom(CustomProfile, nickname=memberNickname).user
+    # 1. 관리자 2. 팀의 대표가 멥버를 강퇴 3. 팀 멤버가 자진 탈퇴
+    if request.user.is_staff or team.representative == request.user or member == request.user:
         if member == team.representative:
             if team.members.exclude(id=request.user.id):
-                team.representative = team.members.exclude(id=request.user.id)[0]
+                team.representative = list(team.members.all())[0]
                 team.save()
                 team.members.remove(member)
             else:
@@ -212,7 +245,8 @@ def member_delete(request, teamName):
             team.members.remove(member)
 
         return Response(status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])
@@ -317,3 +351,9 @@ def HasCustomProfile(request):
         return Response('true', status=status.HTTP_200_OK)
     else:
         return Response('false', status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def check_is_me_staff(request):
+    data = {"isStaff": request.user.is_staff}
+    return Response(data)

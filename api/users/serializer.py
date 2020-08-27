@@ -187,10 +187,13 @@ class TeamsSerializerForPost(serializers.ModelSerializer):
 class TeamSerializer(serializers.ModelSerializer):
     members = serializers.SerializerMethodField()
     isRepresentative = serializers.SerializerMethodField()
+    representativeNickname = serializers.CharField(source='representative.customProfile.nickname')
 
     class Meta:
         model = Team
-        fields = ['id', 'name', 'representative', 'members', 'smallImage', 'createdAt', 'isRepresentative']
+        fields = ['id', 'name', 'representative', 'representativeNickname', 'members', 'smallImage', 'createdAt',
+                  'isRepresentative']
+        read_only_fields = ['id', 'representativeNickname', 'createdAt', 'isRepresentative']
 
     def get_members(self, obj):
         members = obj.members.all()

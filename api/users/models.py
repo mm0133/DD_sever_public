@@ -57,9 +57,7 @@ class CustomProfile(models.Model):
         return myContestAnswers
 
     def myContestsNow(self):
-        myContestAnswers = ContestParticipantAnswer.objects \
-            .filter(Q(user=self.user) | Q(teamMembers__contains=self.user.customProfile.nickname)) \
-            .order_by("-createdAt")
+        myContestAnswers = self.myContests()
         returnList = []
         for contestAnswer in myContestAnswers:
             if not contestAnswer.contest.isFinished:
@@ -67,9 +65,7 @@ class CustomProfile(models.Model):
         return returnList
 
     def myContestsFinished(self):
-        myContestAnswers = ContestParticipantAnswer.objects \
-            .filter(Q(user=self.user) | Q(teamMembers__contains=self.user.customProfile.nickname)) \
-            .order_by("-createdAt")
+        myContestAnswers = self.myContests()
         returnList = []
         for contestAnswer in myContestAnswers:
             if contestAnswer.contest.isFinished:
@@ -103,7 +99,6 @@ class Team(models.Model):
     def __str__(self):
         return f"Team {self.name} "
 
-
 class TeamInvite(models.Model):
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.CASCADE, related_name="teamInvite")
     invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='teamInviteReceived')
@@ -113,3 +108,4 @@ class TeamInvite(models.Model):
 
     def __str__(self):
         return f"teamInvite from team {self.team.name}' to {self.invitee.customProfile.nickname}"
+
