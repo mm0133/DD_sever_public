@@ -8,9 +8,9 @@ from rest_framework.pagination import PageNumberPagination
 def HitCountResponse(request, obj, response):
     # [1] 로그인 확인
     if not request.user.is_authenticated:
-        cookie_name = 'ddHit'
+        cookie_name = 'DDHit'
     else:
-        cookie_name = f'ddHit:{request.user.id}'
+        cookie_name = f'DDHit:{request.user.id}'
 
     # [2] 그 날 당일 밤 12시에 쿠키 삭제
     tomorrow = datetime.datetime.replace(datetime.datetime.now(), hour=23, minute=59, second=0)
