@@ -348,9 +348,11 @@ class UserCreateView(CreateAPIView):
 @permission_classes([permissions.IsAuthenticated])
 def HasCustomProfile(request):
     if get_object_or_None(CustomProfile, user=request.user):
-        return Response('true', status=status.HTTP_200_OK)
+        hasProfile = True
     else:
-        return Response('false', status=status.HTTP_200_OK)
+        hasProfile = False
+    data = {"hasProfile": hasProfile}
+    return Response(data)
 
 
 @api_view(['GET'])
