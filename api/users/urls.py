@@ -9,8 +9,8 @@ urlpatterns = [
 
     path("my_profile/", views.CustomProfileView.as_view()),  # get, post(처음에만), put
 
-    path("team_create/", views.post_team),  # post
     path("team_by_user_nickname/<str:nickname>/", views.get_teams),  # get
+    path("team_create/", views.post_team),  # post
     path("team/<str:teamName>/", views.TeamViewWithTeamName.as_view()),  # get delete
     path("team/<str:teamName>/member_invite/", views.member_invite),  # post
     path("team/<str:teamName>/member_invite_accept/", views.member_invite_accept),  # post

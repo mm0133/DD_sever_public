@@ -1,11 +1,8 @@
 import datetime
 import json
 
-from django.http import Http404
-from django.shortcuts import _get_queryset
-from rest_framework import filters, status
+from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
 
 
 def HitCountResponse(request, obj, response):
@@ -61,11 +58,6 @@ def pagination_with_pagesize(pagesize):
         page_size = pagesize
 
     return ReturnClass
-
-
-def notFoundErrorMaker(message):
-    class Http404Custom(Exception):
-        war
 
 
 

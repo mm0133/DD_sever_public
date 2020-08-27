@@ -90,7 +90,7 @@ def get_teams(request, nickname):
 def post_team(request):
     serializer = TeamsSerializerForPost(data=request.data, context={"user": request.user})
     if serializer.is_valid():
-        serializer.save(representative=request.user)
+        serializer.save(representative=request.user, members=(request.user,))
         image = get_object_or_None(request.data, "image")
         if image:
             serializer.save(smallImage=image)
@@ -317,5 +317,3 @@ def HasCustomProfile(request):
         return Response('true', status=status.HTTP_200_OK)
     else:
         return Response('false', status=status.HTTP_200_OK)
-
-
