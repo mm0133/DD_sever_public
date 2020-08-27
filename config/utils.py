@@ -21,12 +21,13 @@ def HitCountResponse(request, obj, response):
         cookies = request.COOKIES.get(cookie_name)
         cookies_dict = json.loads(cookies)
         if objName in cookies_dict:
-            if obj.id not in cookies_dict[objName]:
-                cookies_dict[objName] = cookies_dict[objName].append(obj.id)
-                obj.hitNums += 1
-                obj.save()
-                returnCookies = json.dumps(cookies_dict)
-                response.set_cookie(cookie_name, returnCookies, expires=expires)
+            if cookies_dict[objName]:
+                if obj.id not in cookies_dict[objName]:
+                    cookies_dict[objName] = cookies_dict[objName].append(obj.id)
+                    obj.hitNums += 1
+                    obj.save()
+                    returnCookies = json.dumps(cookies_dict)
+                    response.set_cookie(cookie_name, returnCookies, expires=expires)
 
         else:
             cookies_dict[objName] = [obj.id]
