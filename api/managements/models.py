@@ -2,12 +2,16 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+from config.utils import ddAnonymousUser
+
+
 # 삭제할 때 view 에서, 대댓이 있는 걸 확인해서 있으면 '삭제된 댓글입니다'로 content 를 바꾼다.
 # 대댓 없으면 그냥 지운다.
 
 
 class Notice(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
+                               default=ddAnonymousUser)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -25,7 +29,8 @@ class Notice(models.Model):
 
 
 class QuestionToManager(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
+                               default=ddAnonymousUser)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -40,7 +45,8 @@ class QuestionToManager(models.Model):
 
 
 class CommentToQuestion(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
+                               default=ddAnonymousUser)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -61,7 +67,8 @@ class CommentToQuestion(models.Model):
 
 # 그냥 받고 끝인 피드백
 class FeedbackToManager(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
+                               default=ddAnonymousUser)
     createdAt = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
 

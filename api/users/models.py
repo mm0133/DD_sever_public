@@ -99,6 +99,7 @@ class Team(models.Model):
     def __str__(self):
         return f"Team {self.name} "
 
+
 class TeamInvite(models.Model):
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.CASCADE, related_name="teamInvite")
     invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='teamInviteReceived')
@@ -108,4 +109,3 @@ class TeamInvite(models.Model):
 
     def __str__(self):
         return f"teamInvite from team {self.team.name}' to {self.invitee.customProfile.nickname}"
-

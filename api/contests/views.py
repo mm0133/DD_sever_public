@@ -232,8 +232,10 @@ class ContestParticipantAnswerViewWithPK(APIView):
 
     def get(self, request, pk):
         contestParticipantAnswer = get_object_or_404_custom(ContestParticipantAnswer, pk=pk)
-        if contestParticipantAnswer.team:
-            if request.user.customProfile.nickname not in contestParticipantAnswer.teamMembers:
+        if contestParticipantAnswer.isTeam:
+            if not request.user.is_authenticated:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            elif request.user.customProfile.nickname not in contestParticipantAnswer.teamMembers:
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
             if not (request.user and request.user.is_authenticated and request.user == contestParticipantAnswer.user):
@@ -263,7 +265,7 @@ def ContestScrap(request, pk):
     contest = get_object_or_404_custom(Contest, pk=pk)
     if contest not in request.user.customProfile.contestScraps.all():
         request.user.customProfile.contestScraps.add(contest)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_202_ACCEPTED)
     else:
         request.user.customProfile.contestScraps.remove(contest)
         return Response(status=status.HTTP_200_OK)

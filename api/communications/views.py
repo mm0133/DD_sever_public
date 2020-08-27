@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from config.customExceptions import get_object_or_404_custom
 from config.customPermissions import IsGetRequestOrAuthenticated, IsGetRequestOrWriterOrAdminUser
-from config.utils import HitCountResponse
+from config.utils import HitCountResponse, ddAnonymousUser
 from .models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
 from .serializer import ContestDebatesSerializer, ContestDebateSerializer, ContestCodeNotesSerializer, \
     ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer, DebateCommentSerializer, CodeNoteCommentSerializer, \
@@ -297,7 +297,9 @@ class DebateCommentViewWithPK(APIView):
 
     def delete(self, request, pk):
         debateComment = self.get_debateComment(pk)
-        debateComment.delete()
+        debateComment.writer = ddAnonymousUser
+        debateComment.content = ''
+        debateComment.save()
         return Response(status=status.HTTP_200_OK)
 
 
@@ -352,7 +354,9 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
 
     def delete(self, request, pk):
         codeNoteComment = self.get_codeNoteComment(pk)
-        codeNoteComment.delete()
+        codeNoteComment.writer = ddAnonymousUser
+        codeNoteComment.content = ''
+        codeNoteComment.save()
         return Response(status=status.HTTP_200_OK)
 
 
@@ -406,7 +410,9 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
 
     def delete(self, request, pk):
         velogComment = self.get_velogComment(pk)
-        velogComment.delete()
+        velogComment.writer = ddAnonymousUser
+        velogComment.content = ''
+        velogComment.save()
         return Response(status=status.HTTP_200_OK)
 
 

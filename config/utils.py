@@ -1,7 +1,9 @@
 import datetime
 import json
 
-from rest_framework import filters
+from annoying.functions import get_object_or_None
+from django.contrib.auth.models import User
+from rest_framework import filters, generics
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -61,4 +63,12 @@ def pagination_with_pagesize(pagesize):
     return ReturnClass
 
 
+class DDCustomListAPiView(generics.ListAPIView):
+    def paginate_queryset(self, queryset, view=None):
+        if 'no_page' in self.request.query_params:
+            return None
+        else:
+            return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
+
+ddAnonymousUser = get_object_or_None(User, username='anonymous')

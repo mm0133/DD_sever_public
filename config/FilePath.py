@@ -39,8 +39,6 @@ def contestBackThumbPath(instance, filename):
 def contestParticipantAnswerFilePath(instance, filename):
     # 개인 제출과 팀 제출을 구분함. 안 그러면 instance 에 user 나 team 이 없을 경우 error 가 발생함
     if instance.user:
-        return f'contests/ContestParticipantAnswer/file/user{instance.user.id}-contest{instance.contest}/{uuid4().hex}\
-        /{instance.id}_{uuid4().hex}/{filename}'
+        return f'contests/ContestParticipantAnswer/file/user{instance.user.id}-contest{instance.contest}/{uuid4().hex}/{instance.id}_{uuid4().hex}/{filename}'
     else:
-        return f'contests/ContestParticipantAnswer/file/team{instance.team.id}-contest{instance.contest}/{uuid4().hex}\
-        /{instance.id}_{uuid4().hex}/{filename}'
+        return f'contests/ContestParticipantAnswer/file/team{instance.team.id}-contest{instance.contest}/{uuid4().hex}/{uuid4().hex}/{filename}'

@@ -63,18 +63,18 @@ class IsRepresentativeOrAdminUser(permissions.BasePermission):
 
 
 class IsGetRequestOrTeamRepresentativeOrOwner(permissions.BasePermission):
-    class IsGetRequestOrWriterOrAdminUser(permissions.BasePermission):
-        # 작성자만 접근, 작성자가 아니면 Read 만 가능
-        def has_object_permission(self, request, view, obj):
-            if request.method == "GET":
+    # 작성자만 접근, 작성자가 아니면 Read 만 가능
+    def has_object_permission(self, request, view, obj):
+        print(request.user.is_authenticated)
+        if request.method == "GET":
+            return True
+        if request.user.is_authenticated:
+            if obj.user == request.user:
                 return True
-            if request.user.is_authenticated:
-                if obj.user == request.user:
-                    return True
-                elif obj.team.representative == request.user:
-                    return True
-                elif request.user.is_staff:
-                    return True
-                return False
-            else:
-                return False
+            elif obj.team.representative == request.user:
+                return True
+            elif request.user.is_staff:
+                return True
+            return False
+        else:
+            return False

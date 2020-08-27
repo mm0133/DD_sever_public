@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, \
     IsGetRequestOrWriterOrAdminUser
 from config.customExceptions import get_object_or_404_custom
-from config.utils import HitCountResponse
+from config.utils import HitCountResponse, ddAnonymousUser
 from .models import EduVideoLecture, LecturePackage, LecturePackageComment, EduVideoLectureComment
 from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer, \
     LecturePackageSerializerForPost, LecturePackageCommentSerializer, EduVideoLectureCommentSerializer, \
@@ -152,7 +152,9 @@ class LecturePackageCommentsViewWithPK(APIView):
 
     def delete(self, request, pk):
         lecturePackageComment = self.get_lecturePackageComment(pk)
-        lecturePackageComment.delete()
+        lecturePackageComment.writer = ddAnonymousUser
+        lecturePackageComment.content = ''
+        lecturePackageComment.save()
         return Response(status=status.HTTP_200_OK)
 
 
@@ -201,7 +203,9 @@ class EduVideoLectureCommentViewWithPK(APIView):
 
     def delete(self, request, pk):
         eduVideoLectureComment = self.get_eduVideoLectureComment(pk)
-        eduVideoLectureComment.delete()
+        eduVideoLectureComment.writer = ddAnonymousUser
+        eduVideoLectureComment.content = ''
+        eduVideoLectureComment.save()
         return Response(status=status.HTTP_200_OK)
 
 
