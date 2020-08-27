@@ -29,7 +29,7 @@ class EduVideoLecture(models.Model):
 
     title = models.CharField(max_length=255)  # 제목은 무조건 달아야 함!
 
-    lecturePackage = models.ForeignKey(LecturePackage, blank=True, null=True, on_delete=models.CASCADE)
+    lecturePackage = models.ForeignKey(LecturePackage, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
