@@ -17,16 +17,17 @@ def HitCountResponse(request, obj, response):
     expires = datetime.datetime.strftime(tomorrow, "%a, %d-%b-%Y %H:%M:%S GMT")
     objName = obj.__class__.__name__
     # [3] hit 를 check 하는 쿠키가 있는 경우
-    if request.COOKIES.get(cookie_name) is not None:
+    if request.COOKIES.get(cookie_name):
         cookies = request.COOKIES.get(cookie_name)
         cookies_dict = json.loads(cookies)
         if objName in cookies_dict:
-            if obj.id not in cookies_dict[objName]:
-                cookies_dict[objName] = cookies_dict[objName].append(obj.id)
-                obj.hitNums += 1
-                obj.save()
-                returnCookies = json.dumps(cookies_dict)
-                response.set_cookie(cookie_name, returnCookies, expires=expires)
+            if cookies_dict[objName]:
+                if obj.id not in cookies_dict[objName]:
+                    cookies_dict[objName] = cookies_dict[objName].append(obj.id)
+                    obj.hitNums += 1
+                    obj.save()
+                    returnCookies = json.dumps(cookies_dict)
+                    response.set_cookie(cookie_name, returnCookies, expires=expires)
 
         else:
             cookies_dict[objName] = [obj.id]
