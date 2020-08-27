@@ -26,7 +26,7 @@ class NoticeListView(generics.ListAPIView):
     ordering_fields = ('hitNums', 'id')
 
     def list(self, request, *args, **kwargs):
-        isPinned = request.GET.get('ispinned')
+        isPinned = request.GET.get('isPinned')
         if isPinned == 'true':
             rawQueryset = self.get_queryset().filter(isPinned=True)
         elif isPinned == 'false':
@@ -89,8 +89,8 @@ class QuestionToManagerListView(generics.ListAPIView):
     ordering_fields = ('hitNums', 'id')
 
     def list(self, request, *args, **kwargs):
-        isPrivate = request.GET.get('isprivate')
-        isMine = request.GET.get('ismine')
+        isPrivate = request.GET.get('isPrivate')
+        isMine = request.GET.get('isMine')
 
         if request.user.is_staff:
             if isPrivate == 'true':

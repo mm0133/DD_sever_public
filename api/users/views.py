@@ -263,15 +263,28 @@ def change_representative(request, teamName):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
+class UserCreateView(CreateAPIView):
+    serializer_class = UserCreateSerializer
+    model = User
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAuthenticated])
 def delete_user(request):
     teams = Team.objects.filter(representative=request.user)
     if teams:
         for team in teams:
-            otherMembers = team.members.exclude(id=request.user.id)
-            if otherMembers:
-                team.representative = otherMembers[0]
+            if team.members.exclude(id=request.user.id):
+                team.representative = team.members.all()[0]
                 team.save()
             else:
                 team.delete()
@@ -282,12 +295,11 @@ def delete_user(request):
 @api_view(['delete'])
 @permission_classes([permissions.IsAdminUser])
 def delete_user_pk(request, pk):
-    user = User.objects.get(pk=pk)
+    user = get_object_or_404_custom(User, pk=pk)
     teams = Team.objects.filter(representative=user)
     for team in teams:
-        otherMembers = team.members.exclude(id=user.id)
-        if otherMembers:
-            team.representative = otherMembers[0]
+        if team.members.exclude(id=user.id):
+            team.representative = team.members.all()[0]
             team.save()
         else:
             team.delete()
@@ -328,20 +340,6 @@ class ChangePasswordView(UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserCreateView(CreateAPIView):
-    serializer_class = UserCreateSerializer
-    model = User
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
