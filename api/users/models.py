@@ -1,10 +1,12 @@
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, signals
+from django.dispatch import receiver
 
-from api.communications.models import ContestCodeNote, ContestDebate, Velog
+from api.communications.models import ContestCodeNote, ContestDebate, Velog, DebateComment, CodeNoteComment, \
+    VelogComment
 from api.contests.models import Contest, ContestParticipantAnswer
 from django.contrib.auth.models import User
-from api.educations.models import LecturePackage
+from api.educations.models import LecturePackage, LecturePackageComment, EduVideoLectureComment
 from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
 
@@ -71,6 +73,23 @@ class CustomProfile(models.Model):
             if contestAnswer.contest.isFinished:
                 returnList.append(contestAnswer.contest)
         return returnList
+
+
+@receiver(signals.pre_delete, sender=CustomProfile)
+def customProfile_pre_delete(sender, instance, **kwargs):
+    ddUser = instance.user
+
+    def myPostings(modelList, writer=ddUser):
+        # list 로 한 번 감싸줘야 map object 가 아니라 list 가 된다.
+        # list 로 감싸줘야 쿼리셋이 아니라 접근할 수 있느 장고 객체가 된다.
+        return list(map(lambda model: list(model.objects.filter(writer=writer)), modelList))
+
+    setList = myPostings([LecturePackageComment, EduVideoLectureComment, ContestDebate, ContestCodeNote, Velog,
+                          DebateComment, CodeNoteComment, VelogComment])
+    for set in setList:
+        for obj in set:
+            obj.writer = User.objects.get(username='anonymous')
+            obj.save()
 
 
 class Team(models.Model):

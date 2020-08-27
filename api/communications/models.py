@@ -12,7 +12,7 @@ from config.utils import ddAnonymousUser
 
 
 class ContestDebate(models.Model):
-    writer = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=ddAnonymousUser)
+    writer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField(null=True, blank=True)
@@ -20,8 +20,7 @@ class ContestDebate(models.Model):
 
     title = models.CharField(max_length=255)
 
-    contest = models.ForeignKey(Contest, null=True, on_delete=models.SET_DEFAULT,
-                                default=ddAnonymousUser)
+    contest = models.ForeignKey(Contest, null=True, on_delete=models.CASCADE)
 
     # like는 여기 두고 스크랩은 유저의 profile에 둘 것이다.
     likes = models.ManyToManyField(
@@ -40,8 +39,7 @@ class ContestDebate(models.Model):
 
 
 class ContestCodeNote(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField(null=True, blank=True)
@@ -67,8 +65,7 @@ class ContestCodeNote(models.Model):
 
 
 class Velog(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField(null=True, blank=True)
@@ -92,8 +89,7 @@ class Velog(models.Model):
 
 
 class DebateComment(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -112,8 +108,7 @@ class DebateComment(models.Model):
 
 # 결투장 code에 comment
 class CodeNoteComment(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -131,8 +126,7 @@ class CodeNoteComment(models.Model):
 
 
 class VelogComment(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()

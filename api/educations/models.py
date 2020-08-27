@@ -5,8 +5,7 @@ from config.utils import ddAnonymousUser
 
 
 class LecturePackage(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     hitNums = models.IntegerField(default=0)
@@ -22,8 +21,7 @@ class LecturePackage(models.Model):
 
 
 class EduVideoLecture(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     hitNums = models.IntegerField(default=0)
@@ -40,8 +38,7 @@ class EduVideoLecture(models.Model):
 
 
 class LecturePackageComment(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='myLecturePackageComments')
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -63,8 +60,7 @@ class LecturePackageComment(models.Model):
 
 
 class EduVideoLectureComment(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()

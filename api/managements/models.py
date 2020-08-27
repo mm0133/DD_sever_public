@@ -10,8 +10,7 @@ from config.utils import ddAnonymousUser
 
 
 class Notice(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -29,8 +28,7 @@ class Notice(models.Model):
 
 
 class QuestionToManager(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -45,8 +43,7 @@ class QuestionToManager(models.Model):
 
 
 class CommentToQuestion(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     content = models.TextField()
@@ -67,8 +64,7 @@ class CommentToQuestion(models.Model):
 
 # 그냥 받고 끝인 피드백
 class FeedbackToManager(models.Model):
-    writer = models.ForeignKey(User, null=True, on_delete=models.SET_DEFAULT,
-                               default=ddAnonymousUser)
+    writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
 

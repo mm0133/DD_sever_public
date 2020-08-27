@@ -13,8 +13,7 @@ from config.utils import ddAnonymousUser
 
 
 class Contest(models.Model):
-    writer = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=ddAnonymousUser,
-                               null=True)  # step 만 가능
+    writer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # step 만 가능
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
@@ -103,8 +102,7 @@ class ContestParticipantAnswer(models.Model):
     team = models.ForeignKey(
         'users.Team', null=True, blank=True, on_delete=models.SET_NULL, related_name="contestAnswer"
     )
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_DEFAULT,
-                             default=ddAnonymousUser, related_name="contestAnswer")
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="contestAnswer")
     isTeam = models.BooleanField(default=False)
     teamMembers = ListTextField(null=True, blank=True, base_field=models.CharField(max_length=255), )
     name = models.CharField(max_length=255)
