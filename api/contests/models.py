@@ -9,7 +9,7 @@ from django_mysql.models import ListTextField
 from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
 
-from config.utils import ddAnonymousUser
+from api.contests import calculators
 
 
 class Contest(models.Model):
@@ -71,7 +71,6 @@ class Contest(models.Model):
                                     options={'quality': 90},
                                     default="user_1/profile",
                                     )
-    contestOverview = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -128,8 +127,9 @@ class ContestParticipantAnswer(models.Model):
             return "삭제된 계정"
 
     def calculateAccuracy(self):
-        # self.file 로 계산하는 로직넣기
-        return 50
+        pk = self.contest.id
+        calculator = getattr(calculators, f'calculate_contest_{pk}')
+        return calculator(self.file)
 
     @property
     def likesCount(self):

@@ -22,6 +22,7 @@ from api.users.serializer import CustomProfileSerializer, MyCustomProfileSeriali
     ProfileBasicInformationSerializer
 from config.customExceptions import get_value_or_error
 from config.customExceptions import get_object_or_404_custom
+from config.utils import DDCustomListAPiView
 
 
 @api_view(['GET'])
@@ -125,7 +126,7 @@ class TeamViewWithTeamName(APIView):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-class TeamInviteListView(generics.ListAPIView):
+class TeamInviteListView(DDCustomListAPiView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = TeamInvite.objects.all().order_by('-id')
     serializer_class = TeamInviteSerializer
