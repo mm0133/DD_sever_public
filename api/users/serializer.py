@@ -240,3 +240,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class ProfileBasicInformationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomProfile
+        fields = ["nickname", "smallImage"]

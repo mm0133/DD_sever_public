@@ -10,7 +10,6 @@ from rest_framework import status, permissions, generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import UpdateAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -19,7 +18,8 @@ from annoying.functions import get_object_or_None
 from api.users.models import CustomProfile, Team, TeamInvite
 from api.users.serializer import CustomProfileSerializer, MyCustomProfileSerializer, \
     CustomProfileSerializerForChange, TeamsSerializer, TeamSerializer, TeamsSerializerForPost, \
-    TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer, TeamInviteSerializer
+    TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer, TeamInviteSerializer, \
+    ProfileBasicInformationSerializer
 from config.customExceptions import get_value_or_error
 from config.customExceptions import get_object_or_404_custom
 
@@ -126,7 +126,7 @@ class TeamViewWithTeamName(APIView):
 
 
 class TeamInviteListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     queryset = TeamInvite.objects.all().order_by('-id')
     serializer_class = TeamInviteSerializer
     filter_backends = (SearchFilter, OrderingFilter)
@@ -357,3 +357,11 @@ def HasCustomProfile(request):
 def check_is_me_staff(request):
     data = {"isStaff": request.user.is_staff}
     return Response(data)
+
+
+@api_view(['POST'])
+def myBasicInformation(request):
+    if request.user and request.user.is_authenticated:
+        customProfile=request.user.customProfile
+        serializer=ProfileBasicInformationSerializer(customProfile)
+        return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)

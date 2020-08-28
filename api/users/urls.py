@@ -27,5 +27,6 @@ urlpatterns = [
     path("password_change/", views.ChangePasswordView.as_view()),
 
     path("has_profile/", views.HasCustomProfile),
-    path("check_is_me_staff/", views.check_is_me_staff)
+    path("check_is_me_staff/", views.check_is_me_staff),
+    path("my_basic_information,", views.myBasicInformation),
 ]
