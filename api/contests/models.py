@@ -25,7 +25,7 @@ class Contest(models.Model):
     )
     deadline = models.DateTimeField()
     timeline = models.TextField()  # 여러 날짜들을 text 로 저장했다가 json 으로 변환해서 프론트로 넘김
-    prize = models.IntegerField()  # 만 단위로 받을 것임.
+    prize = models.TextField()  # 만 단위로 받을 것임.
 
     isForTraining = models.BooleanField(default=False)  # 연습용이냐 실전용이냐.
 
