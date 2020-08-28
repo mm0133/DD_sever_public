@@ -360,8 +360,8 @@ def check_is_me_staff(request):
 
 
 @api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
 def myBasicInformation(request):
-    if request.user and request.user.is_authenticated:
         customProfile=request.user.customProfile
         serializer=ProfileBasicInformationSerializer(customProfile)
         return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)
