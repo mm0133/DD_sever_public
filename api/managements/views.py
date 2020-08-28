@@ -14,10 +14,10 @@ from api.managements.serializer import NoticesSerializer, NoticeSerializer, Feed
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated
 from config.customExceptions import get_object_or_404_custom, DDCustomException
 
-from config.utils import HitCountResponse
+from config.utils import HitCountResponse, DDCustomListAPiView
 
 
-class NoticeListView(generics.ListAPIView):
+class NoticeListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAdminUser]
     queryset = Notice.objects.all().order_by('-id')
     serializer_class = NoticesSerializer
@@ -80,7 +80,7 @@ class NoticeViewWithPk(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class QuestionToManagerListView(generics.ListAPIView):
+class QuestionToManagerListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAdminUser]
     queryset = QuestionToManager.objects.all().order_by('-id')
     serializer_class = QuestionsToManagerSerializer
@@ -229,7 +229,7 @@ class CommentToQuestionViewWithCommentPK(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class FeedbackToManagerListView(generics.ListAPIView):
+class FeedbackToManagerListView(DDCustomListAPiView):
     permission_classes = [IsAdminUser]
     queryset = FeedbackToManager.objects.all().order_by('-id')
     serializer_class = FeedbacksToManagerSerializer

@@ -7,14 +7,14 @@ from rest_framework.views import APIView
 from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuthenticated, \
     IsGetRequestOrWriterOrAdminUser
 from config.customExceptions import get_object_or_404_custom
-from config.utils import HitCountResponse, ddAnonymousUser
+from config.utils import HitCountResponse, ddAnonymousUser, DDCustomListAPiView
 from .models import EduVideoLecture, LecturePackage, LecturePackageComment, EduVideoLectureComment
 from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer, \
     LecturePackageSerializerForPost, LecturePackageCommentSerializer, EduVideoLectureCommentSerializer, \
     LecturePackageCommentSerializerForPostPUT, EduVideoLectureCommentSerializerForPostPut
 
 
-class LecturePackageListView(generics.ListAPIView):
+class LecturePackageListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
     queryset = LecturePackage.objects.all().order_by('-id')
     serializer_class = LecturePackageSerializer

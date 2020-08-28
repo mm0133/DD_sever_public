@@ -18,10 +18,10 @@ from config.customExceptions import get_value_or_error, get_object_or_404_custom
 from config.customPermissions import (IsGetRequestOrAdminUser,
                                       IsGetRequestOrAuthenticated,
                                       IsGetRequestOrTeamRepresentativeOrOwner)
-from config.utils import pagination_with_pagesize
+from config.utils import pagination_with_pagesize, DDCustomListAPiView
 
 
-class ContestListView(generics.ListAPIView):
+class ContestListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAdminUser]
     # queryset 은 해당 모델의 attribute 로만 filtering 이 가능하다. model function 같은 걸로 filtering 못 한다.
     # 그래서 아래와 같이 annotate 로 queryset 에 participantNumber 를 달아주고, 그 걸로 ordering(즉 filtering) 을 하게 하면 된다.
@@ -41,7 +41,7 @@ class ContestListView(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class ContestListNotPaginatedView(generics.ListAPIView):
+class ContestListNotPaginatedView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAdminUser]
     queryset = Contest.objects.all().order_by('-id').annotate(participantNumber=Count('participantAnswer'))
     serializer_class = ContestsSerializer
@@ -136,7 +136,7 @@ def DeleteContestFileWithPK(request, pk):
     return Response(status=status.HTTP_200_OK)
 
 
-class ContestParticipantAnswerListViewWithContestPK(generics.ListAPIView):
+class ContestParticipantAnswerListViewWithContestPK(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
     queryset = ContestParticipantAnswer.objects.all().order_by('-accuracy')
     serializer_class = ContestParticipantAnswersSerializer

@@ -31,7 +31,7 @@ class CustomProfile(models.Model):
                                      )
 
     email = models.EmailField(unique=True)
-    phoneNumber = models.CharField(max_length=11, unique=True)
+    phoneNumber = models.CharField(max_length=11, unique=True, null=True, blank=True)
     nickname = models.CharField(max_length=255, unique=True)
 
     # json으로 어떤 대회에서(id값이 key가 된다) 어떤 rank(1~5)를 들고 있는지 기록해둔다.

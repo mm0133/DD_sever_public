@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from config.customExceptions import get_object_or_404_custom
 from config.customPermissions import IsGetRequestOrAuthenticated, IsGetRequestOrWriterOrAdminUser
-from config.utils import HitCountResponse, ddAnonymousUser
+from config.utils import HitCountResponse, ddAnonymousUser, DDCustomListAPiView
 from .models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
 from .serializer import ContestDebatesSerializer, ContestDebateSerializer, ContestCodeNotesSerializer, \
     ContestCodeNoteSerializer, VelogSerializer, VelogsSerializer, DebateCommentSerializer, CodeNoteCommentSerializer, \
@@ -17,7 +17,7 @@ from ..contests.models import Contest
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 
-class ContestDebateListView(generics.ListAPIView):
+class ContestDebateListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
     queryset = ContestDebate.objects.all().order_by('-id')
     serializer_class = ContestDebatesSerializer
@@ -40,7 +40,7 @@ class ContestDebateListView(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class ContestDebateListViewWithContestPK(generics.ListAPIView):
+class ContestDebateListViewWithContestPK(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
     queryset = ContestDebate.objects.all().order_by('-id')
     serializer_class = ContestDebatesSerializer
@@ -102,7 +102,7 @@ class ContestDebateViewWithPk(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class ContestCodeNoteListView(generics.ListAPIView):
+class ContestCodeNoteListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
     queryset = ContestCodeNote.objects.all().order_by('-id')
     serializer_class = ContestCodeNotesSerializer
@@ -120,7 +120,7 @@ class ContestCodeNoteListView(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class ContestCodeNoteListViewWithContestPK(generics.ListAPIView):
+class ContestCodeNoteListViewWithContestPK(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
     queryset = ContestCodeNote.objects.all().order_by('-id')
     serializer_class = ContestCodeNotesSerializer
@@ -181,7 +181,7 @@ class ContestCodeNoteViewWithPk(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class VelogListView(generics.ListAPIView):
+class VelogListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
     queryset = Velog.objects.all().order_by('-id')
     serializer_class = VelogsSerializer
