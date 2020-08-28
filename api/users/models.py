@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Q, signals
+from django.db.models import Q, signals, F
 from django.dispatch import receiver
 
 from api.communications.models import ContestCodeNote, ContestDebate, Velog, DebateComment, CodeNoteComment, \
@@ -54,25 +54,19 @@ class CustomProfile(models.Model):
 
     def myContests(self):
         myContestAnswers = ContestParticipantAnswer.objects \
-            .filter(Q(user=self.user) | Q(teamMembers__contains=self.user.customProfile.nickname)) \
-            .order_by("-createdAt")
-        return myContestAnswers
+            .filter(Q(user=self.user) | Q(teamMembers__contains=self.user.customProfile.nickname))
+        myContestIds = [contestAnswer.contest.id for contestAnswer in myContestAnswers]
+        ret = Contest.objects.filter(id__in=myContestIds).order_by('-id')
+        return ret
 
     def myContestsNow(self):
-        myContestAnswers = self.myContests()
-        returnList = []
-        for contestAnswer in myContestAnswers:
-            if not contestAnswer.contest.isFinished:
-                returnList.append(contestAnswer.contest)
-        return returnList
+        myContestsNowIds = [contest.id for contest in self.myContests() if not contest.isFinished()]
+        return self.myContests().filter(id__in=myContestsNowIds).order_by('-id')
 
     def myContestsFinished(self):
-        myContestAnswers = self.myContests()
-        returnList = []
-        for contestAnswer in myContestAnswers:
-            if contestAnswer.contest.isFinished:
-                returnList.append(contestAnswer.contest)
-        return returnList
+        print(777)
+        myContestsFinishedIds = [contest.id for contest in self.myContests() if contest.isFinished()]
+        return self.myContests().filter(id__in=myContestsFinishedIds).order_by('-id')
 
 
 @receiver(signals.pre_delete, sender=CustomProfile)

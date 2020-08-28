@@ -43,10 +43,16 @@ class VelogSerializerForScrap(serializers.ModelSerializer):
         fields = ["id", "title", "writerNickname", "writerImage"]
 
 
+class MyContestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contest
+        fields = ['id', 'title', 'difficulty', 'profileThumb', 'isForTraining']
+
+
 class MyCustomProfileSerializer(serializers.ModelSerializer):
     teams = serializers.SerializerMethodField()
-    myContestsNow = serializers.SerializerMethodField()
-    myContestsFinished = serializers.SerializerMethodField()
+    myContestsNow = serializers.ListField()
+    myContestsFinished = serializers.ListField()
     contestDebates = serializers.SerializerMethodField()
     contestCodeNotes = serializers.SerializerMethodField()
     velogs = serializers.SerializerMethodField()
@@ -59,7 +65,8 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomProfile
         fields = ['image', 'user', 'nickname', 'contestRankDictionary',
-                  'teams', 'myContestsNow', 'myContestsFinished',
+                  'teams', 'myContestsNow',
+                  'myContestsFinished',
                   'contestDebates', 'contestCodeNotes', 'velogs',
                   'contestScraps', 'debateScraps', 'codenoteScraps', 'velogScraps']
 
@@ -69,19 +76,14 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_myContestsNow(self, obj):
-        list = []
-        for contest in obj.myContestsNow():
-            list.append({"id": contest.id, "title": contest.title})
-        return list
+        return MyContestSerializer(obj.myContestsNow(), many=True)
 
     def get_myContestsFinished(self, obj):
-        list = []
-        for contest in obj.myContestsFinished():
-            list.append({"id": contest.id, "title": contest.title})
-        return list
+        print(1)
+        print(obj.myContestsFinished())
+        return MyContestSerializer(obj.myContestsFinished(), many=True)
 
     def get_contestDebates(self, obj):
-
         contestDebates = ContestDebate.objects.filter(writer=obj.user)
         serializer = ContestDebatesSerializer(contestDebates, many=True, context={"user": obj.user})
 
@@ -94,7 +96,6 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_velogs(self, obj):
-
         velogs = Velog.objects.filter(writer=obj.user)
         serializer = VelogsSerializer(velogs, many=True, context={"user": obj.user})
 

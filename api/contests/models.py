@@ -2,14 +2,15 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
+from api.contests import calculators
 from api.contests.validators import validate_file_size
-from config.FilePath import contestContestAnswerPath, contestFileFilePath, contestParticipantAnswerFilePath, \
-    contestProfileThumbPath, contestBackThumbPath
+from config.FilePath import (contestBackThumbPath, contestContestAnswerPath,
+                             contestFileFilePath,
+                             contestParticipantAnswerFilePath,
+                             contestProfileThumbPath)
 from django_mysql.models import ListTextField
 from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
-
-from api.contests import calculators
 
 
 class Contest(models.Model):
@@ -142,7 +143,16 @@ class ContestParticipantAnswer(models.Model):
         else:
             return self.likesCount()
 
+    @property
+    def isFinished(self):
+        return self.contest.isFinished()
+
     def __str__(self):
         # 3항 연산자
         teamOrUser = 'team' if self.isTeam else 'user'
-        return f'answer by {teamOrUser} {self.name} to {self.contest.title}'
+        # if self.contest:
+        #     title = self.contest.title
+        # else:
+        #     title = None
+        title = self.contest.title if self.contest else None
+        return f'answer by {teamOrUser} {self.name} to {title}'

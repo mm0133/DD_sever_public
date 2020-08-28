@@ -65,7 +65,6 @@ def pagination_with_pagesize(pagesize):
 
 class DDCustomListAPiView(generics.ListAPIView):
     def paginate_queryset(self, queryset, view=None):
-        print()
         if 'no_page' in self.request.query_params:
             return None
         else:
