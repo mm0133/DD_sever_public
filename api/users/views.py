@@ -360,4 +360,4 @@ def check_is_me_staff(request):
 def myBasicInformation(request):
     customProfile = request.user.customProfile
     serializer = ProfileBasicInformationSerializer(customProfile)
-    return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
