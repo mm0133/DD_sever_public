@@ -35,14 +35,18 @@ class IsGetRequestOrAdminUser(permissions.BasePermission):
 class IsGetRequestOrWriterOrAdminUser(permissions.BasePermission):
     # 작성자만 접근, 작성자가 아니면 Read만 가능
     def has_object_permission(self, request, view, obj):
+        if hasattr(obj, 'isTemporary') and obj.isTemporary:
+            if obj.writer == request.user or request.user.is_staff:
+                return True
+            else:
+                return False
         if request.method == "GET":
             return True
         if request.user.is_authenticated:
-            if obj.writer == request.user:
+            if obj.writer == request.user or request.user.is_staff:
                 return True
-            elif request.user.is_staff:
-                return True
-            return False
+            else:
+                return False
         else:
             return False
 

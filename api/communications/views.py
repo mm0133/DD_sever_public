@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from config.customExceptions import get_object_or_404_custom
+from config.customExceptions import get_object_or_404_custom, get_object_or_404_custom_isTemporary
 from config.customPermissions import IsGetRequestOrAuthenticated, IsGetRequestOrWriterOrAdminUser
 from config.utils import HitCountResponse, ddAnonymousUser, DDCustomListAPiView
 from .models import ContestDebate, ContestCodeNote, Velog, DebateComment, CodeNoteComment, VelogComment
@@ -19,7 +19,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 class ContestDebateListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
-    queryset = ContestDebate.objects.all().order_by('-id')
+    queryset = ContestDebate.dd_objects.all().order_by('-id')
     serializer_class = ContestDebatesSerializer
     # pagination_class 안 써주면 settings.py 에 있는 default 설정 따라감.
     # pagination_class = PageNumberPagination
@@ -42,7 +42,7 @@ class ContestDebateListView(DDCustomListAPiView):
 
 class ContestDebateListViewWithContestPK(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
-    queryset = ContestDebate.objects.all().order_by('-id')
+    queryset = ContestDebate.dd_objects.all().order_by('-id')
     serializer_class = ContestDebatesSerializer
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('title', 'writer__customProfile__nickname')
@@ -76,7 +76,7 @@ class ContestDebateViewWithPk(APIView):
     permission_classes = [IsGetRequestOrWriterOrAdminUser]
 
     def get_contestDebate(self, pk):
-        contestDebate = get_object_or_404_custom(ContestDebate, pk=pk)
+        contestDebate = get_object_or_404_custom_isTemporary(ContestDebate, pk=pk)
         self.check_object_permissions(self.request, contestDebate)
         return contestDebate
 
@@ -104,7 +104,7 @@ class ContestDebateViewWithPk(APIView):
 
 class ContestCodeNoteListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
-    queryset = ContestCodeNote.objects.all().order_by('-id')
+    queryset = ContestDebate.dd_objects.all().order_by('-id')
     serializer_class = ContestCodeNotesSerializer
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('title', 'writer__customProfile__nickname')
@@ -122,7 +122,7 @@ class ContestCodeNoteListView(DDCustomListAPiView):
 
 class ContestCodeNoteListViewWithContestPK(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
-    queryset = ContestCodeNote.objects.all().order_by('-id')
+    queryset = ContestDebate.dd_objects.all().order_by('-id')
     serializer_class = ContestCodeNotesSerializer
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('title', 'writer__customProfile__nickname')
@@ -155,7 +155,7 @@ class ContestCodeNoteViewWithPk(APIView):
     permission_classes = [IsGetRequestOrWriterOrAdminUser]
 
     def get_contestCodeNote(self, pk):
-        contestCodeNote = get_object_or_404_custom(ContestCodeNote, pk=pk)
+        contestCodeNote = get_object_or_404_custom_isTemporary(ContestCodeNote, pk=pk)
         self.check_object_permissions(self.request, contestCodeNote)
         return contestCodeNote
 
@@ -183,7 +183,7 @@ class ContestCodeNoteViewWithPk(APIView):
 
 class VelogListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
-    queryset = Velog.objects.all().order_by('-id')
+    queryset = Velog.dd_objects.all().order_by('-id')
     serializer_class = VelogsSerializer
     # pagination_class 안 써주면 settings.py 에 있는 default 설정 따라감.
     # pagination_class = PageNumberPagination
@@ -221,7 +221,7 @@ class VelogViewWithPk(APIView):
     permission_classes = [IsGetRequestOrWriterOrAdminUser]
 
     def get_velog(self, pk):
-        velog = get_object_or_404_custom(Velog, pk=pk)
+        velog = get_object_or_404_custom_isTemporary(Velog, pk=pk)
         self.check_object_permissions(self.request, velog)
         return velog
 

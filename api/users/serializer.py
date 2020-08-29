@@ -2,7 +2,6 @@ from annoying.functions import get_object_or_None
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-from django.core.serializers import serialize
 from api.communications.models import ContestDebate, ContestCodeNote, Velog
 from api.communications.serializer import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
 from api.contests.models import Contest
@@ -83,19 +82,19 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return MyContestSerializer(obj.myContestsFinished(), many=True).data
 
     def get_contestDebates(self, obj):
-        contestDebates = ContestDebate.objects.filter(writer=obj.user)
+        contestDebates = ContestDebate.dd_objects.filter(writer=obj.user)
         serializer = ContestDebatesSerializer(contestDebates, many=True, context={"user": obj.user})
 
         return serializer.data
 
     def get_contestCodeNotes(self, obj):
-        contestCodeNotes = ContestCodeNote.objects.filter(writer=obj.user)
+        contestCodeNotes = ContestDebate.dd_objects.filter(writer=obj.user)
         serializer = ContestCodeNotesSerializer(contestCodeNotes, many=True, context={"user": obj.user})
 
         return serializer.data
 
     def get_velogs(self, obj):
-        velogs = Velog.objects.filter(writer=obj.user)
+        velogs = Velog.dd_objects.filter(writer=obj.user)
         serializer = VelogsSerializer(velogs, many=True, context={"user": obj.user})
 
         return serializer.data
@@ -131,7 +130,7 @@ class CustomProfileSerializer(serializers.ModelSerializer):
         fields = ['image', 'nickname', 'contestRankDictionary', 'velogs']
 
     def get_velogs(self, obj):
-        velogs = Velog.objects.filter(writer=obj.user)
+        velogs = Velog.dd_objects.filter(writer=obj.user)
         serializer = VeolgSerializerForProfile(velogs, many=True)
 
         return serializer.data

@@ -1,12 +1,7 @@
-import json
-
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
 
-from django.core import serializers
-
-from rest_framework import status, permissions, generics
+from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import UpdateAPIView, CreateAPIView
@@ -237,7 +232,7 @@ def member_delete(request, teamName):
     if request.user.is_staff or team.representative == request.user or member == request.user:
         if member == team.representative:
             if team.members.exclude(id=request.user.id):
-                team.representative = list(team.members.all())[0]
+                team.representative = list(team.members.exclude(id=request.user.id))[0]
                 team.save()
                 team.members.remove(member)
             else:
@@ -285,7 +280,7 @@ def delete_user(request):
     if teams:
         for team in teams:
             if team.members.exclude(id=request.user.id):
-                team.representative = team.members.all()[0]
+                team.representative = team.members.exclude(id=request.user.id)[0]
                 team.save()
             else:
                 team.delete()
@@ -300,7 +295,7 @@ def delete_user_pk(request, pk):
     teams = Team.objects.filter(representative=user)
     for team in teams:
         if team.members.exclude(id=user.id):
-            team.representative = team.members.all()[0]
+            team.representative = team.members.exclude(id=request.user.id)[0]
             team.save()
         else:
             team.delete()
@@ -363,6 +358,6 @@ def check_is_me_staff(request):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def myBasicInformation(request):
-        customProfile=request.user.customProfile
-        serializer=ProfileBasicInformationSerializer(customProfile)
-        return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)
+    customProfile = request.user.customProfile
+    serializer = ProfileBasicInformationSerializer(customProfile)
+    return Response(data=serializer.data, status=status.HTTP_401_UNAUTHORIZED)

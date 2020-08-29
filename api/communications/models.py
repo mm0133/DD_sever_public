@@ -1,14 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from api.contests.models import Contest
-from config.utils import ddAnonymousUser
-
-# 삭제할 때 view에서, 대댓이 있는 걸 확인해서 있으면 '삭제된 댓글입니다'로 content를 바꾼다.
-# 대댓 없으면 그냥 지운다.
 
 
-# ContestDebate와 ContestCodePost는 모델 상 정확히 똑같지만, 다르게 쓴다.
-
+class IsTemporaryAttributeManager(models.Manager):
+    def get_queryset(self):
+        return super(IsTemporaryAttributeManager, self).get_queryset()\
+            .filter(isTemporary=False)
 
 
 class ContestDebate(models.Model):
@@ -23,9 +21,12 @@ class ContestDebate(models.Model):
     contest = models.ForeignKey(Contest, null=True, on_delete=models.CASCADE)
 
     # like는 여기 두고 스크랩은 유저의 profile에 둘 것이다.
-    likes = models.ManyToManyField(
-        User, related_name="contestDebateLikes", blank=True
-    )
+    likes = models.ManyToManyField(User, related_name="contestDebateLikes", blank=True)
+
+    isTemporary = models.BooleanField(default=False)
+
+    objects = models.Manager()
+    dd_objects = IsTemporaryAttributeManager()
 
     def __str__(self):
         return self.title
@@ -54,6 +55,10 @@ class ContestCodeNote(models.Model):
         User, related_name="contestCodeNoteLikes", blank=True
     )
 
+    isTemporary = models.BooleanField(default=False)
+
+    objects = models.Manager()
+    dd_objects = IsTemporaryAttributeManager()
     def __str__(self):
         return self.title
 
@@ -77,6 +82,11 @@ class Velog(models.Model):
     likes = models.ManyToManyField(
         User, related_name="velogLikes", blank=True
     )
+
+    isTemporary = models.BooleanField(default=False)
+
+    objects = models.Manager()
+    dd_objects = IsTemporaryAttributeManager()
 
     def __str__(self):
         return self.title
