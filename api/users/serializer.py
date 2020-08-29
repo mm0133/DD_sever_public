@@ -2,7 +2,7 @@ from annoying.functions import get_object_or_None
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-
+from django.core.serializers import serialize
 from api.communications.models import ContestDebate, ContestCodeNote, Velog
 from api.communications.serializer import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
 from api.contests.models import Contest
@@ -46,13 +46,13 @@ class VelogSerializerForScrap(serializers.ModelSerializer):
 class MyContestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contest
-        fields = ['id', 'title', 'difficulty', 'profileThumb', 'isForTraining']
+        fields = ['id', 'title', 'difficulty', 'isForTraining']
 
 
 class MyCustomProfileSerializer(serializers.ModelSerializer):
     teams = serializers.SerializerMethodField()
-    myContestsNow = serializers.ListField()
-    myContestsFinished = serializers.ListField()
+    myContestsNow = serializers.SerializerMethodField()
+    # myContestsFinished = serializers.SerializerMethodField()
     contestDebates = serializers.SerializerMethodField()
     contestCodeNotes = serializers.SerializerMethodField()
     velogs = serializers.SerializerMethodField()
@@ -65,8 +65,9 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomProfile
         fields = ['image', 'user', 'nickname', 'contestRankDictionary',
-                  'teams', 'myContestsNow',
-                  'myContestsFinished',
+                  'teams',
+                  'myContestsNow',
+                  # 'myContestsFinished',
                   'contestDebates', 'contestCodeNotes', 'velogs',
                   'contestScraps', 'debateScraps', 'codenoteScraps', 'velogScraps']
 
@@ -76,12 +77,15 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_myContestsNow(self, obj):
-        return MyContestSerializer(obj.myContestsNow(), many=True)
+        obj.obj.myContestsNow()
+        print('get_myContestsNow')
+        # return MyContestSerializer(obj.myContestsNow(), many=True)
+        return None
 
     def get_myContestsFinished(self, obj):
         print(1)
-        print(obj.myContestsFinished())
-        return MyContestSerializer(obj.myContestsFinished(), many=True)
+        return None
+        # return MyContestSerializer(obj.myContestsFinished(), many=True)
 
     def get_contestDebates(self, obj):
         contestDebates = ContestDebate.objects.filter(writer=obj.user)

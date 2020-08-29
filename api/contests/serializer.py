@@ -35,7 +35,7 @@ class ContestSerializer(serializers.ModelSerializer):
         fields = ['id', 'writer', 'title', 'subtitle', 'createdAt', 'updatedAt', 'contestAnswer', 'deadline',
                   'timeline', 'prize', 'isForTraining', 'winnerInterview', 'difficulty', 'evaluationMethod',
                   'learningModel', 'evaluationExplanation', 'contestExplanation', 'prizeExplanation', 'dataExplanation',
-                  'profileThumb', 'backThumb', 'contestOverview',
+                  'profileThumb', 'backThumb',
                   'isScraped', 'scrapNums', 'isFinished', 'participantNumber']
         read_only_fields = ['isScraped', 'scrapNums', 'isFinished', 'participantNumber']
         extra_kwargs = {'writer': {'write_only': True},
@@ -54,8 +54,7 @@ class ContestSerializerForPost(serializers.ModelSerializer):
         fields = ['title', 'subtitle', 'contestAnswer', 'deadline',
                   'timeline', 'prize', 'isForTraining', 'winnerInterview', 'difficulty', 'evaluationMethod',
                   'learningModel', 'evaluationExplanation', 'contestExplanation', 'prizeExplanation', 'dataExplanation',
-                  'profileThumb', 'backThumb', 'contestOverview', ]
-
+                  'profileThumb', 'backThumb']
 
 
 class ContestScrapSerializer(serializers.ModelSerializer):
