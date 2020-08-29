@@ -361,3 +361,12 @@ def myBasicInformation(request):
     customProfile = request.user.customProfile
     serializer = ProfileBasicInformationSerializer(customProfile)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def isProperNickname(request):
+    nickname = get_value_or_error(request.data, "nickname")
+    if(get_object_or_None(CustomProfile, nickname=nickname)):
+        data = {"exist":True}
+    else:
+        data = {"exist":False}
+    return Response(data)

@@ -29,4 +29,5 @@ urlpatterns = [
     path("has_profile/", views.HasCustomProfile),
     path("check_is_me_staff/", views.check_is_me_staff),
     path("my_basic_information/", views.myBasicInformation),
+    path("check_nickname/", views.isProperNickname),
 ]
