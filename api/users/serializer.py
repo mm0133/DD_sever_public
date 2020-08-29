@@ -4,7 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from api.communications.models import ContestDebate, ContestCodeNote, Velog
 from api.communications.serializer import ContestDebatesSerializer, ContestCodeNotesSerializer, VelogsSerializer
-from api.contests.models import Contest
+from api.contests.models import Contest, ContestParticipantAnswer
 from api.users.models import CustomProfile, Team, TeamInvite
 from api.users.utils import validate_phoneNumber
 
@@ -48,6 +48,14 @@ class MyContestSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'difficulty', 'isForTraining', 'profileThumb']
 
 
+class MyContestRankSerializer(serializers.ModelSerializer):
+    contest_title = serializers.CharField(source='contest.title')
+
+    class Meta:
+        model = ContestParticipantAnswer
+        fields = ['contest_id', 'contest_title', 'rank']
+
+
 class MyCustomProfileSerializer(serializers.ModelSerializer):
     teams = serializers.SerializerMethodField()
     myContestsNow = serializers.SerializerMethodField()
@@ -61,14 +69,16 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
     codenoteScraps = serializers.SerializerMethodField()
     velogScraps = serializers.SerializerMethodField()
 
+    contestRankList = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomProfile
-        fields = ['image', 'user', 'nickname', 'contestRankDictionary',
+        fields = ['image', 'user', 'nickname',
                   'teams',
-                  'myContestsNow',
-                  'myContestsFinished',
+                  'myContestsNow', 'myContestsFinished', 'contestRankList',
                   'contestDebates', 'contestCodeNotes', 'velogs',
-                  'contestScraps', 'debateScraps', 'codenoteScraps', 'velogScraps']
+                  'contestScraps', 'debateScraps', 'codenoteScraps', 'velogScraps',
+                  ]
 
     def get_teams(self, obj):
         teams = obj.user.teams
@@ -80,6 +90,9 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
 
     def get_myContestsFinished(self, obj):
         return MyContestSerializer(obj.myContestsFinished(), many=True).data
+
+    def get_contestRankList(self, obj):
+        return MyContestRankSerializer(obj.myContestRanked(), many=True).data
 
     def get_contestDebates(self, obj):
         contestDebates = ContestDebate.dd_objects.filter(writer=obj.user)

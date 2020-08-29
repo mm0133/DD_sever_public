@@ -83,6 +83,12 @@ class Contest(models.Model):
         else:
             return False
 
+    def isMedalGiven(self):
+        if self.participantAnswer.first():
+            return self.participantAnswer.first().rank != 0
+        else:
+            return False
+
     def scrapsCount(self):
         return self.scrapProfiles.count()
 
@@ -96,15 +102,12 @@ class ContestFile(models.Model):
 
 
 class ContestParticipantAnswer(models.Model):
-    contest = models.ForeignKey(
-        Contest, null=True, on_delete=models.SET_NULL, related_name="participantAnswer"
-    )
-    team = models.ForeignKey(
-        'users.Team', null=True, blank=True, on_delete=models.SET_NULL, related_name="contestAnswer"
-    )
+    contest = models.ForeignKey(Contest, null=True, on_delete=models.SET_NULL, related_name="participantAnswer")
+    team = models.ForeignKey('users.Team', null=True, blank=True, on_delete=models.SET_NULL,
+                             related_name="contestAnswer")
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="contestAnswer")
     isTeam = models.BooleanField(default=False)
-    teamMembers = ListTextField(null=True, blank=True, base_field=models.CharField(max_length=255), )
+    teamMembers = ListTextField(null=True, blank=True, base_field=models.CharField(max_length=255))
     name = models.CharField(max_length=255)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)

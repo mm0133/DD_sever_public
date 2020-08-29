@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # apps
     "api.users",
     "api.contests",
@@ -33,17 +34,15 @@ INSTALLED_APPS = [
     "api.educations",
     "api.managements",
 
+    # library
     "rest_framework",
-
-    # social login
     'social_django',  # django social auth
-    'rest_social_auth',
-
+    'rest_social_auth',  # social login
     "corsheaders",
-
     'import_export',
-
     'dbbackup',  # django-dbbackup
+    'django_extensions',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -171,3 +170,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, 'backup')}
+
+CRONJOBS = [
+    ('*/5 * * * *', 'contests.crons.give_medal_auto', '>> /log/medal_cron.log'),
+]

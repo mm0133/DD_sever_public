@@ -34,7 +34,8 @@ class CustomProfile(models.Model):
     phoneNumber = models.CharField(max_length=11, unique=True, null=True, blank=True)
     nickname = models.CharField(max_length=255, unique=True)
 
-    # json으로 어떤 대회에서(id값이 key가 된다) 어떤 rank(1~5)를 들고 있는지 기록해둔다.
+    # json으로 어떤 대회에서(id값이 key가 된다) 어떤 rank(1~5)를 들고 있는지 기록해둔다. => 이 기능 serialzer로 넘겼음.
+    # db 꼬일 것 같아서 일단은 남겨 뒀음.
     contestRankDictionary = models.TextField(default="{}")
 
     contestScraps = models.ManyToManyField(Contest, related_name="scrapProfiles", blank=True)
@@ -52,22 +53,24 @@ class CustomProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} Profile"
 
-    def myContests(self):
-        myContestAnswers = ContestParticipantAnswer.objects \
+    def myContestAnswers(self):
+        return ContestParticipantAnswer.objects \
             .filter(Q(user=self.user) | Q(teamMembers__contains=self.user.customProfile.nickname))
-        myContestIds = [contestAnswer.contest.id for contestAnswer in myContestAnswers]
-        ret = Contest.objects.filter(id__in=myContestIds).order_by('-id')
-        return ret
+
+    def myContestRanked(self):
+        return self.myContestAnswers().filter(rank__in=[1, 2, 3, 4])
+
+    def myContests(self):
+        myContestIds = [contestAnswer.contest.id for contestAnswer in self.myContestAnswers()]
+        return Contest.objects.filter(id__in=myContestIds).order_by('-id')
 
     def myContestsNow(self):
         myContestsNowIds = [contest.id for contest in self.myContests() if not contest.isFinished()]
-        ret = self.myContests().filter(id__in=myContestsNowIds).order_by('-id')
-        return ret
+        return self.myContests().filter(id__in=myContestsNowIds).order_by('-id')
 
     def myContestsFinished(self):
         myContestsFinishedIds = [contest.id for contest in self.myContests() if contest.isFinished()]
-        ret = self.myContests().filter(id__in=myContestsFinishedIds).order_by('-id')
-        return ret
+        return self.myContests().filter(id__in=myContestsFinishedIds).order_by('-id')
 
 
 @receiver(signals.pre_delete, sender=CustomProfile)
