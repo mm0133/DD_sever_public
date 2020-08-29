@@ -88,7 +88,7 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_contestCodeNotes(self, obj):
-        contestCodeNotes = ContestDebate.dd_objects.filter(writer=obj.user)
+        contestCodeNotes = ContestCodeNote.dd_objects.filter(writer=obj.user)
         serializer = ContestCodeNotesSerializer(contestCodeNotes, many=True, context={"user": obj.user})
 
         return serializer.data
