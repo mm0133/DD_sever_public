@@ -62,18 +62,11 @@ class CustomProfile(models.Model):
     def myContestsNow(self):
         myContestsNowIds = [contest.id for contest in self.myContests() if not contest.isFinished()]
         ret = self.myContests().filter(id__in=myContestsNowIds).order_by('-id')
-        print('model.myContestsNow')
-        print(ret)
         return ret
 
     def myContestsFinished(self):
-        print(777)
         myContestsFinishedIds = [contest.id for contest in self.myContests() if contest.isFinished()]
-        print(888)
         ret = self.myContests().filter(id__in=myContestsFinishedIds).order_by('-id')
-        print(999)
-        print(ret)
-        print(1010)
         return ret
 
 

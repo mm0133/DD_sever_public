@@ -46,13 +46,13 @@ class VelogSerializerForScrap(serializers.ModelSerializer):
 class MyContestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contest
-        fields = ['id', 'title', 'difficulty', 'isForTraining']
+        fields = ['id', 'title', 'difficulty', 'isForTraining', 'profileThumb']
 
 
 class MyCustomProfileSerializer(serializers.ModelSerializer):
     teams = serializers.SerializerMethodField()
     myContestsNow = serializers.SerializerMethodField()
-    # myContestsFinished = serializers.SerializerMethodField()
+    myContestsFinished = serializers.SerializerMethodField()
     contestDebates = serializers.SerializerMethodField()
     contestCodeNotes = serializers.SerializerMethodField()
     velogs = serializers.SerializerMethodField()
@@ -67,7 +67,7 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         fields = ['image', 'user', 'nickname', 'contestRankDictionary',
                   'teams',
                   'myContestsNow',
-                  # 'myContestsFinished',
+                  'myContestsFinished',
                   'contestDebates', 'contestCodeNotes', 'velogs',
                   'contestScraps', 'debateScraps', 'codenoteScraps', 'velogScraps']
 
@@ -77,15 +77,10 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_myContestsNow(self, obj):
-        obj.obj.myContestsNow()
-        print('get_myContestsNow')
-        # return MyContestSerializer(obj.myContestsNow(), many=True)
-        return None
+        return MyContestSerializer(obj.myContestsNow(), many=True).data
 
     def get_myContestsFinished(self, obj):
-        print(1)
-        return None
-        # return MyContestSerializer(obj.myContestsFinished(), many=True)
+        return MyContestSerializer(obj.myContestsFinished(), many=True).data
 
     def get_contestDebates(self, obj):
         contestDebates = ContestDebate.objects.filter(writer=obj.user)
