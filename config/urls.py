@@ -18,8 +18,10 @@ from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_social_auth.views import SocialJWTPairOnlyAuthView, SocialJWTPairUserAuthView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenObtainSlidingView, \
+    TokenRefreshSlidingView
+from rest_social_auth.views import SocialJWTPairOnlyAuthView, SocialJWTPairUserAuthView, SocialJWTSlidingOnlyAuthView, \
+    SocialJWTSlidingUserAuthView
 
 from api.users.customPipeline import social_signup_profile
 
@@ -30,23 +32,21 @@ urlpatterns = [
     path("api/v1/communications/", include("api.communications.urls")),
     path("api/v1/users/", include("api.users.urls")),
     path("api/v1/managements/", include("api.managements.urls")),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path("login/social/profile/", social_signup_profile),
-
     url(r'', include('social_django.urls', namespace='social')),
-    url(r'^api/login/', include('rest_social_auth.urls_jwt_pair')),
-
-
-    # returns token only
-    url(r'^social/jwt-pair/(?:(?P<provider>[a-zA-Z0-9_-]+)/?)?$',
-        SocialJWTPairOnlyAuthView.as_view(),
-        name='login_social_jwt_pair'),
+    #일반로그인 토큰
+    path('api/token/', TokenObtainSlidingView.as_view(), name='token_obtain'),
+    path('api/token/refresh/', TokenRefreshSlidingView.as_view(), name='token_refresh'),
+    # 소셜로그인 토큰
+    url(r'^api/login/social/jwt-sliding/(?:(?P<provider>[a-zA-Z0-9_-]+)/?)?$',
+        SocialJWTSlidingOnlyAuthView.as_view(),
+        name='login_social_jwt_sliding'),
     # returns token + user_data
-    url(r'^social/jwt-pair-user/(?:(?P<provider>[a-zA-Z0-9_-]+)/?)?$',
-        SocialJWTPairUserAuthView.as_view(),
-        name='login_social_jwt_pair_user'),
+    url(r'^api/login/social/jwt-sliding-user/(?:(?P<provider>[a-zA-Z0-9_-]+)/?)?$',
+        SocialJWTSlidingUserAuthView.as_view(),
+        name='login_social_jwt_sliding_user'),
+
 
 ]
 
