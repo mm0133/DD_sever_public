@@ -36,7 +36,6 @@ def give_medal_auto():
                 answer.rank = 3
             else:
                 answer.rank = 4
-            print(answer)
             answer.save()
 
         # 나머지에게는 대회가 끝났다는 것을 표시하기 위해 기존의 0이 아닌 5 값을 부여.
@@ -45,5 +44,4 @@ def give_medal_auto():
                 answer.rank = 4
             else:
                 answer.rank = 5
-            print(answer)
             answer.save()

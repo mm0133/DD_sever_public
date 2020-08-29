@@ -50,10 +50,12 @@ class MyContestSerializer(serializers.ModelSerializer):
 
 class MyContestRankSerializer(serializers.ModelSerializer):
     contest_title = serializers.CharField(source='contest.title')
+    contest_difficulty = serializers.CharField(source='contest.difficulty')
+    contest_isForTraining = serializers.CharField(source='contest.isForTraining')
 
     class Meta:
         model = ContestParticipantAnswer
-        fields = ['contest_id', 'contest_title', 'rank']
+        fields = ['contest_id', 'contest_title', 'contest_difficulty', 'contest_isForTraining', 'rank']
 
 
 class MyCustomProfileSerializer(serializers.ModelSerializer):
