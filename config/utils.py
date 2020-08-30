@@ -71,13 +71,13 @@ class DDCustomListAPiView(generics.ListAPIView):
             return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
 
-def ddAnonymousUser_make():
-    anony = get_object_or_None(User, username='anonymous')
-    if anony:
-        return anony
-    else:
-        anony2 = User.objects.create(username='anonymous', password='123')
-        return anony2
+# def ddAnonymousUser_make():
+#     anony = get_object_or_None(User, username='anonymous')
+#     if anony:
+#         return anony
+#     else:
+#         anony2 = User.objects.create(username='anonymous', password='123')
+#         return anony2
 
 
-ddAnonymousUser = ddAnonymousUser_make()
+ddAnonymousUser = User.objects.get(pk=2)
