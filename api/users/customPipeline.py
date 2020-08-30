@@ -4,6 +4,20 @@ from social_core.pipeline.partial import partial
 
 from api.users.models import CustomProfile
 
+def github_email(strategy, details, user=None, *args, **kwargs):
+    """Get user avatar from social provider."""
+
+    if user:
+        backend_name = kwargs['backend'].__class__.__name__.lower()
+        response = kwargs.get('response', {})
+        email = None
+        print(response)
+        if 'github' in backend_name and response.get('email'):
+            email = response['email']
+        if email and user.email != email:
+            user.email = email
+            strategy.storage.user.changed(user)
+
 
 @partial
 def request_profile_data(strategy, details, user=None, *args, **kwargs):

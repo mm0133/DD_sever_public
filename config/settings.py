@@ -143,22 +143,36 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
 )
 
+SOCIAL_AUTH_PIPELINE =(
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'api.users.customPipeline.github_email'
+)
+
+
 # REST_SOCIAL_OAUTH_REDIRECT_URI = '/'
-REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI = 'http://127.0.0.1:3000/auth/social/callback/'
+REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI = 'http://127.0.0.1:3000/auth/social/callback'
 REST_SOCIAL_DOMAIN_FROM_ORIGIN = False
 
-SOCIAL_AUTH_GITHUB_KEY = '679f9b8e9e9cfbf16221'
+SOCIAL_AUTH_GITHUB_KEY = '026f732d573c2afdead4'
 SOCIAL_AUTH_GITHUB_SECRET = GITHUB_OAUTH2_SECRET
-# SOCIAL_AUTH_GITHUB_SCOPE = ['email',]
+SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
-    '468545293049-p195m8hbli0ss99614cb2siqf4rgt04k.apps.googleusercontent.com'
+    '979510034981-hd4l7ldbj43c64q16q1dbpmcqa3r417e.apps.googleusercontent.com'
 )
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_OAUTH2_SECRET
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', ]
 
-SOCIAL_AUTH_NAVER_KEY = 'mM_KbZbhn4GWvhh6vSiz'
+SOCIAL_AUTH_NAVER_KEY = 'aRXXE_H2v6yaj1bFX3eQ'
 SOCIAL_AUTH_NAVER_SECRET = NAVER_OAUTH2_SECRET
 
 DOMAIN_ADDRESS = ''
