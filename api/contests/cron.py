@@ -8,6 +8,10 @@ logger = logging.getLogger("django")
 
 def give_medal_auto():
     now = timezone.now()
+    lecturePackage = LecturePackage.objects.get(pk=1)
+    lecturePackage.hiNums += 1
+    lecturePackage.save()
+
     logger.debug(f"give_medal_auto function is executed. dateTime: {now}")
     target_contest_ids = [contest.id for contest in Contest.objects.all() if
                           (not contest.isMedalGiven()) and (contest.isFinished())]
