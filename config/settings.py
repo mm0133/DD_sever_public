@@ -189,14 +189,23 @@ CRONJOBS = [
     ('* * * * *', 'api.contests.cron.give_medal_auto', '>> /logs/medal_cron.log'),
 ]
 
-GGING = {
+CRONTAB_COMMAND_SUFFIX = '2>&1'
+
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'logs/log'),
+            'formatter': 'verbose',
         },
     },
     'loggers': {
@@ -204,7 +213,6 @@ GGING = {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
-        },
-    },
+        }
+    }
 }
-
