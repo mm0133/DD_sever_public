@@ -10,18 +10,40 @@ from api.users.utils import validate_phoneNumber
 
 
 class ContestSerializerForScrap(serializers.ModelSerializer):
+    isScraped= serializers.BooleanField
     class Meta:
         model = Contest
-        fields = ["id", "profileThumb", "title", "isForTraining", "difficulty"]
+        fields = ["id", "profileThumb", "title", "isForTraining", "difficulty", "isScraped"]
+
+    def get_isScraped(self, obj):
+        user = self.context.get("user")
+        return obj.isScraped(user)
+
+class ContestTitleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contest
+        fields = ["id","title"]
 
 
 class DebateSerializerForScrap(serializers.ModelSerializer):
     writerNickname = serializers.CharField(source='writer.customProfile.nickname')
     writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
+    contest = serializers.SerializerMethodField()
+    isScraped = serializers.SerializerMethodField()
 
     class Meta:
         model = ContestDebate
-        fields = ["id", "title", "writerNickname", "writerImage"]
+        fields = ["id", "title", "writerNickname", "writerImage", "ContestTitle"]
+
+    def get_contest(self, obj):
+        return ContestTitleSerializer(obj.contest).data
+
+    def get_isScraped(self, obj):
+        user = self.context.get("user")
+        return obj.isScraped(user)
+
+
+
 
 
 class CodenoteSerializerForScrap(serializers.ModelSerializer):

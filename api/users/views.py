@@ -28,7 +28,7 @@ from config.utils import DDCustomListAPiView
 @permission_classes([permissions.IsAuthenticated])
 def get_myPage(request):
     profile = CustomProfile.objects.get(user=request.user)
-    serializer = MyCustomProfileSerializer(profile)
+    serializer = MyCustomProfileSerializer(profile, context={"user": request.user})
     return Response(serializer.data)
 
 
