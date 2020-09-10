@@ -25,6 +25,7 @@ class ContestTitleSerializer(serializers.ModelSerializer):
         fields = ["id","title"]
 
 
+
 class DebateSerializerForScrap(serializers.ModelSerializer):
     writerNickname = serializers.CharField(source='writer.customProfile.nickname')
     writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
