@@ -132,6 +132,13 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'dataduck.ai@gmail.com'
+EMAIL_HOST_PASSWORD = 'dataduckai20'
+
 # authentication
 SIMPLE_JWT = my_settings.SIMPLE_JWT
 

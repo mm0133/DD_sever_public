@@ -30,4 +30,6 @@ urlpatterns = [
     path("check_is_me_staff/", views.check_is_me_staff),
     path("my_basic_information/", views.myBasicInformation),
     path("check_nickname/", views.isProperNickname),
+    path("requrie_email_authenticiation/",views.RequireEmailAuthentication),
+    path("confirm_email_authenticiation/",views.ConfirmEmailAuthentication),
 ]

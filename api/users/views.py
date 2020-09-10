@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
@@ -10,11 +13,12 @@ from rest_framework.views import APIView
 
 from annoying.functions import get_object_or_None
 
-from api.users.models import CustomProfile, Team, TeamInvite
+from api.users.models import CustomProfile, Team, TeamInvite, EmailAuthenticationKey
 from api.users.serializer import CustomProfileSerializer, MyCustomProfileSerializer, \
     CustomProfileSerializerForChange, TeamsSerializer, TeamSerializer, TeamsSerializerForPost, \
     TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer, TeamInviteSerializer, \
     ProfileBasicInformationSerializer
+from api.users.utils import validateEmail
 from config.customExceptions import get_value_or_error
 from config.customExceptions import get_object_or_404_custom
 from config.utils import DDCustomListAPiView
@@ -362,11 +366,101 @@ def myBasicInformation(request):
     serializer = ProfileBasicInformationSerializer(customProfile)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 def isProperNickname(request):
     nickname = get_value_or_error(request.data, "nickname")
-    if(get_object_or_None(CustomProfile, nickname=nickname)):
-        data = {"exist":True}
+    if (get_object_or_None(CustomProfile, nickname=nickname)):
+        data = {"exist": True}
     else:
-        data = {"exist":False}
+        data = {"exist": False}
     return Response(data)
+
+
+from uuid import uuid4
+
+
+
+
+@api_view(['POST'])
+def RequireEmailAuthentication(request):
+
+    key = uuid4().hex[:6],
+    type = get_value_or_error(request.data, "type")
+
+    if type=="findPW":
+        id = get_value_or_error(request.data, "type")
+        user=get_object_or_None(User, username=id)
+        if not user:
+            return Response(data={'error':"아이디를 확인해주세요."}, status=status.HTTP_400_BAD_REQUEST)
+        email=user.customProfile.email
+        emailAuthenticationKey = get_object_or_None(EmailAuthenticationKey, email=email)
+        if emailAuthenticationKey:
+            emailAuthenticationKey.delete()
+
+        EmailAuthenticationKey.objects.create(
+            email=email,
+            key=key,
+            type=type,
+        )
+
+        name=email.split('@')[0]
+        domain = email.split('@')[1]
+        if len(name)>3:
+            name=name[:3]+'*'*(len(name)-3)
+
+
+        protectedEmail=name+'@'+ domain
+        return Response(data={'email':protectedEmail}, status=status.HTTP_200_OK)
+
+    email = get_value_or_error(request.data, "email"),
+    if type=="signUp":
+        if validateEmail('email'):
+            return Response(data={'error':"올바른 이메일을 입력해 주세요"}, status=status.HTTP_400_BAD_REQUEST)
+        if get_object_or_None(CustomProfile, email=email):
+            return Response(data={'error': "해당 이메일로 이미 가입되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
+    emailAuthenticationKey = get_object_or_None(EmailAuthenticationKey, email=email)
+    if emailAuthenticationKey:
+        emailAuthenticationKey.delete()
+
+    EmailAuthenticationKey.objects.create(
+        email=email,
+        key=key,
+        type=type,
+    )
+    return Response(status=status.HTTP_200_OK)
+
+
+
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def ConfirmEmailAuthentication(request):
+
+    email = get_value_or_error(request.data, "email"),
+    key = get_value_or_error(request.data, "key")
+    type = get_value_or_error(request.data, "type")
+    emailAuthenticationKey = get_object_or_None(EmailAuthenticationKey, email=email)
+
+
+    if emailAuthenticationKey.key!=key:
+        return Response(data={'isConfirmed':False, 'error':"인증번호가 일치 하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+    if emailAuthenticationKey.type!=type:
+        return Response(data={'isConfirmed':False, 'error':"한번에 하나의 인증만 가능합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+    timeInterval=timezone.now() - emailAuthenticationKey.createdAt
+    if timeInterval>timedelta(minute=5):
+        emailAuthenticationKey.delete()
+        return Response(data={'isConfirmed':False, 'error':"인증 요청시간 5분이 초과 되었습니다. 인증요청을 다시 해주세요"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    if type == "findPW":
+        customProfile = get_object_or_404_custom(CustomProfileView, email=email)
+        user = customProfile.user
+        temporaryPassword = uuid4().hex[:8]
+        user.password = temporaryPassword
+        user.save()
+        return (Response(data={'isConfirmed':True, 'temporaryPassword':temporaryPassword}))
+    return Response(data={'isConfirmed':True}, status=status.HTTP_200_OK)
+

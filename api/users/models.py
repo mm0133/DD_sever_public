@@ -126,3 +126,10 @@ class TeamInvite(models.Model):
 
     def __str__(self):
         return f"teamInvite from team {self.team.name}' to {self.invitee.customProfile.nickname}"
+
+
+class EmailAuthenticationKey(models.Model):
+    email = models.EmailField()
+    createdAt = models.DateTimeField(auto_now_add=True)
+    key = models.CharField(max_length=255)
+    type = models.CharField(max_length=255) #가입:signIn ,아이디 찾기: findID, 비밀번호 찾기: findPW
