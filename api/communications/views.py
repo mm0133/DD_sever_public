@@ -297,12 +297,14 @@ class DebateCommentViewWithPK(APIView):
 
     def delete(self, request, pk):
         debateComment = self.get_debateComment(pk)
-        if DebateComment.objects.filter(debateComment=debateComment):
-            debateComment.delete()
-        else:
+        if DebateComment.objects.filter(debateComment=debateComment) or debateComment.debateComment:
             debateComment.writer = ddAnonymousUser
-            debateComment.content = '삭제된 댓글 입니다.'
+            debateComment.content = '삭제된 댓글입니다.'
             debateComment.save()
+
+        else:
+            debateComment.delete()
+
         return Response(status=status.HTTP_200_OK)
 
 
@@ -357,12 +359,14 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
 
     def delete(self, request, pk):
         codeNoteComment = self.get_codeNoteComment(pk)
-        if CodeNoteComment.objects.filter(debateComment=debateComment):
-            codeNoteComment.delete()
-        else:
+        if CodeNoteComment.objects.filter(debateComment=debateComment) or codeNoteComment.codeNoteComment:
             codeNoteComment.writer = ddAnonymousUser
-            codeNoteComment.content = '삭제된 댓글 입니다.'
+            codeNoteComment.content = '삭제된 댓글입니다.'
             codeNoteComment.save()
+
+        else:
+            codeNoteComment.delete()
+
         return Response(status=status.HTTP_200_OK)
 
 
@@ -416,12 +420,14 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
 
     def delete(self, request, pk):
         velogComment = self.get_velogComment(pk)
-        if VelogComment.objects.filter(debateComment=velogComment):
-            velogComment.delete()
-        else:
+        if VelogComment.objects.filter(debateComment=velogComment) or velogComment.velogComment:
             velogComment.writer = ddAnonymousUser
-            velogComment.content = '삭제된 댓글 입니다.'
+            velogComment.content = '삭제된 댓글입니다.'
             velogComment.save()
+
+        else:
+            velogComment.delete()
+
         return Response(status=status.HTTP_200_OK)
 
 
