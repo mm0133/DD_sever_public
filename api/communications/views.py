@@ -104,7 +104,7 @@ class ContestDebateViewWithPk(APIView):
 
 class ContestCodeNoteListView(DDCustomListAPiView):
     permission_classes = [IsGetRequestOrAuthenticated]
-    queryset = ContestDebate.dd_objects.all().order_by('-id')
+    queryset = ContestCodeNote.dd_objects.all().order_by('-id')
     serializer_class = ContestCodeNotesSerializer
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('title', 'writer__customProfile__nickname')

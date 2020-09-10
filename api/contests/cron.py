@@ -1,7 +1,20 @@
+#from django.utils import timezone
+
 from api.contests.models import Contest, ContestParticipantAnswer
+from api.educations.models import LecturePackage
+
+import logging
+
+logger = logging.getLogger("django")
 
 
 def give_medal_auto():
+    #now = timezone.now()
+    lecturePackage = LecturePackage.objects.get(pk=1)
+    lecturePackage.hitNums += 1
+    lecturePackage.save()
+    print('hello!')
+    logger.debug("give_medal_auto function is executed.")
     target_contest_ids = [contest.id for contest in Contest.objects.all() if
                           (not contest.isMedalGiven()) and (contest.isFinished())]
     contests = Contest.objects.filter(id__in=target_contest_ids)
@@ -45,3 +58,10 @@ def give_medal_auto():
             else:
                 answer.rank = 5
             answer.save()
+
+
+
+def check_logger():
+	logger.debug("I'm checking logger")
+	print("I'm checking logger")
+

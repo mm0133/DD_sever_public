@@ -193,5 +193,33 @@ DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, 'backup')}
 
 CRONJOBS = [
-    ('*/5 * * * *', 'contests.crons.give_medal_auto', '>> /log/medal_cron.log'),
+    ('* * * * *', 'api.contests.cron.give_medal_auto', '>> /logs/medal_cron.log'),
 ]
+
+CRONTAB_COMMAND_SUFFIX = '2>&1'
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs/log'),
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         }
+#     }
+# }

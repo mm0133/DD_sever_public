@@ -167,3 +167,5 @@ Pipfile.lock
 backup/
 
 .config/
+
+logs/
