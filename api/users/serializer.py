@@ -34,7 +34,7 @@ class DebateSerializerForScrap(serializers.ModelSerializer):
 
     class Meta:
         model = ContestDebate
-        fields = ["id", "title", "writerNickname", "writerImage", "ContestTitle"]
+        fields = ["id", "title", "writerNickname", "writerImage","isScraped", "contest", ]
 
     def get_contest(self, obj):
         return ContestTitleSerializer(obj.contest).data
