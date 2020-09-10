@@ -11,7 +11,6 @@ def github_email(strategy, details, user=None, *args, **kwargs):
         backend_name = kwargs['backend'].__class__.__name__.lower()
         response = kwargs.get('response', {})
         email = None
-        print(response)
         if 'github' in backend_name and response.get('email'):
             email = response['email']
         if email and user.email != email:
