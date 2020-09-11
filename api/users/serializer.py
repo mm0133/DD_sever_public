@@ -10,7 +10,7 @@ from api.users.utils import validate_phoneNumber
 
 
 class ContestSerializerForScrap(serializers.ModelSerializer):
-    isScraped= serializers.BooleanField
+    isScraped= serializers.SerializerMethodField
     class Meta:
         model = Contest
         fields = ["id", "profileThumb", "title", "isForTraining", "difficulty", "isScraped"]
@@ -147,7 +147,7 @@ class MyCustomProfileSerializer(serializers.ModelSerializer):
 
     def get_codenoteScraps(self, obj):
         codenoteScraps = obj.codeNoteScraps.all()
-        return DebateSerializerForScrap(codenoteScraps, many=True, context={"user": obj.user}).data
+        return CodenoteSerializerForScrap(codenoteScraps, many=True, context={"user": obj.user}).data
 
     def get_velogScraps(self, obj):
         velogScraps = obj.velogScraps.all()
