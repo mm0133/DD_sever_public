@@ -50,19 +50,37 @@ class DebateSerializerForScrap(serializers.ModelSerializer):
 class CodenoteSerializerForScrap(serializers.ModelSerializer):
     writerNickname = serializers.CharField(source='writer.customProfile.nickname')
     writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
+    contest = serializers.SerializerMethodField()
+    isScraped = serializers.SerializerMethodField()
 
     class Meta:
         model = ContestCodeNote
-        fields = ["id", "title", "writerNickname", "writerImage"]
+        fields = ["id", "title", "writerNickname", "writerImage","isScraped", "contest", ]
+
+    def get_contest(self, obj):
+        return ContestTitleSerializer(obj.contest).data
+
+    def get_isScraped(self, obj):
+        user = self.context.get("user")
+        return obj.isScraped(user)
 
 
 class VelogSerializerForScrap(serializers.ModelSerializer):
     writerNickname = serializers.CharField(source='writer.customProfile.nickname')
     writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
+    contest = serializers.SerializerMethodField()
+    isScraped = serializers.SerializerMethodField()
 
     class Meta:
         model = Velog
-        fields = ["id", "title", "writerNickname", "writerImage"]
+        fields = ["id", "title", "writerNickname", "writerImage","isScraped", "contest", ]
+
+    def get_contest(self, obj):
+        return ContestTitleSerializer(obj.contest).data
+
+    def get_isScraped(self, obj):
+        user = self.context.get("user")
+        return obj.isScraped(user)
 
 
 class MyContestSerializer(serializers.ModelSerializer):
