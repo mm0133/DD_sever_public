@@ -359,7 +359,7 @@ class CodeNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 �
 
     def delete(self, request, pk):
         codeNoteComment = self.get_codeNoteComment(pk)
-        if CodeNoteComment.objects.filter(debateComment=debateComment) or codeNoteComment.codeNoteComment:
+        if CodeNoteComment.objects.filter(codeNoteComment=codeNoteComment) or codeNoteComment.codeNoteComment:
             codeNoteComment.writer = ddAnonymousUser
             codeNoteComment.content = '삭제된 댓글입니다.'
             codeNoteComment.save()
@@ -420,7 +420,7 @@ class VelogCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘�
 
     def delete(self, request, pk):
         velogComment = self.get_velogComment(pk)
-        if VelogComment.objects.filter(debateComment=velogComment) or velogComment.velogComment:
+        if VelogComment.objects.filter(velogComment=velogComment) or velogComment.velogComment:
             velogComment.writer = ddAnonymousUser
             velogComment.content = '삭제된 댓글입니다.'
             velogComment.save()

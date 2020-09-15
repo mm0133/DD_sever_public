@@ -30,6 +30,9 @@ urlpatterns = [
     path("check_is_me_staff/", views.check_is_me_staff),
     path("my_basic_information/", views.myBasicInformation),
     path("check_nickname/", views.isProperNickname),
-    path("requrie_email_authenticiation/",views.RequireEmailAuthentication),
-    path("confirm_email_authenticiation/",views.ConfirmEmailAuthentication),
+
+    path("requrie_signup_email_authenticiation/",views.signUpEmailAuthentication),
+    path("requrie_findpw_email_authenticiation/", views.findPassWordEmailAuthentication),
+    path("confirm_signup_email_authenticiation/", views.signUpEmailAuthenticationConfirm),
+    path("confirm_findpw_email_authenticiation/",views.findPassWordEmailAuthenticationConfirm),
 ]
