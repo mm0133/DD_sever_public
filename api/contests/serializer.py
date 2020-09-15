@@ -1,5 +1,6 @@
 from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from rest_framework import serializers
+from os.path import basename
 
 
 class ContestsSerializer(serializers.ModelSerializer):
@@ -65,11 +66,26 @@ class ContestScrapSerializer(serializers.ModelSerializer):
 
 class ContestFileSerializer(serializers.ModelSerializer):
     file = serializers.FileField(use_url=True)
+    fileName = serializers.SerializerMethodField()
+    fileSize = serializers.SerializerMethodField()
 
     class Meta:
         model = ContestFile
-        fields = ['id', 'contest', 'file']
+        fields = ['id', 'contest', 'file', 'fileName', 'fileSize', ]
         extra_kwargs = {'contest': {'write_only': True}}
+
+    def get_fileName(self, obj):
+        return basename(obj.file.name)
+
+    def get_fileSize(self, obj):
+        filesize = obj.file.size
+        if filesize > 1048576:
+            size = "%.1fMB" % (filesize / 1048576)
+        elif filesize > 1024:
+            size = "%dKB" % (filesize / 1024)
+        else:
+            size = "1KB 미만"
+        return size
 
 
 class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
