@@ -1,3 +1,4 @@
+from annoying.functions import get_object_or_None
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -11,6 +12,8 @@ from config.FilePath import (contestBackThumbPath, contestContestAnswerPath,
 from django_mysql.models import ListTextField
 from imagekit.models import ProcessedImageField
 from imagekit.processors import Thumbnail
+
+from config.utils import ddAnonymousUser
 
 
 class Contest(models.Model):
@@ -129,6 +132,17 @@ class ContestParticipantAnswer(models.Model):
             return self.user.customProfile.nickname
         else:
             return "삭제된 계정"
+    def get_teamMembers(self):
+        teamMemberList=self.teamMembers
+        if teamMemberList:
+            for member in teamMemberList:
+                user = get_object_or_None(User, id=member.id)
+                if user:
+                    member["smallImage"] = user.customProfile.smallImage
+                else:
+                    member["smallImage"] = ddAnonymousUser.customProfile.smallImage
+            return teamMemberList
+        return None
 
     def calculateAccuracy(self):
         pk = self.contest.id

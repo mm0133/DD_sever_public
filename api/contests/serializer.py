@@ -94,7 +94,7 @@ class ContestFileSerializer(serializers.ModelSerializer):
 
 
 class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
-    teamMembers = serializers.SerializerMethodField()
+    teamMembers = serializers.ListField(source='get_teamMembers')
     isOwner = serializers.SerializerMethodField()
 
     class Meta:
@@ -107,16 +107,7 @@ class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
             return user and user.is_authenticated and user == obj.team.representative
         else:
             return user and user.is_authenticated and user == obj.user
-    def get_teamMembers(self,obj):
-        teamMemberList=obj.teamMember
-        if teamMemberList:
-            for member in obj.teamMemberList:
-                user=get_object_or_None(User, id=member.id)
-                if user:
-                    member["smallImage"] = user.customProfile.smallImage
-                else:
-                    member["smallImage"] = ddAnonymousUser.customProfile.smallImage
-        return teamMemberList
+
 
 
 
