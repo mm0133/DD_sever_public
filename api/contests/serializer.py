@@ -1,6 +1,11 @@
+from annoying.functions import get_object_or_None
+from django.contrib.auth.models import User
+
 from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from rest_framework import serializers
 from os.path import basename
+
+from config.utils import ddAnonymousUser
 
 
 class ContestsSerializer(serializers.ModelSerializer):
@@ -89,7 +94,7 @@ class ContestFileSerializer(serializers.ModelSerializer):
 
 
 class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
-    teamMembers = serializers.ListField()
+    teamMembers = serializers.SerializerMethodField()
     isOwner = serializers.SerializerMethodField()
 
     class Meta:
@@ -102,6 +107,17 @@ class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
             return user and user.is_authenticated and user == obj.team.representative
         else:
             return user and user.is_authenticated and user == obj.user
+    def get_teamMembers(self,obj):
+        teamMemberList=obj.teamMember
+        if teamMemberList:
+            for member in obj.teamMemberList:
+                user=get_object_or_None(User, id=member.id)
+                if user:
+                    member["smallImage"] = user.customProfile.smallImage
+                else:
+                    member["smallImage"] = ddAnonymousUser.customProfile.smallImage
+        return teamMemberList
+
 
 
 class ContestParticipantAnswerSerializer(serializers.ModelSerializer):
