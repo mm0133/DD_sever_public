@@ -5,6 +5,8 @@ from api.contests.models import Contest, ContestFile, ContestParticipantAnswer
 from rest_framework import serializers
 from os.path import basename
 
+from api.users.models import CustomProfile
+from api.users.serializer import CustomProfileBasicSerializer
 from config.utils import ddAnonymousUser
 
 
@@ -94,7 +96,7 @@ class ContestFileSerializer(serializers.ModelSerializer):
 
 
 class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
-    teamMembers = serializers.ListField(source='get_teamMembers')
+    teamMembers = serializers.SerializerMethodField()
     isOwner = serializers.SerializerMethodField()
 
     class Meta:
@@ -107,6 +109,25 @@ class ContestParticipantAnswersSerializer(serializers.ModelSerializer):
             return user and user.is_authenticated and user == obj.team.representative
         else:
             return user and user.is_authenticated and user == obj.user
+
+    def get_teamMembers(self, obj):
+
+        if obj.teamMembers:
+            list = []
+            for mem in obj.teamMembers:
+                member=mem.split(":")
+                user=get_object_or_None(User, pk=member[0])
+
+                if user:
+                    customProfile=user.customProfile
+
+                else:
+                    customProfile=CustomProfile(nickname=member[1], smallImage=ddAnonymousUser.customProfile.smallImage)
+                list.append(customProfile)
+            serializer=CustomProfileBasicSerializer(list, many=True)
+            return serializer.data
+        return None
+
 
 
 

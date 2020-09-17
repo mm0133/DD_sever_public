@@ -227,6 +227,13 @@ class MemberSerializer(serializers.ModelSerializer):
         fields = ['nickname', 'smallImage']
 
 
+class CustomProfileBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomProfile
+        fields = ["nickname", "smallImage"]
+
+
+
 class TeamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team

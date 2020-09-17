@@ -184,8 +184,7 @@ class ContestParticipantAnswerCreateViewWithContestPK(APIView):
 
             teamMembers = []
             for member in team.members.all():
-                memberdict={'Id':member.id, 'nickName':member.customProfile.nickname}
-                teamMembers.append(memberdict)
+                teamMembers.append(f'{member.id}:{member.customProfile.nickname}')
 
             contestParticipantAnswer = ContestParticipantAnswer.objects.create(
                 isTeam=True,
