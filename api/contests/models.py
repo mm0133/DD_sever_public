@@ -67,7 +67,7 @@ class Contest(models.Model):
                                        )
     backThumb = ProcessedImageField(null=True, blank=True,
                                     max_length=255, upload_to=contestBackThumbPath,
-                                    processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
+                                    processors=[Thumbnail(1080, 250)],  # 처리할 작업 목룍
                                     format='JPEG',  # 최종 저장 포맷
                                     options={'quality': 90},
                                     default="user_1/profile",
