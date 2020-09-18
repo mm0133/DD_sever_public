@@ -93,6 +93,11 @@ def get_teams(request, nickname):
     return Response(serializer.data)
 
 
+
+
+
+
+
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def post_team(request):
@@ -110,11 +115,31 @@ def post_team(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class TeamViewWithTeamName(APIView):
     def get(self, request, teamName):
         team = get_object_or_404_custom(Team, name=teamName)
         serializer = TeamSerializer(team, context={"user": request.user})
         return Response(data=serializer.data)
+
+
+    def put(self, request, teamName):
+        team = get_object_or_404_custom(Team, name=teamName)
+        if request.user != team.representative:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        defaultImage = get_value_or_None(request.data, "defaultImage")
+        if defaultImage:
+            team.smallImage = "user_1/profile"
+            team.image = "user_1/profile"
+            team.save()
+            return Response(status=status.HTTP_200_OK)
+
+        image = get_value_or_error(request.data, "image")
+        team.smallImage = "user_1/profile"
+        team.image = "user_1/profile"
+        team.save()
+        return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, teamName):
         team = get_object_or_404_custom(Team, name=teamName)
