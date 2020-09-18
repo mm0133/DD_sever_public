@@ -80,4 +80,4 @@ class DDCustomListAPiView(generics.ListAPIView):
 #         return anony2
 
 
-ddAnonymousUser = User.objects.get(pk=2)
+ddAnonymousUser = User.objects.get(pk=3)
