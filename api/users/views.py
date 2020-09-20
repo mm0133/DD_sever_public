@@ -16,8 +16,8 @@ from annoying.functions import get_object_or_None
 from api.users.models import CustomProfile, Team, TeamInvite, EmailAuthenticationKey
 from api.users.serializer import CustomProfileSerializer, MyCustomProfileSerializer, \
     CustomProfileSerializerForChange, TeamsSerializer, TeamSerializer, TeamsSerializerForPost, \
-    TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer, \
-    ProfileBasicInformationSerializer
+    ChangePasswordSerializer, UserCreateSerializer, \
+    ProfileBasicInformationSerializer, TeamInviteSerializer
 from api.users.utils import validateEmail
 from config.customExceptions import get_value_or_error
 from config.customExceptions import get_object_or_404_custom
@@ -151,13 +151,7 @@ class TeamViewWithTeamName(APIView):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-# @api_view(['POST'])
-# @permission_classes([permissions.IsAuthenticated])
-# def team_invite_to_me(request):
-#
-#     serializer=
-#
-#     return Response(data=)
+
 
 
 # class TeamInviteListView(DDCustomListAPiView):
@@ -182,6 +176,23 @@ class TeamViewWithTeamName(APIView):
 #         serializer = TeamInviteSerializer(queryset, many=True, context={'user': request.user})
 #         return Response(serializer.data)
 
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def team_invite_to_me(request):
+    teamInvites=TeamInvite.objects.filter(invitee=request.user)
+    serializer=TeamInviteSerializer(teamInvites)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def team_invite_from_team(request,teamName):
+    team=get_object_or_404_custom(Team, name=teamName)
+    if not request.user in team.members:
+        return Response(data="팀 멤버만 볼 수 있습니다.",status=status.HTTP_401_UNAUTHORIZED)
+    teamInvites=TeamInvite.objects.filter(team=team)
+    serializer=TeamInviteSerializer(teamInvites)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
@@ -203,11 +214,12 @@ def member_invite_send(request, teamName):
     elif get_object_or_None(TeamInvite, team=team, invitee=member):
         return Response(f"당신은 {memberNickname}을 to team {teamName}에 이미 초대했습니다. ",
                             status=status.HTTP_403_FORBIDDEN)
+    if len(team.members) + TeamInvite.objects.filter(team=team).count()>10:
+        return Response("팀원은 최대 10명입니다.", status=status.HTTP_400_BAD_REQUEST)
 
     TeamInvite.objects.create(
         team=team,
         invitee=member,
-        invitingMessage=invitingMessage
     )
     return Response(status=status.HTTP_200_OK)
 

@@ -274,21 +274,15 @@ class TeamSerializer(serializers.ModelSerializer):
         return user == obj.representative
 
 
-# class TeamInviteSerializer(serializers.ModelSerializer):
-#     inviteeNickname=
-#     inviterNickname=
-#     teamName=
-#     class Meta:
-#         model = TeamInvite
-#         fields = []
-
-
-class TeamInviteSerializerForAccept(serializers.ModelSerializer):
-    isAccepted=serializers.BooleanField()
+class TeamInviteSerializer(serializers.ModelSerializer):
+    inviteeNickname=serializers.CharField(source='invitee.CustomProfile.nickname')
+    inviterNickname=serializers.CharField(source='team.representative.CustomProfile.nickname')
+    teamName=serializers.CharField(source='team.name')
     class Meta:
         model = TeamInvite
-        fields = ["isAccepted"]
-        extra_kwargs = {'isAccepted': {'required': True}}
+        fields = ['inviteeNickname','inviterNickname','team','teamName']
+
+
 
 
 class ChangePasswordSerializer(serializers.Serializer):
