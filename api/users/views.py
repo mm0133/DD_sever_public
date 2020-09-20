@@ -16,7 +16,7 @@ from annoying.functions import get_object_or_None
 from api.users.models import CustomProfile, Team, TeamInvite, EmailAuthenticationKey
 from api.users.serializer import CustomProfileSerializer, MyCustomProfileSerializer, \
     CustomProfileSerializerForChange, TeamsSerializer, TeamSerializer, TeamsSerializerForPost, \
-    TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer, TeamInviteSerializer, \
+    TeamInviteSerializerForAccept, ChangePasswordSerializer, UserCreateSerializer, \
     ProfileBasicInformationSerializer
 from api.users.utils import validateEmail
 from config.customExceptions import get_value_or_error
@@ -128,7 +128,8 @@ class TeamViewWithTeamName(APIView):
         if request.user != team.representative:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        defaultImage = get_value_or_None(request.data, "defaultImage")
+        defaultImage = get_object_or_404_custom(request.data, "defaultImage")
+
         if defaultImage:
             team.smallImage = "user_1/profile"
             team.image = "user_1/profile"
@@ -150,27 +151,36 @@ class TeamViewWithTeamName(APIView):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-class TeamInviteListView(DDCustomListAPiView):
-    permission_classes = [permissions.IsAuthenticated]
-    queryset = TeamInvite.objects.all().order_by('-id')
-    serializer_class = TeamInviteSerializer
-    filter_backends = (SearchFilter, OrderingFilter)
-    search_fields = ('name', 'representative__customProfile__nickname')
-    ordering_fields = ('name', 'id')
+# @api_view(['POST'])
+# @permission_classes([permissions.IsAuthenticated])
+# def team_invite_to_me(request):
+#
+#     serializer=
+#
+#     return Response(data=)
 
-    def list(self, request, *args, **kwargs):
-        if request.user.is_staff:
-            rawQueryset = self.get_queryset()
-        else:
-            rawQueryset = self.get_queryset().filter(Q(team__representative=request.user) | Q(invitee=request.user))
 
-        queryset = self.filter_queryset(rawQueryset)
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = TeamInviteSerializer(page, many=True, context={'user': request.user})
-            return self.get_paginated_response(serializer.data)
-        serializer = TeamInviteSerializer(queryset, many=True, context={'user': request.user})
-        return Response(serializer.data)
+# class TeamInviteListView(DDCustomListAPiView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     queryset = TeamInvite.objects.all().order_by('-id')
+#     serializer_class = TeamInviteSerializer
+#     filter_backends = (SearchFilter, OrderingFilter)
+#     search_fields = ('name', 'representative__customProfile__nickname')
+#     ordering_fields = ('name', 'id')
+#
+#     def list(self, request, *args, **kwargs):
+#         if request.user.is_staff:
+#             rawQueryset = self.get_queryset()
+#         else:
+#             rawQueryset = self.get_queryset().filter(Q(team__representative=request.user) | Q(invitee=request.user))
+#
+#         queryset = self.filter_queryset(rawQueryset)
+#         page = self.paginate_queryset(queryset)
+#         if page is not None:
+#             serializer = TeamInviteSerializer(page, many=True, context={'user': request.user})
+#             return self.get_paginated_response(serializer.data)
+#         serializer = TeamInviteSerializer(queryset, many=True, context={'user': request.user})
+#         return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -182,7 +192,7 @@ def member_invite_send(request, teamName):
     member = get_object_or_404_custom(CustomProfile, nickname=memberNickname).user
 
     if not (team.representative == request.user or request.user.is_staff):
-        return Response(f"당신은 팀 {teamName}'의 대표도 아니고 관리자도 아닙니다. 초대 요청을 보낼 수 업습니다.",
+        return Response(f"당신은 팀 {teamName}'의 대표가 아닙니다. 초대 요청을 보낼 수 없습니다.",
                         status=status.HTTP_401_UNAUTHORIZED)
 
     if memberNickname == request.user.customProfile.nickname:
@@ -191,17 +201,8 @@ def member_invite_send(request, teamName):
         return Response(f"멤버 {memberNickname}는 이미 팀 {teamName}의 멤버입니다. 초대할 수 없습니다.",
                         status=status.HTTP_403_FORBIDDEN)
     elif get_object_or_None(TeamInvite, team=team, invitee=member):
-        teamInvite = get_object_or_None(TeamInvite, team=team, invitee=member)
-        # 아직 수락/거절 안 했을 때
-        if not teamInvite.isFinished:
-            return Response(f"당신은 {memberNickname}을 to team {teamName}에 이미 초대했습니다. ",
+        return Response(f"당신은 {memberNickname}을 to team {teamName}에 이미 초대했습니다. ",
                             status=status.HTTP_403_FORBIDDEN)
-        # 이미 거절했는데 다시 초대했을 때
-        else:
-            teamInvite.isFinished = False
-            teamInvite.invitingMessage = invitingMessage
-            teamInvite.save()
-            return Response(status=status.HTTP_200_OK)
 
     TeamInvite.objects.create(
         team=team,
@@ -218,22 +219,15 @@ def member_invite_accept(request, teamName):
     teamInvite = get_object_or_404_custom(TeamInvite, team=team, invitee=request.user)
 
     if not (teamInvite.invitee == request.user or request.user.is_staff):
-        return Response(f"당신은 팀 {teamName}'의 초대를 받지 않았고 관리자도 아닙니다. 초대를 수락할 수 없습니다.",
+        return Response(f"당신은 팀 {teamName}'의 초대를 받지 않았습니다.",
                         status=status.HTTP_401_UNAUTHORIZED)
 
-    # 이렇게 해야 JS의 true/false 를 python 의 true/false 로 알아들을 수 있음.
-    serializer = TeamInviteSerializerForAccept(teamInvite, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
+    isAccepted = get_object_or_404_custom(request.data, "isAccepted")
+    if isAccepted:
+        team.members.add(teamInvite.invitee)
+    teamInvite.delete()
+    return Response(status=status.HTTP_200_OK)
 
-        if serializer.data["isAccepted"]:
-            team.members.add(teamInvite.invitee)
-
-        teamInvite.isFinished = True
-        teamInvite.save()
-        return Response(status=status.HTTP_200_OK)
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
-from imagekit.generatorlibrary import Thumbnail
-from imagekit.models import ProcessedImageField
 
+from imagekit.models import ProcessedImageField
+from imagekit.processors import Thumbnail
 from config.utils import ddAnonymousUser
 from config.FilePath import lecturePackageThumbnailPath
 

@@ -240,9 +240,11 @@ class TeamSerializerForPut(serializers.ModelSerializer):
 
 
 class TeamsSerializer(serializers.ModelSerializer):
+    representativeNickname = serializers.CharField(source='representative.CustomProfile.nickname')
     class Meta:
         model = Team
-        fields = ['id', 'name', 'representative', 'smallImage']
+        fields = ['id', 'name', 'representativeNickname', 'smallImage','representative']
+        extra_kwargs = {'representative': {'write_only': True}}
 
 
 class TeamsSerializerForPost(serializers.ModelSerializer):
@@ -261,6 +263,7 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'representative', 'representativeNickname', 'members', 'smallImage', 'createdAt',
                   'isRepresentative']
         read_only_fields = ['id', 'representativeNickname', 'createdAt', 'isRepresentative']
+        extra_kwargs = {'representative': {'write_only': True}}
 
     def get_members(self, obj):
         members = obj.members.all()
@@ -271,13 +274,17 @@ class TeamSerializer(serializers.ModelSerializer):
         return user == obj.representative
 
 
-class TeamInviteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TeamInvite
-        fields = "__all__"
+# class TeamInviteSerializer(serializers.ModelSerializer):
+#     inviteeNickname=
+#     inviterNickname=
+#     teamName=
+#     class Meta:
+#         model = TeamInvite
+#         fields = []
 
 
 class TeamInviteSerializerForAccept(serializers.ModelSerializer):
+    isAccepted=serializers.BooleanField()
     class Meta:
         model = TeamInvite
         fields = ["isAccepted"]
