@@ -240,7 +240,7 @@ class TeamSerializerForPut(serializers.ModelSerializer):
 
 
 class TeamsSerializer(serializers.ModelSerializer):
-    representativeNickname = serializers.CharField(source='representative.CustomProfile.nickname')
+    representativeNickname = serializers.CharField(source='representative.customProfile.nickname')
     class Meta:
         model = Team
         fields = ['id', 'name', 'representativeNickname', 'smallImage','representative']

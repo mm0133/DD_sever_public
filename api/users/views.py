@@ -87,8 +87,10 @@ class CustomProfileView(APIView):
 
 @api_view(['GET'])
 def get_teams(request, nickname):
-    user = get_object_or_404_custom(CustomProfile, nickname=nickname).user
-    teams = user.teams
+    customProfile = get_object_or_404_custom(CustomProfile, nickname=nickname)
+    print(customProfile.nickname)
+    teams = customProfile.user.teams.all()
+    print(teams)
     serializer = TeamsSerializer(teams, many=True)
     return Response(serializer.data)
 
