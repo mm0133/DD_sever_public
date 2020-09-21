@@ -272,8 +272,8 @@ class TeamSerializer(serializers.ModelSerializer):
 
 
 class TeamInviteSerializer(serializers.ModelSerializer):
-    inviteeNickname=serializers.CharField(source='invitee.CustomProfile.nickname')
-    inviterNickname=serializers.CharField(source='team.representative.CustomProfile.nickname')
+    inviteeNickname=serializers.CharField(source='invitee.customProfile.nickname')
+    inviterNickname=serializers.CharField(source='team.representative.customProfile.nickname')
     teamName=serializers.CharField(source='team.name')
     class Meta:
         model = TeamInvite

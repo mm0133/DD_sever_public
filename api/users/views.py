@@ -180,17 +180,17 @@ class TeamViewWithTeamName(APIView):
 @permission_classes([permissions.IsAuthenticated])
 def team_invite_to_me(request):
     teamInvites=TeamInvite.objects.filter(invitee=request.user)
-    serializer=TeamInviteSerializer(teamInvites)
+    serializer=TeamInviteSerializer(teamInvites, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def team_invite_from_team(request,teamName):
     team=get_object_or_404_custom(Team, name=teamName)
-    if not request.user in team.members:
+    if not request.user in team.members.all():
         return Response(data="팀 멤버만 볼 수 있습니다.",status=status.HTTP_401_UNAUTHORIZED)
     teamInvites=TeamInvite.objects.filter(team=team)
-    serializer=TeamInviteSerializer(teamInvites)
+    serializer=TeamInviteSerializer(teamInvites, many=True)
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
