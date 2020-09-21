@@ -197,6 +197,7 @@ def team_invite_from_team(request,teamName):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def member_invite_send(request, teamName):
+
     team = get_object_or_404_custom(Team, name=teamName)
     memberNickname = get_value_or_error(request.data, "memberNickname")
     invitingMessage = get_object_or_None(request.data, "invitingMessage")
@@ -214,7 +215,7 @@ def member_invite_send(request, teamName):
     elif get_object_or_None(TeamInvite, team=team, invitee=member):
         return Response(f"당신은 {memberNickname}을 to team {teamName}에 이미 초대했습니다. ",
                             status=status.HTTP_403_FORBIDDEN)
-    if len(team.members) + TeamInvite.objects.filter(team=team).count()>10:
+    if team.members.all().count() + TeamInvite.objects.filter(team=team).count()>10:
         return Response("팀원은 최대 10명입니다.", status=status.HTTP_400_BAD_REQUEST)
 
     TeamInvite.objects.create(
