@@ -68,15 +68,12 @@ class CodenoteSerializerForScrap(serializers.ModelSerializer):
 class VelogSerializerForScrap(serializers.ModelSerializer):
     writerNickname = serializers.CharField(source='writer.customProfile.nickname')
     writerImage = serializers.ImageField(source='writer.customProfile.smallImage')
-    contest = serializers.SerializerMethodField()
     isScraped = serializers.SerializerMethodField()
 
     class Meta:
         model = Velog
-        fields = ["id", "title", "writerNickname", "writerImage","isScraped", "contest", ]
+        fields = ["id", "title", "writerNickname", "writerImage","isScraped", ]
 
-    def get_contest(self, obj):
-        return ContestTitleSerializer(obj.contest).data
 
     def get_isScraped(self, obj):
         user = self.context.get("user")
