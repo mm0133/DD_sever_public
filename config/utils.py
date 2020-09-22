@@ -6,11 +6,6 @@ from django.contrib.auth.models import User
 from rest_framework import filters, generics
 from rest_framework.pagination import PageNumberPagination
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> ad261ddff69556ffd6485d3d7bb7f35fe7ae2f1c
 
 def HitCountResponse(request, obj, response):
     # [1] 로그인 확인
