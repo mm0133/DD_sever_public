@@ -6,6 +6,11 @@ from django.contrib.auth.models import User
 from rest_framework import filters, generics
 from rest_framework.pagination import PageNumberPagination
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> ad261ddff69556ffd6485d3d7bb7f35fe7ae2f1c
 
 def HitCountResponse(request, obj, response):
     # [1] 로그인 확인
@@ -78,7 +83,6 @@ class DDCustomListAPiView(generics.ListAPIView):
 #     else:
 #         anony2 = User.objects.create(username='anonymous', password='123')
 #         return anony2
-
 
 # ddAnonymousUser = User.objects.get(customProfile__nickname="펑")
 ddAnonymousUser = User.objects.get(pk=2)

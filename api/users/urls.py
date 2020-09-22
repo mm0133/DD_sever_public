@@ -11,9 +11,10 @@ urlpatterns = [
 
     path("team_by_user_nickname/<str:nickname>/", views.get_teams),  # get
     path("team_create/", views.post_team),  # post
-    path("team/<str:teamName>/", views.TeamViewWithTeamName.as_view()),  # get delete
+    path("team/<str:teamName>/", views.TeamViewWithTeamName.as_view()),  # get put delete
 
-    path("teaminvite/", views.TeamInviteListView.as_view()),  # get
+    path("teaminvite_to_me/", views.team_invite_to_me),  # get
+    path("teaminvite/<str:teamName>/", views.team_invite_from_team), #get
 
     path("team/<str:teamName>/member_invite_send/", views.member_invite_send),  # post
     path("team/<str:teamName>/member_invite_accept/", views.member_invite_accept),  # post

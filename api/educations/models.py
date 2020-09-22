@@ -1,14 +1,23 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from imagekit.models import ProcessedImageField
+from imagekit.processors import Thumbnail
 from config.utils import ddAnonymousUser
-
+from config.FilePath import lecturePackageThumbnailPath
 
 class LecturePackage(models.Model):
     writer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     hitNums = models.IntegerField(default=0)
+    thumbnail = ProcessedImageField(null=True, blank=True,
+                                    max_length=255, upload_to=lecturePackageThumbnailPath,
+                                    processors=[Thumbnail(256, 256)],  # 처리할 작업 목룍
+                                    format='JPEG',  # 최종 저장 포맷
+                                    options={'quality': 90},
+                                    default="user_1/profile",
+                                    )
 
     title = models.CharField(max_length=255)  # 제목은 무조건 달아야 함!
 
