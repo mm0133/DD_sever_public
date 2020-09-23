@@ -140,6 +140,7 @@ class TeamViewWithTeamName(APIView):
         if image:
             team.smallImage=image
             team.image=image
+            team.save()
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
