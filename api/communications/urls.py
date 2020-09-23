@@ -34,5 +34,8 @@ urlpatterns = [
 
     path("velogcomment_with_velog_pk/<int:pk>/", views.VelogCommentViewWithVelogPK.as_view()),
     path("velogcomment/<int:pk>/", views.VelogCommentViewWithPK.as_view()),
-    path("velogcomment/<int:pk>/like/", views.VelogCommentLike)
+    path("velogcomment/<int:pk>/like/", views.VelogCommentLike),
+    path("contestdebate_temporary/",views.temporaryContestDebate),
+    path("contestcodenote_temporary/", views.temporaryContestCodeNote),
+    path("velog_temporary/", views.temporaryVelog),
 ]

@@ -9,6 +9,11 @@ from rest_framework.pagination import PageNumberPagination
 
 def HitCountResponse(request, obj, response):
     # [1] 로그인 확인
+
+    #임시저장 객체의 경우 조회수 오르지 않음
+    if getattr(obj, 'isTemporary', False):
+        return response
+
     if not request.user.is_authenticated:
         cookie_name = 'DDHit'
     else:
