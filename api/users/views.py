@@ -136,11 +136,12 @@ class TeamViewWithTeamName(APIView):
             team.save()
             return Response(status=status.HTTP_200_OK)
 
-        image = get_value_or_error(request.data, "image")
-        team.smallImage = "user_1/profile"
-        team.image = "user_1/profile"
-        team.save()
-        return Response(status=status.HTTP_200_OK)
+        image = get_object_or_None(request.data, "image")
+        if image:
+            team.smallImage=image
+            team.image=image
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, teamName):
         team = get_object_or_404_custom(Team, name=teamName)
