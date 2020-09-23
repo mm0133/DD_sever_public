@@ -544,7 +544,7 @@ def VelogCommentLike(request, pk):
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['GET'])
 def temporaryContestDebate(request):
-    contestDebates=ContestDebate.objects.filter(wirter=request.user, isTemporary=True)
+    contestDebates=ContestDebate.objects.filter(writer=request.user, isTemporary=True)
     serializer = ContestDebatesSerializer(contestDebates,many=True, context={'user': request.user})
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -552,13 +552,13 @@ def temporaryContestDebate(request):
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['GET'])
 def temporaryContestCodeNote(request):
-    contestCodeNotes=ContestCodeNote.objects.filter(wirter=request.user, isTemporary=True)
+    contestCodeNotes=ContestCodeNote.objects.filter(writer=request.user, isTemporary=True)
     serializer = ContestCodeNotesSerializer(contestCodeNotes, many=True, context={'user': request.user})
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 @permission_classes([permissions.IsAuthenticated])
 @api_view(['GET'])
 def temporaryVelog(request):
-    velog=Velog.objects.filter(wirter=request.user, isTemporary=True)
+    velog=Velog.objects.filter(writer=request.user, isTemporary=True)
     serializer = VelogsSerializer(velog, many=True, context={'user': request.user})
     return Response(data=serializer.data, status=status.HTTP_200_OK)
