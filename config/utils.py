@@ -7,8 +7,6 @@ from rest_framework import filters, generics
 from rest_framework.pagination import PageNumberPagination
 
 
-
-
 def HitCountResponse(request, obj, response):
     # [1] 로그인 확인
     if not request.user.is_authenticated:
@@ -81,6 +79,5 @@ class DDCustomListAPiView(generics.ListAPIView):
 #         anony2 = User.objects.create(username='anonymous', password='123')
 #         return anony2
 
-# anonyProfile = CustomProfile.objects.get(nickname="펑")
-
-ddAnonymousUser = User.objects.get(pk=1)
+# ddAnonymousUser = User.objects.get(customProfile__nickname="펑")
+ddAnonymousUser = User.objects.get(pk=2)
