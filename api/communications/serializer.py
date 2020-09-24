@@ -42,19 +42,19 @@ class LikeScrapContestTitleIncludedModelSerializer(LikeScrapIncludedModelSeriali
 class ContestDebateSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = ContestDebate
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'isTemporary']
 
 
 class ContestCodeNoteSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = ContestCodeNote
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'isTemporary']
 
 
 class VelogSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = Velog
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'isTemporary']
 
 
 class ContestDebatesSerializer(LikeScrapContestTitleIncludedModelSerializer, IsOwnerMixin):
