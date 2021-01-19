@@ -89,3 +89,18 @@ class EduVideoLectureComment(models.Model):
         return f'comment (id: {self.id}) by {self.writer.customProfile.nickname} \
         on eduVideoLecture {self.eduVideoLecture.title} \
         of lecturePackage {self.eduVideoLecture.lecturePackage.title}'
+
+class LectureNoteComment(models.Model):
+    writer=models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
+    content = models.TextField()
+    page= models.CharField(max_length=255)
+    likes = models.ManyToManyField(
+        User, related_name="lectureNoteCommentLikes", blank=True
+    )
+
+    # 대댓글(재귀)
+    lectureNoteComment = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True
+    )

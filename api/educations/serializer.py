@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from api.communications.serializer import LikeIncludedModelSerializer
-from api.educations.models import EduVideoLecture, LecturePackage, LecturePackageComment, EduVideoLectureComment
+from api.educations.models import EduVideoLecture, LecturePackage, LecturePackageComment, EduVideoLectureComment, \
+    LectureNoteComment
 from config.serializer import IsOwnerMixin
 
 
@@ -64,3 +65,17 @@ class EduVideoLectureCommentSerializer(LikeIncludedModelSerializer, IsOwnerMixin
         exclude = ['likes', ]
         read_only_fields = ['createdAt', 'hitNums', 'updatedAt']
         extra_kwargs = {'writer': {'write_only': True}}
+
+
+class LectureNoteCommentSerializerForPost(serializers.ModelSerializer):
+    class Meta:
+        model = LectureNoteComment
+        fields = ['content']
+
+
+class LectureNoteCommentSerializer(LikeIncludedModelSerializer, IsOwnerMixin):
+    class Meta:
+        model = LectureNoteComment
+        exclude = ['likes', ]
+        read_only_fields = ['createdAt', 'hitNums', 'updatedAt']
+        extra_kwargs = {'writer': {'write_only': True}, 'contestDebate': {'write_only': True}}

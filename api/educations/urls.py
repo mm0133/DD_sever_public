@@ -17,4 +17,8 @@ urlpatterns = [
     path("eduVideoLectureComment_with_package_pk/<int:pk>/", views.EduVideoLectureCommentsViewWithVideoPK.as_view()),
     path("eduVideoLectureComment/<int:pk>/", views.EduVideoLectureCommentViewWithPK.as_view()),
     path("eduVideoLectureComment/<int:pk>/like/", views.EduVideoLectureCommentLike),
+
+    path("lecturenotecomment_with_page/<str:page>/", views.LectureNoteCommentViewWithPage.as_view()),
+    path("lecturenotecomment/<int:pk>/", views.LectureNoteCommentViewWithPK.as_view()),
+    path("lecturenotecomment/<int:pk>/like/", views.LectureNoteCommentLike),
 ]

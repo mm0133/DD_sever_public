@@ -8,10 +8,11 @@ from config.customPermissions import IsGetRequestOrAdminUser, IsGetRequestOrAuth
     IsGetRequestOrWriterOrAdminUser
 from config.customExceptions import get_object_or_404_custom
 from config.utils import HitCountResponse, ddAnonymousUser, DDCustomListAPiView
-from .models import EduVideoLecture, LecturePackage, LecturePackageComment, EduVideoLectureComment
+from .models import EduVideoLecture, LecturePackage, LecturePackageComment, EduVideoLectureComment, LectureNoteComment
 from .serializer import EduVideoLectureSerializer, EduVideoLecturesSerializer, LecturePackageSerializer, \
     LecturePackageSerializerForPost, LecturePackageCommentSerializer, EduVideoLectureCommentSerializer, \
-    LecturePackageCommentSerializerForPostPUT, EduVideoLectureCommentSerializerForPostPut
+    LecturePackageCommentSerializerForPostPUT, EduVideoLectureCommentSerializerForPostPut, LectureNoteCommentSerializer, \
+    LectureNoteCommentSerializerForPost
 
 
 class LecturePackageListView(DDCustomListAPiView):
@@ -230,4 +231,83 @@ def EduVideoLectureCommentLike(request, pk):
         return Response(status=status.HTTP_200_OK)
     else:
         eduVideoLectureComment.likes.add(request.user)
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+
+
+
+
+
+
+
+class LectureNoteCommentViewWithPage(APIView):
+    permission_classes = [IsGetRequestOrAuthenticated]
+
+    def get(self, request, page):
+        lectureNoteComment = LectureNoteComment.objects.filter(page=page)
+        serializer = LectureNoteCommentSerializer(lectureNoteComment, many=True, context={'user': request.user})
+        return Response(serializer.data)
+
+    def post(self, request, page):
+        # 프론트엔드에서 안 담아주면 none 으로 처리됨.
+        serializer = LectureNoteCommentSerializerForPost(data=request.data)
+        if serializer.is_valid():
+            lectureNoteComment = serializer.save(writer=request.user,
+                                              page=page)
+            returnSerializer = LectureNoteCommentSerializer(lectureNoteComment, context={"user": request.user})
+            return Response(returnSerializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+class LectureNoteCommentViewWithPK(APIView):  # 댓글 수정삭제, get요청은 잘안쓸거같긴한데 나중에 혹시 ajax에서 쓸수있으니 구현해놈
+    permission_classes = [IsGetRequestOrWriterOrAdminUser]
+
+    def get_lectureNoteComment(self, pk):
+        lectureNoteComment = get_object_or_404_custom(LectureNoteComment, pk=pk)
+        self.check_object_permissions(self.request, lectureNoteComment)
+        return lectureNoteComment
+
+    def get(self, request, pk):
+        lectureNoteComment = self.get_lectureNoteComment(pk)
+        serializer = LectureNoteCommentSerializer(lectureNoteComment, context={'user': request.user})
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        lectureNoteComment = self.get_lectureNoteComment(pk)
+
+        serializer = LectureNoteCommentSerializer(lectureNoteComment, data=request.data, partial=True,
+                                               context={"user": request.user})
+        if serializer.is_valid():  # validate 로직 추가
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        lectureNoteComment = self.get_lectureNoteComment(pk)
+        if LectureNoteComment.objects.filter(lectureNoteComment=lectureNoteComment) or lectureNoteComment.lectureNoteComment:
+            lectureNoteComment.writer = ddAnonymousUser
+            lectureNoteComment.content = '삭제된 댓글입니다.'
+            lectureNoteComment.save()
+
+        else:
+            lectureNoteComment.delete()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+@permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+def LectureNoteCommentLike(request, pk):
+    lectureNoteComment = get_object_or_404_custom(LectureNoteComment, pk=pk)
+    if lectureNoteComment.likes.filter(id=request.user.id).exists():
+        lectureNoteComment.likes.remove(request.user)
+        return Response(status=status.HTTP_200_OK)
+    else:
+        lectureNoteComment.likes.add(request.user)
         return Response(status=status.HTTP_202_ACCEPTED)
