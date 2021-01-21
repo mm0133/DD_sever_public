@@ -250,9 +250,16 @@ class LectureNoteCommentViewWithPage(APIView):
 
     def post(self, request, page):
         # 프론트엔드에서 안 담아주면 none 으로 처리됨.
+        parent_Comment_id = request.data.get('lectureNoteComment_id')
+        parent_Comment = None
+        if parent_Comment_id:
+            parent_velogComment = get_object_or_404_custom(LectureNoteComment, pk=parent_Comment_id)
+
+
+
         serializer = LectureNoteCommentSerializerForPost(data=request.data)
         if serializer.is_valid():
-            lectureNoteComment = serializer.save(writer=request.user,
+            lectureNoteComment = serializer.save(writer=request.user, lectureNoteComment=parent_velogComment,
                                               page=page)
             returnSerializer = LectureNoteCommentSerializer(lectureNoteComment, context={"user": request.user})
             return Response(returnSerializer.data)
