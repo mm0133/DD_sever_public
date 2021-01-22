@@ -253,13 +253,13 @@ class LectureNoteCommentViewWithPage(APIView):
         parent_Comment_id = request.data.get('lectureNoteComment_id')
         parent_Comment = None
         if parent_Comment_id:
-            parent_velogComment = get_object_or_404_custom(LectureNoteComment, pk=parent_Comment_id)
+            parent_Comment = get_object_or_404_custom(LectureNoteComment, pk=parent_Comment_id)
 
 
 
         serializer = LectureNoteCommentSerializerForPost(data=request.data)
         if serializer.is_valid():
-            lectureNoteComment = serializer.save(writer=request.user, lectureNoteComment=parent_velogComment,
+            lectureNoteComment = serializer.save(writer=request.user, lectureNoteComment=parent_Comment,
                                               page=page)
             returnSerializer = LectureNoteCommentSerializer(lectureNoteComment, context={"user": request.user})
             return Response(returnSerializer.data)
