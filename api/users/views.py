@@ -85,6 +85,17 @@ class CustomProfileView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def to_default_image(request):
+    customProfile = get_object_or_404_custom(CustomProfile, user=request.user)
+    customProfile.image="default_image/user_profile.jpeg"
+    customProfile.smallImage="default_image/user_profile.jpeg"
+    customProfile.save()
+
+
+
 @api_view(['GET'])
 def get_teams(request, nickname):
     customProfile = get_object_or_404_custom(CustomProfile, nickname=nickname)

@@ -20,14 +20,14 @@ class CustomProfile(models.Model):
                                 processors=[Thumbnail(256, 256)],
                                 format='JPEG',
                                 options={'quality': 85},
-                                default="user_1/profile",
+                                default="default_image/user_profile.jpeg",
                                 )
     smallImage = ProcessedImageField(null=True, blank=True,
                                      max_length=255, upload_to=customProfileSmallImage,
                                      processors=[Thumbnail(64, 64)],
                                      format='JPEG',
                                      options={'quality': 60},
-                                     default="user_1/profile",
+                                     default="default_image/user_profile.jpeg",
                                      )
 
     email = models.EmailField(unique=True)

@@ -8,6 +8,7 @@ urlpatterns = [
     path("profile/<str:nickname>/", views.get_profile),  # get
 
     path("my_profile/", views.CustomProfileView.as_view()),  # get, post(처음에만), put
+    path("my_profile/to_default_image/", views.to_default_image), # 기본이미지로 바꾸기
 
     path("team_by_user_nickname/<str:nickname>/", views.get_teams),  # get
     path("team_create/", views.post_team),  # post
