@@ -93,6 +93,7 @@ def to_default_image(request):
     customProfile.image="default_image/user_profile.jpeg"
     customProfile.smallImage="default_image/user_profile.jpeg"
     customProfile.save()
+    return Response(status=status.HTTP_200_OK)
 
 
 
